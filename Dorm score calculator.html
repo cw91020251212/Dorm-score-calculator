@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宿舍分數計算器 - 優化版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #0f2a4a;
+            --accent: #4f9de8;
+            --accent-dark: #347fd3;
+            --success: #28a745;
+            --success-dark: #218838;
+            --warning: #ffc107;
+            --warning-dark: #e0a800;
+            --danger: #e84f4f;
+            --danger-dark: #d33a3a;
+            --text-light: #fff;
+            --text-dark: #333;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --section-bg: rgba(30, 58, 95, 0.7);
+            --required: #ff6b6b;
+            --hint-pink: #ffb6c1;
+            --language-bg: rgba(144, 238, 144, 0.8); /* 淺綠色背景 */
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 25px;
+            background: var(--section-bg);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(79, 157, 232, 0.7),
+                         0 0 20px rgba(79, 157, 232, 0.5),
+                         0 0 30px rgba(79, 157, 232, 0.3);
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        
+        h1 i {
+            color: #ffc107;
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0c8ff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .form-section {
+            background: var(--section-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #e0e0e0;
+            font-size: 1.1rem;
+        }
+        
+        .required::after {
+            content: "*";
+            color: var(--required);
+            margin-left: 4px;
+            font-weight: bold;
+        }
+        
+        .input-control {
+            width: 100%;
+            padding: 14px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 18px;
+        }
+        
+        .input-control.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(232, 79, 79, 0.3);
+        }
+        
+        .input-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 157, 232, 0.3);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .input-hint {
+            font-size: 0.75rem; /* 縮小字體兩級 */
+            color: var(--hint-pink);
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #000;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        /* 按鈕文字黑色邊框效果 */
+        .btn span {
+            position: relative;
+            z-index: 2;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+        }
+        
+        /* 特殊按鈕 - 無文字陰影 */
+        .btn.no-text-shadow span {
+            text-shadow: none !important;
+        }
+        
+        /* 計算按鈕 - 醒目漸變設計 */
+        .btn-primary {
+            background: linear-gradient(135deg, #4f9de8, #ffc107);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffc107, #4f9de8);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover:before {
+            opacity: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn-primary i {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: var(--success-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: var(--text-dark);
+        }
+        
+        .btn-warning:hover {
+            background: var(--warning-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            transform: translateY(-2px);
+        }
+        
+        .result-section {
+            background: var(--section-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .result-container {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 10px;
+            overflow-y: auto;
+            font-size: 1.1rem;
+        }
+        
+        .result-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .result-placeholder i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .highlight-score {
+            display: block;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--warning);
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 2px solid var(--warning);
+        }
+        
+        .result-details {
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            padding: 18px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .result-value {
+            color: #fff;
+        }
+        
+        .data-section {
+            background: var(--section-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            grid-column: 1 / -1;
+        }
+        
+        .data-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            font-size: 18px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 1.3rem;
+        }
+        
+        .data-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .data-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .card-date {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .card-score {
+            font-size: 2rem;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--warning);
+        }
+        
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .detail-label {
+            font-size: 0.95rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #000;
+        }
+        
+        .action-btn span {
+            text-shadow: 
+                -1px -1px 0 #000,  
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+        }
+        
+        .load-btn {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .load-btn:hover {
+            background: var(--accent-dark);
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background: var(--danger-dark);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            grid-column: 1 / -1;
+            font-size: 1.2rem;
+        }
+        
+        .no-data i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 20px 20px;
+            margin-top: 20px;
+            color: #aaa;
+        }
+        
+        /* 狀態欄優化 - 更細更精緻 */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .status-message {
+            font-size: 0.95rem;
+            color: yellow;
+        }
+        
+        .status-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .status-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+        
+        .status-btn span {
+            text-shadow: 
+                -1px -1px 0 #000,  
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            body {
+                font-size: 16px;
+            }
+            
+            /* 手機版語言按鈕調整 */
+            .language-toggle {
+                top: 15px !important;
+                right: 15px !important;
+                font-size: 0.8rem !important;
+                padding: 6px 12px !important;
+            }
+        }
+        
+        /* 打印样式 */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 10mm;
+            }
+            
+            .container, .form-section, .result-section {
+                box-shadow: none;
+                background: white;
+            }
+            
+            .button-group, .data-section, .status-bar, footer, .language-toggle {
+                display: none;
+            }
+            
+            .result-container {
+                background: white;
+                color: black;
+                border: 1px solid #ccc;
+            }
+            
+            .highlight-score {
+                color: #1e3a5f;
+            }
+        }
+        
+        /* 標題裝飾效果 - 多色設計 */
+        .header-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .circle-1 {
+            width: 120px;
+            height: 120px;
+            top: -30px;
+            right: -30px;
+            background: rgba(79, 157, 232, 0.1);
+        }
+        
+        .circle-2 {
+            width: 80px;
+            height: 80px;
+            bottom: -20px;
+            left: -20px;
+            background: rgba(255, 182, 193, 0.15);
+        }
+        
+        .circle-3 {
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            left: 20%;
+            background: rgba(255, 193, 7, 0.15);
+        }
+        
+        .circle-4 {
+            width: 100px;
+            height: 100px;
+            bottom: 20px;
+            right: 100px;
+            background: rgba(40, 167, 69, 0.15);
+        }
+        
+        .circle-5 {
+            width: 90px;
+            height: 90px;
+            top: 20px;
+            left: 15%;
+            background: rgba(232, 79, 79, 0.15);
+        }
+        
+        .circle-6 {
+            width: 70px;
+            height: 70px;
+            top: 40%;
+            right: 15%;
+            background: rgba(159, 79, 232, 0.15);
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(5px, 10px);
+            }
+            50% {
+                transform: translate(-10px, 5px);
+            }
+            75% {
+                transform: translate(8px, -7px);
+            }
+        }
+        
+        /* 新增標題閃光效果 - 速度減慢 */
+        @keyframes shine {
+            0% {
+                background-position: -500px;
+            }
+            100% {
+                background-position: 500px;
+            }
+        }
+        
+        h1 {
+            position: relative;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 5s infinite linear; /* 從3s改為5s，使動畫變慢 */
+            z-index: -1;
+        }
+        
+        /* 語言切換按鈕 - 修正位置到右上角，避免覆蓋標題 */
+        .language-toggle {
+            position: fixed; /* 改為 fixed 定位 */
+            top: 20px; /* 距離頂部 20px */
+            right: 20px; /* 距離右邊 20px */
+            background: var(--language-bg); /* 使用淺綠色背景 */
+            color: #333; /* 深色文字 */
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 25px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000; /* 確保在最上層 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-weight: bold;
+            text-shadow: none; /* 移除文字陰影 */
+        }
+        
+        .language-toggle:hover {
+            background: rgba(152, 251, 152, 0.95); /* 加深背景色 */
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+        
+        .language-toggle:active {
+            transform: translateY(0) scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-decoration">
+                <div class="decoration-circle circle-1"></div>
+                <div class="decoration-circle circle-2"></div>
+                <div class="decoration-circle circle-3"></div>
+                <div class="decoration-circle circle-4"></div>
+                <div class="decoration-circle circle-5"></div>
+                <div class="decoration-circle circle-6"></div>
+            </div>
+            
+            <h1><i class="fas fa-calculator"></i> <span id="appTitle">宿舍分數計算器</span></h1>
+        </header>
+        
+        <!-- 語言切換按鈕 - 移至右上角 -->
+        <button id="languageToggle" class="language-toggle">English</button>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-edit"></i> <span id="inputSectionTitle">輸入資料</span></h2>
+                
+                <div class="form-group">
+                    <label for="salary" class="required"><span id="salaryLabel">薪金（港幣）</span></label>
+                    <input type="number" id="salary" class="input-control" placeholder="例如：30000" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="divisor" class="required"><span id="divisorLabel">除數</span></label>
+                    <input type="number" id="divisor" class="input-control" value="538" min="1">
+                    <div class="input-hint"><span id="divisorHint">目前預設值538，請參考最新宿舍手冊</span></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hireDate" class="required"><span id="hireDateLabel">入職日期</span></label>
+                        <input type="date" id="hireDate" class="input-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endDate" class="required"><span id="endDateLabel">截止日期</span></label>
+                        <input type="date" id="endDate" class="input-control">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="spouse"><span id="spouseLabel">配偶在港居住？</span></label>
+                    <select id="spouse" class="input-control">
+                        <option value="no" selected><span id="spouseNo">否</span></option>
+                        <option value="yes"><span id="spouseYes">是</span></option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="children"><span id="childrenLabel">子女人數</span></label>
+                        <input type="number" id="children" class="input-control" value="0" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="overseas"><span id="overseasLabel">海外就讀子女人數</span></label>
+                        <input type="number" id="overseas" class="input-control" value="0" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newborn"><span id="newbornLabel">新生（在一個月內出生）</span></label>
+                        <input type="number" id="newborn" class="input-control" value="0" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="otherChildren"><span id="otherChildrenLabel">其他子女（除首名）</span></label>
+                        <input type="number" id="otherChildren" class="input-control" value="0" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="instruction"><span id="instructionLabel">是否被指示離開宿舍？</span></label>
+                        <select id="instruction" class="input-control">
+                            <option value="no" selected><span id="instructionNo">否</span></option>
+                            <option value="yes"><span id="instructionYes">是</span></option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="defect"><span id="defectLabel">宿舍有缺陷？</span></label>
+                        <select id="defect" class="input-control">
+                            <option value="no" selected><span id="defectNo">否</span></option>
+                            <option value="yes"><span id="defectYes">是</span></option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="calcBtn" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> <span id="calcBtnText">計算分數</span>
+                    </button>
+                    <button id="resetBtn" class="btn btn-danger">
+                        <i class="fas fa-redo"></i> <span id="resetBtnText">重置表單</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> <span id="resultSectionTitle">計算結果</span></h2>
+                
+                <div class="result-container">
+                    <div class="result-placeholder" id="resultPlaceholder">
+                        <i class="fas fa-file-alt"></i>
+                        <p><span id="resultPlaceholderText">填寫左側表單後點擊「計算分數」</span></p>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="saveDataBtn" class="btn btn-success">
+                        <i class="fas fa-save"></i> <span id="saveBtnText">儲存目前資料</span>
+                    </button>
+                    <button id="savePdfBtn" class="btn btn-warning no-text-shadow">
+                        <i class="fas fa-file-pdf"></i> <span id="printBtnText">列印結果</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="data-section">
+                <h2 class="section-title"><i class="fas fa-database"></i> <span id="dataSectionTitle">已儲存資料</span></h2>
+                
+                <div class="data-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchData" class="input-control" placeholder="搜尋儲存資料...">
+                    </div>
+                    
+                    <button id="exportBtn" class="btn btn-warning no-text-shadow">
+                        <i class="fas fa-file-export"></i> <span id="exportBtnText">匯出所有資料</span>
+                    </button>
+                    
+                    <button id="importBtn" class="btn btn-success">
+                        <i class="fas fa-file-import"></i> <span id="importBtnText">匯入資料</span>
+                    </button>
+                </div>
+                
+                <div class="data-container">
+                    <div class="no-data" id="noDataMessage">
+                        <i class="fas fa-database"></i>
+                        <h3><span id="noDataTitle">尚未儲存任何資料</span></h3>
+                        <p><span id="noDataHint">請使用「儲存目前資料」按鈕保存您的計算結果</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <!-- 已刪除版權和技術支援信息 -->
+        </footer>
+    </div>
+    
+    <div class="status-bar">
+        <div class="status-message">
+            <i class="fas fa-info-circle"></i> <span id="statusText">系統準備就緒，請填寫表單開始計算</span>
+        </div>
+        <div class="status-actions">
+            <button class="status-btn" style="background: var(--accent); color: white;">
+                <i class="fas fa-cloud"></i> <span id="backupStatus">自動備份已啟用</span>
+            </button>
+            <button class="status-btn" style="background: var(--success); color: white;">
+                <i class="fas fa-database"></i> <span id="dataStatus">已儲存 <span id="dataCount">0</span> 筆資料</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 語言設置
+        let currentLang = 'zh';
+        const translations = {
+            'zh': {
+                'appTitle': '宿舍分數計算器',
+                'inputSectionTitle': '輸入資料',
+                'salaryLabel': '薪金（港幣）',
+                'divisorLabel': '除數',
+                'divisorHint': '目前預設值538，請參考最新宿舍手冊',
+                'hireDateLabel': '入職日期',
+                'endDateLabel': '截止日期',
+                'spouseLabel': '配偶在港居住？',
+                'spouseNo': '否',
+                'spouseYes': '是',
+                'childrenLabel': '子女人數',
+                'overseasLabel': '海外就讀子女人數',
+                'newbornLabel': '新生（在一個月內出生）',
+                'otherChildrenLabel': '其他子女（除首名）',
+                'instructionLabel': '是否被指示離開宿舍？',
+                'instructionNo': '否',
+                'instructionYes': '是',
+                'defectLabel': '宿舍有缺陷？',
+                'defectNo': '否',
+                'defectYes': '是',
+                'calcBtnText': '計算分數',
+                'resetBtnText': '重置表單',
+                'resultSectionTitle': '計算結果',
+                'resultPlaceholderText': '填寫左側表單後點擊「計算分數」',
+                'saveBtnText': '儲存目前資料',
+                'printBtnText': '列印結果',
+                'dataSectionTitle': '已儲存資料',
+                'exportBtnText': '匯出所有資料',
+                'importBtnText': '匯入資料',
+                'noDataTitle': '尚未儲存任何資料',
+                'noDataHint': '請使用「儲存目前資料」按鈕保存您的計算結果',
+                'statusText': '系統準備就緒，請填寫表單開始計算',
+                'backupStatus': '自動備份已啟用',
+                'dataStatus': '已儲存',
+                'langButton': 'English'
+            },
+            'en': {
+                'appTitle': 'Dormitory Score Calculator',
+                'inputSectionTitle': 'Input Data',
+                'salaryLabel': 'Salary (HKD)',
+                'divisorLabel': 'Divisor',
+                'divisorHint': 'Default value is 538, please refer to the latest dormitory manual',
+                'hireDateLabel': 'Hire Date',
+                'endDateLabel': 'End Date',
+                'spouseLabel': 'Spouse in Hong Kong?',
+                'spouseNo': 'No',
+                'spouseYes': 'Yes',
+                'childrenLabel': 'Number of Children',
+                'overseasLabel': 'Children Studying Overseas',
+                'newbornLabel': 'Newborn (within one month)',
+                'otherChildrenLabel': 'Other Children (except first child)',
+                'instructionLabel': 'Instructed to leave dormitory?',
+                'instructionNo': 'No',
+                'instructionYes': 'Yes',
+                'defectLabel': 'Dormitory has defects?',
+                'defectNo': 'No',
+                'defectYes': 'Yes',
+                'calcBtnText': 'Calculate Score',
+                'resetBtnText': 'Reset Form',
+                'resultSectionTitle': 'Calculation Result',
+                'resultPlaceholderText': 'Fill in the form and click "Calculate Score"',
+                'saveBtnText': 'Save Current Data',
+                'printBtnText': 'Print Result',
+                'dataSectionTitle': 'Saved Data',
+                'exportBtnText': 'Export All Data',
+                'importBtnText': 'Import Data',
+                'noDataTitle': 'No Data Saved',
+                'noDataHint': 'Please use "Save Current Data" button to save your calculation',
+                'statusText': 'System ready, please fill in the form to start calculation',
+                'backupStatus': 'Auto Backup Enabled',
+                'dataStatus': 'Saved',
+                'langButton': '中文'
+            }
+        };
+        
+        // 切換語言函數
+        function setLanguage(lang) {
+            currentLang = lang;
+            // 更新所有帶有ID的元素
+            Object.keys(translations[lang]).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // 更新語言按鈕文本 - 修正邏輯：顯示相反的語言名稱
+            document.getElementById('languageToggle').textContent = 
+                lang === 'zh' ? 'English' : '中文';
+            
+            // 更新數據狀態文本
+            updateDataCount();
+        }
+        
+        // 語言切換事件
+        document.getElementById('languageToggle').addEventListener('click', function() {
+            const newLang = currentLang === 'zh' ? 'en' : 'zh';
+            setLanguage(newLang);
+        });
+        
+        // 計算規則
+        const scoringRules = {
+            spouse: 20,
+            child: 10,
+            overseasChild: 5,
+            newborn: 10,
+            firstChildBonus: 20,
+            instruction: 72,
+            defect: 20,
+            serviceMultiplier: 6
+        };
+        
+        // 當前計算結果
+        let currentScore = 0;
+        
+        // 初始化表單數據
+        function initForm() {
+            const today = new Date();
+            document.getElementById('endDate').valueAsDate = today;
+            
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            document.getElementById('hireDate').valueAsDate = oneYearAgo;
+            
+            // 重置結果區域
+            document.querySelector('.result-container').innerHTML = `
+                <div class="result-placeholder" id="resultPlaceholder">
+                    <i class="fas fa-file-alt"></i>
+                    <p><span id="resultPlaceholderText">${translations[currentLang]['resultPlaceholderText']}</span></p>
+                </div>
+            `;
+            
+            // 重置當前分數
+            currentScore = 0;
+            
+            updateStatus(translations[currentLang]['statusText']);
+            
+            // 重置錯誤狀態
+            document.querySelectorAll('.input-control').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+        
+        // 更新狀態欄
+        function updateStatus(message) {
+            document.getElementById('statusText').textContent = message;
+        }
+        
+        // 驗證必填字段
+        function validateRequiredFields() {
+            const requiredFields = [
+                {id: 'salary', name: translations[currentLang]['salaryLabel']},
+                {id: 'divisor', name: translations[currentLang]['divisorLabel']},
+                {id: 'hireDate', name: translations[currentLang]['hireDateLabel']},
+                {id: 'endDate', name: translations[currentLang]['endDateLabel']}
+            ];
+            
+            let isValid = true;
+            let missingFields = [];
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const value = element.value.trim();
+                
+                if (!value) {
+                    element.classList.add('error');
+                    missingFields.push(field.name);
+                    isValid = false;
+                } else {
+                    element.classList.remove('error');
+                }
+            });
+            
+            if (!isValid) {
+                const errorMsg = currentLang === 'zh' ? 
+                    `錯誤：請填寫必填欄位 - ${missingFields.join('、')}` :
+                    `Error: Please fill in required fields - ${missingFields.join(', ')}`;
+                updateStatus(errorMsg);
+            }
+            
+            return isValid;
+        }
+        
+        // 計算分數
+        function calculateScore() {
+            // 驗證必填字段
+            if (!validateRequiredFields()) {
+                return;
+            }
+            
+            // 獲取表單值
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const divisor = parseFloat(document.getElementById('divisor').value) || 538;
+            const hireDate = document.getElementById('hireDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            const hire = new Date(hireDate);
+            const end = new Date(endDate);
+            
+            if (end < hire) {
+                const errorMsg = currentLang === 'zh' ? 
+                    "錯誤：截止日期不能早於入職日期" : 
+                    "Error: End date cannot be earlier than hire date";
+                updateStatus(errorMsg);
+                document.getElementById('endDate').classList.add('error');
+                document.getElementById('hireDate').classList.add('error');
+                return;
+            } else {
+                document.getElementById('endDate').classList.remove('error');
+                document.getElementById('hireDate').classList.remove('error');
+            }
+            
+            const spouse = document.getElementById('spouse').value === 'yes';
+            const children = parseInt(document.getElementById('children').value) || 0;
+            const overseas = parseInt(document.getElementById('overseas').value) || 0;
+            const newborn = parseInt(document.getElementById('newborn').value) || 0;
+            const otherChildren = parseInt(document.getElementById('otherChildren').value) || 0;
+            const instruction = document.getElementById('instruction').value === 'yes';
+            const defect = document.getElementById('defect').value === 'yes';
+            
+            // 計算年資分數 (使用365.25日為一年)
+            const oneDay = 1000 * 60 * 60 * 24;
+            const days = Math.floor((end - hire) / oneDay) + 1;
+            const years = days / 365.25;
+            const serviceScore = years * scoringRules.serviceMultiplier;
+            
+            // 計算薪金分數
+            const salaryScore = salary / divisor;
+            
+            // 家庭相關分數
+            const spouseScore = spouse ? scoringRules.spouse : 0;
+            const childrenScore = children * scoringRules.child;
+            const overseasScore = overseas * scoringRules.overseasChild;
+            const newbornScore = newborn * scoringRules.newborn;
+            const otherChildrenScore = otherChildren * scoringRules.child + 
+                                     (otherChildren > 0 ? scoringRules.firstChildBonus : 0);
+            
+            // 特殊情況分數
+            const instructionScore = instruction ? scoringRules.instruction : 0;
+            const defectScore = defect ? scoringRules.defect : 0;
+            
+            // 總分
+            currentScore = salaryScore + serviceScore + spouseScore + childrenScore + 
+                          overseasScore + newbornScore + otherChildrenScore + 
+                          instructionScore + defectScore;
+            
+            // 顯示結果
+            displayResult(currentScore, {
+                salaryScore, serviceScore, spouseScore, childrenScore, 
+                overseasScore, newbornScore, otherChildrenScore, 
+                instructionScore, defectScore,
+                salary, divisor, days, years
+            });
+            
+            const successMsg = currentLang === 'zh' ? 
+                `計算完成！總分: ${currentScore.toFixed(2)}` : 
+                `Calculation completed! Total score: ${currentScore.toFixed(2)}`;
+            updateStatus(successMsg);
+        }
+        
+        // 顯示結果
+        function displayResult(totalScore, details) {
+            const resultContainer = document.querySelector('.result-container');
+            
+            // 根據語言顯示結果
+            if (currentLang === 'zh') {
+                resultContainer.innerHTML = `
+                    <div class="highlight-score">總分: ${totalScore.toFixed(4)}</div>
+                    
+                    <div class="result-details">
+                        <div class="result-item">
+                            <div class="result-label">薪金分數</div>
+                            <div class="result-value">${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">年資分數</div>
+                            <div class="result-value">${details.days} 天 (${details.years.toFixed(2)} 年) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">家庭分數</div>
+                            <div class="result-value">
+                                配偶: ${details.spouseScore}分 | 
+                                子女: ${details.childrenScore}分 | 
+                                海外: ${details.overseasScore}分 | 
+                                新生: ${details.newbornScore}分 | 
+                                其他: ${details.otherChildrenScore}分
+                            </div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">特殊分數</div>
+                            <div class="result-value">
+                                指示離開: ${details.instructionScore}分 | 
+                                宿舍缺陷: ${details.defectScore}分
+                            </div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">詳細分數組成</div>
+                            <div class="result-value">
+                                薪金分數: ${details.salaryScore.toFixed(4)}<br>
+                                年資分數: ${details.serviceScore.toFixed(4)}<br>
+                                家庭分數: ${(details.spouseScore + details.childrenScore + details.overseasScore + details.newbornScore + details.otherChildrenScore).toFixed(4)}<br>
+                                特殊分數: ${(details.instructionScore + details.defectScore).toFixed(4)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultContainer.innerHTML = `
+                    <div class="highlight-score">Total Score: ${totalScore.toFixed(4)}</div>
+                    
+                    <div class="result-details">
+                        <div class="result-item">
+                            <div class="result-label">Salary Score</div>
+                            <div class="result-value">${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Service Score</div>
+                            <div class="result-value">${details.days} days (${details.years.toFixed(2)} years) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Family Score</div>
+                            <div class="result-value">
+                                Spouse: ${details.spouseScore} | 
+                                Children: ${details.childrenScore} | 
+                                Overseas: ${details.overseasScore} | 
+                                Newborn: ${details.newbornScore} | 
+                                Other: ${details.otherChildrenScore}
+                            </div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Special Score</div>
+                            <div class="result-value">
+                                Instruction: ${details.instructionScore} | 
+                                Defect: ${details.defectScore}
+                            </div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-label">Score Composition</div>
+                            <div class="result-value">
+                                Salary Score: ${details.salaryScore.toFixed(4)}<br>
+                                Service Score: ${details.serviceScore.toFixed(4)}<br>
+                                Family Score: ${(details.spouseScore + details.childrenScore + details.overseasScore + details.newbornScore + details.otherChildrenScore).toFixed(4)}<br>
+                                Special Score: ${(details.instructionScore + details.defectScore).toFixed(4)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // 保存目前資料
+        function saveCurrentData() {
+            const salary = document.getElementById('salary').value;
+            const divisor = document.getElementById('divisor').value;
+            const hireDate = document.getElementById('hireDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            // 基本驗證
+            if (!salary || !divisor || !hireDate || !endDate || currentScore === 0) {
+                const errorMsg = currentLang === 'zh' ? 
+                    "錯誤：請先填寫必填欄位並計算分數" : 
+                    "Error: Please fill in required fields and calculate score";
+                updateStatus(errorMsg);
+                return;
+            }
+            
+            const defaultName = currentLang === 'zh' ? '儲存記錄' : 'Saved Record';
+            const promptMsg = currentLang === 'zh' ? 
+                "請輸入儲存名稱：" : 
+                "Please enter a name for this record:";
+                
+            const name = prompt(promptMsg, defaultName);
+            if (!name) return;
+            
+            // 獲取表單數據
+            const now = new Date();
+            const formData = {
+                salary,
+                divisor,
+                hireDate,
+                endDate,
+                spouse: document.getElementById('spouse').value,
+                children: document.getElementById('children').value,
+                overseas: document.getElementById('overseas').value,
+                newborn: document.getElementById('newborn').value,
+                otherChildren: document.getElementById('otherChildren').value,
+                instruction: document.getElementById('instruction').value,
+                defect: document.getElementById('defect').value,
+                score: currentScore.toFixed(4),
+                timestamp: now.toLocaleString(),
+                lang: currentLang
+            };
+            
+            // 保存到本地存儲
+            let savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            savedData[name] = formData;
+            localStorage.setItem('dormData', JSON.stringify(savedData));
+            
+            const successMsg = currentLang === 'zh' ? 
+                "資料已保存: " + name : 
+                "Data saved: " + name;
+            updateStatus(successMsg);
+            
+            // 在UI中添加新卡片
+            addDataCard(name, formData);
+            
+            // 更新數據計數
+            updateDataCount();
+        }
+        
+        // 添加數據卡片
+        function addDataCard(name, data) {
+            const dataContainer = document.querySelector('.data-container');
+            const noDataMessage = document.getElementById('noDataMessage');
+            
+            if (noDataMessage) {
+                noDataMessage.style.display = 'none';
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'data-card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-name">${name}</div>
+                    <div class="card-date">${data.timestamp}</div>
+                </div>
+                <div class="card-score">${data.score} ${currentLang === 'zh' ? '分' : ''}</div>
+                <div class="card-details">
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLang === 'zh' ? '薪金' : 'Salary'}</div>
+                        <div class="detail-value">HK$ ${data.salary || '0'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLang === 'zh' ? '子女' : 'Children'}</div>
+                        <div class="detail-value">${data.children || '0'} ${currentLang === 'zh' ? '人' : ''}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLang === 'zh' ? '配偶在港' : 'Spouse in HK'}</div>
+                        <div class="detail-value">${data.spouse === 'yes' ? (currentLang === 'zh' ? '是' : 'Yes') : (currentLang === 'zh' ? '否' : 'No')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLang === 'zh' ? '保存時間' : 'Saved Time'}</div>
+                        <div class="detail-value">${data.timestamp}</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <div class="action-btn load-btn" data-name="${name}">
+                        <i class="fas fa-download"></i> <span>${currentLang === 'zh' ? '載入' : 'Load'}</span>
+                    </div>
+                    <div class="action-btn delete-btn" data-name="${name}">
+                        <i class="fas fa-trash"></i> <span>${currentLang === 'zh' ? '刪除' : 'Delete'}</span>
+                    </div>
+                </div>
+            `;
+            
+            dataContainer.prepend(card);
+            
+            // 添加事件監聽器
+            card.querySelector('.load-btn').addEventListener('click', function() {
+                loadSavedData(this.dataset.name);
+            });
+            
+            card.querySelector('.delete-btn').addEventListener('click', function() {
+                deleteSavedData(this.dataset.name);
+            });
+        }
+        
+        // 加載保存的數據
+        function loadSavedData(name) {
+            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            const data = savedData[name];
+            
+            if (!data) {
+                const errorMsg = currentLang === 'zh' ? 
+                    "錯誤：找不到保存的數據" : 
+                    "Error: Saved data not found";
+                updateStatus(errorMsg);
+                return;
+            }
+            
+            // 填充表單
+            document.getElementById('salary').value = data.salary;
+            document.getElementById('divisor').value = data.divisor;
+            document.getElementById('hireDate').value = data.hireDate;
+            document.getElementById('endDate').value = data.endDate;
+            document.getElementById('spouse').value = data.spouse;
+            document.getElementById('children').value = data.children;
+            document.getElementById('overseas').value = data.overseas;
+            document.getElementById('newborn').value = data.newborn;
+            document.getElementById('otherChildren').value = data.otherChildren;
+            document.getElementById('instruction').value = data.instruction;
+            document.getElementById('defect').value = data.defect;
+            
+            // 設置當前分數
+            currentScore = parseFloat(data.score) || 0;
+            
+            // 顯示結果
+            if (currentScore > 0) {
+                calculateScore();
+            }
+            
+            const successMsg = currentLang === 'zh' ? 
+                "已載入保存的數據: " + name : 
+                "Loaded saved data: " + name;
+            updateStatus(successMsg);
+        }
+        
+        // 刪除保存的數據
+        function deleteSavedData(name) {
+            const confirmMsg = currentLang === 'zh' ? 
+                `確定要刪除「${name}」嗎？` : 
+                `Are you sure you want to delete "${name}"?`;
+                
+            if (!confirm(confirmMsg)) return;
+            
+            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            delete savedData[name];
+            localStorage.setItem('dormData', JSON.stringify(savedData));
+            
+            // 從UI中移除卡片
+            document.querySelectorAll('.data-card').forEach(card => {
+                if (card.querySelector('.load-btn').dataset.name === name) {
+                    card.remove();
+                }
+            });
+            
+            const successMsg = currentLang === 'zh' ? 
+                "已刪除保存的數據: " + name : 
+                "Deleted saved data: " + name;
+            updateStatus(successMsg);
+            
+            // 更新數據計數
+            updateDataCount();
+            
+            // 檢查是否還有數據
+            if (Object.keys(savedData).length === 0) {
+                document.getElementById('noDataMessage').style.display = 'block';
+            }
+        }
+        
+        // 導出所有數據
+        function exportAllData() {
+            const savedData = localStorage.getItem('dormData') || '{}';
+            const blob = new Blob([savedData], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dormitory_data_backup.json';
+            document.body.appendChild(a);
+            a.click();
+            
+            // 清理
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+            
+            const successMsg = currentLang === 'zh' ? 
+                "已導出所有數據" : 
+                "All data exported";
+            updateStatus(successMsg);
+        }
+        
+        // 導入數據
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        // 驗證數據格式
+                        if (typeof data !== 'object') {
+                            throw new Error('無效的數據格式');
+                        }
+                        
+                        // 保存到本地存儲
+                        localStorage.setItem('dormData', JSON.stringify(data));
+                        
+                        // 更新UI
+                        document.querySelector('.data-container').innerHTML = '';
+                        document.getElementById('noDataMessage').style.display = 'none';
+                        
+                        for (const [name, item] of Object.entries(data)) {
+                            addDataCard(name, item);
+                        }
+                        
+                        const successMsg = currentLang === 'zh' ? 
+                            `已導入數據: ${Object.keys(data).length} 筆記錄` : 
+                            `Data imported: ${Object.keys(data).length} records`;
+                        updateStatus(successMsg);
+                        updateDataCount();
+                    } catch (error) {
+                        const errorMsg = currentLang === 'zh' ? 
+                            `錯誤: ${error.message}` : 
+                            `Error: ${error.message}`;
+                        updateStatus(errorMsg);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // 更新數據計數
+        function updateDataCount() {
+            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            document.getElementById('dataCount').textContent = Object.keys(savedData).length;
+            
+            // 更新數據狀態文本
+            const dataStatus = currentLang === 'zh' ? 
+                `已儲存 ${Object.keys(savedData).length} 筆資料` : 
+                `${Object.keys(savedData).length} records saved`;
+            document.getElementById('dataStatus').textContent = dataStatus;
+        }
+        
+        // 加載保存的數據
+        function loadAllSavedData() {
+            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            
+            if (Object.keys(savedData).length === 0) {
+                document.getElementById('noDataMessage').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('noDataMessage').style.display = 'none';
+            
+            for (const [name, data] of Object.entries(savedData)) {
+                addDataCard(name, data);
+            }
+            
+            updateDataCount();
+        }
+        
+        // 事件監聽
+        document.getElementById('calcBtn').addEventListener('click', calculateScore);
+        document.getElementById('resetBtn').addEventListener('click', initForm);
+        document.getElementById('saveDataBtn').addEventListener('click', saveCurrentData);
+        document.getElementById('savePdfBtn').addEventListener('click', () => window.print());
+        document.getElementById('exportBtn').addEventListener('click', exportAllData);
+        document.getElementById('importBtn').addEventListener('click', importData);
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initForm();
+            loadAllSavedData();
+            setLanguage('zh');
+        });
+    </script>
+</body>
+</html>
+
