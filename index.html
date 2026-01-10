@@ -62,16 +62,19 @@
         }
         
         h1 {
-            font-size: 3.2rem;
-            margin-bottom: 10px;
+            /* 以 clamp 做自適應，進一步縮細，確保任何裝置一行內完全顯示 */
+            font-size: clamp(1.5rem, 4.8vw, 2.0rem);
+            line-height: 1.1;
+            margin-bottom: 8px;
             color: #fff;
-            text-shadow: 0 0 10px rgba(79, 157, 232, 0.7),
-                         0 0 20px rgba(79, 157, 232, 0.5),
-                         0 0 30px rgba(79, 157, 232, 0.3);
+            /* 降低光暈，避免視覺膨脹感 */
+            text-shadow: 0 0 6px rgba(79, 157, 232, 0.5),
+                         0 0 12px rgba(79, 157, 232, 0.35);
             position: relative;
             z-index: 2;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             font-weight: 700;
+            white-space: nowrap; /* 強制單行顯示 */
         }
         
         h1 i {
@@ -181,7 +184,7 @@
             padding: 16px;
             font-size: 18px;
             font-weight: bold;
-            border: 2px solid #000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
@@ -196,11 +199,7 @@
         .btn span {
             position: relative;
             z-index: 2;
-            text-shadow: 
-                -1px -1px 0 #000,  
-                1px -1px 0 #000,
-                -1px 1px 0 #000,
-                1px 1px 0 #000;
+            text-shadow: none;
         }
         
         /* 特殊按鈕 - 無文字陰影 */
@@ -468,7 +467,7 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            border: 2px solid #000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .action-btn span {
@@ -547,7 +546,7 @@
             border-radius: 4px;
             font-size: 0.85rem;
             cursor: pointer;
-            border: 2px solid #000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .status-btn span {
@@ -568,7 +567,7 @@
             }
             
             h1 {
-                font-size: 2.5rem;
+                font-size: 2.3rem; /* 手機上再細少少 */
             }
         }
         
@@ -765,6 +764,235 @@
         .language-toggle:active {
             transform: translateY(0) scale(0.98);
         }
+            /* 簡化模式：只保留「儲存」＋「載入」按鈕 */
+            .search-box { display: none !important; }
+            #importBtn { display: none !important; }
+            #savePdfBtn { display: none !important; }
+            #exportBtn { display: none !important; }
+            .status-actions { display: none !important; }
+            .data-section { display: none !important; }
+            /* 兩個按鈕水平排列（手機亦保持橫排） */
+            @media (max-width: 600px) {
+                .button-group { flex-direction: row !important; }
+            }
+            /* 強制兩個主要按鈕水平排列 */
+            .button-group { flex-direction: row !important; justify-content: flex-start; align-items: center; gap: 12px; }
+            .button-group .btn { flex: 0 0 auto; min-width: 160px; }
+            /* 顯示調校控制：A+/A- + 亮度 */
+            /* 顯示調校工具列（置於標題區右下角，不遮標題） */
+            /* 工具列改為正常文流，不覆蓋內容，置中顯示於標題下方 */
+            .display-controls { position: static; margin: 24px auto 28px; z-index: 1; display: flex; gap: 8px; align-items: center; justify-content: center; background: rgba(255,255,255,0.10); padding: 4px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); max-width: 76%; }
+            /* 讓 header 內部元素遵循文流 */
+            header { position: relative; overflow: visible; }
+            .display-label { font-size: 0.85rem; color: var(--text-light); margin-right: 4px; opacity: 0.9; }
+            /* 使用現有 .btn 風格但縮細尺寸 */
+            .btn-small { padding: 5px 8px; font-size: 13px; min-width: auto; line-height: 1; }
+            /* 主題模式：亮／暗（覆蓋色板變數） */
+            /* 粉色主題（Pastel Pink）統一風格 */
+            .theme-light { 
+                --primary: #f8f1f4; /* 粉白背景 */
+                --primary-dark: #f0e4ea; /* 稍深粉白 */
+                --accent: #f28fb1; /* 柔粉重點色 */
+                --accent-dark: #d96a8f; /* 深粉重點色 */
+                --success: #86c5a6; /* 柔和綠 */
+                --warning: #f3c27a; /* 柔和黃 */
+                --danger: #e07a8c; /* 柔和紅 */
+                --text-light: #fff; /* 光明版主要文字改深色 */
+                --text-dark: #111; 
+                --card-bg: rgba(255, 255, 255, 0.95);
+                --section-bg: rgba(255, 255, 255, 0.98);
+            }
+            .theme-light body { color: var(--text-light); }
+            .theme-light .input-control { background: #ffffff; color: #333; border-color: #c88fa1; }
+            .theme-light .section-title { color: #2b6cb0; border-color: #2b6cb0; }
+            .theme-light .highlight-score { color: var(--warning); border-color: var(--warning); background: rgba(255,255,255,0.7); }
+            .theme-light body { color: var(--text-dark); }
+            .theme-light .form-section, .theme-light .result-section, .theme-light .data-section { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+            .theme-light .highlight-score { color: var(--warning); border-color: var(--warning); background: rgba(255,255,255,0.8); }
+            /* 標題高度微縮 */
+            header { padding: 12px 16px 20px !important; }
+            h1 { font-size: 2.8rem !important; }
+            /* 修正輸入欄位行高，避免字體縮放後擠壓或截斷 */
+            .input-control { line-height: 1.5 !important; }
+            /* 語言切換：浮動圓形按鈕（不影響版面），兼容瀏海安全距 */
+            .language-toggle {
+                position: fixed;
+                top: calc(10px + env(safe-area-inset-top));
+                right: calc(10px + env(safe-area-inset-right));
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: var(--language-bg);
+                color: #333;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                z-index: 1000;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+                font-weight: bold;
+                text-shadow: none;
+            }
+            .language-toggle:hover { transform: translateY(-1px) scale(1.03); }
+            .language-toggle:active { transform: translateY(0) scale(0.98); }
+            @media (max-width: 600px) {
+                .language-toggle { width: 36px; height: 36px; font-size: 0.8rem; }
+            }
+            /* 工具列按鈕風格：跟輸入欄的淺藍透明效果，降低存在感 */
+            .display-controls .btn,
+            .display-controls .btn-small {
+                background: rgba(255,255,255,0.12) !important;
+                color: var(--text-light) !important;
+                border: 1px solid rgba(255,255,255,0.25) !important;
+                box-shadow: none !important;
+            }
+            .display-controls .btn-small:hover { background: rgba(255,255,255,0.16) !important; }
+            .display-controls .btn-small { height: 26px; padding: 3px 8px; font-size: 13px; }
+            /* 光明版下的工具列與文字可讀性優化 */
+            .theme-light .display-controls { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.10) !important; }
+            .theme-light .display-controls .btn,
+            .theme-light .display-controls .btn-small { background: rgba(0,0,0,0.06) !important; color: #222 !important; border: 1px solid rgba(0,0,0,0.12) !important; }
+            /* 光明版整體文字顏色加深，避免過淺看不清 */
+            .theme-light label,
+            .theme-light .input-control,
+            .theme-light .result-value,
+            .theme-light .result-label { color: #222 !important; }
+            /* 新增：較淺的黑暗版（theme-dark）配色，減低整體黑度但保持對比度 */
+            .theme-dark {
+                --primary: #27486f;           /* 由 #1e3a5f 提亮 */
+                --primary-dark: #1a3658;      /* 由 #0f2a4a 提亮 */
+                --accent: #7fb3e9;            /* 重點色偏淺藍，易讀 */
+                --accent-dark: #4f94d9;
+                --section-bg: rgba(30, 58, 95, 0.60);  /* 由 0.70 降到 0.60，少啲暗 */
+                --card-bg: rgba(255, 255, 255, 0.06);  /* 稍微提亮卡片層 */
+                --text-light: #f2f5f9;        /* 文字偏淺但唔係純白，減刺眼 */
+            }
+            /* 黑暗版下的輸入欄：微提亮背景與邊框，增可讀性 */
+            .theme-dark .input-control {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(255, 255, 255, 0.25);
+                color: #f2f5f9;
+            }
+            /* 覆蓋定義：按你的要求重設深色／光明主題的配色與風格 */
+            .theme-dark {
+                /* 還原至原來的深色主題（作為基準版本） */
+                --primary: #1e3a5f;
+                --primary-dark: #0f2a4a;
+                --accent: #4f9de8;
+                --accent-dark: #347fd3;
+                --section-bg: rgba(30, 58, 95, 0.70);
+                --card-bg: rgba(255, 255, 255, 0.08);
+                --text-light: #fff;
+            }
+            .theme-dark .input-control { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--text-light); }
+            
+            .theme-light {
+                /* 光明版：以深色主題為基礎整體提亮、透明度降低 */
+                --primary: #2a5175; 
+                --primary-dark: #184364; 
+                --accent: #4f9de8; 
+                --accent-dark: #347fd3; 
+                --success: #86c5a6; 
+                --warning: #f3c27a; 
+                --danger: #e07a8c; 
+                --text-light: #fff; 
+                --text-dark: #111; 
+                --card-bg: rgba(255, 255, 255, 0.12);
+                --section-bg: rgba(30, 58, 95, 0.50);
+            }
+            .theme-light .input-control { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.30); }
+            /* 覆蓋：光明版文字顏色保持白色，避免早前 #222 覆蓋 */
+            .theme-light label,
+            .theme-light .result-value,
+            .theme-light .result-label { color: #fff !important; }
+            /* 光明版全面提亮（整體更亮），並保持白色文字清晰可讀 */
+            .theme-light {
+                --primary: #8e9caf;          /* 亮：極淡粉白 */
+                --primary-dark: #8794a4;     /* 亮：極淡暖白 */
+                --accent: #7ec8ff;           /* 亮：柔藍重點色 */
+                --accent-dark: #4f9de8;      /* 原藍作深重點 */
+                --success: #8bd6b1;          /* 亮：柔綠 */
+                --warning: #ffd07a;          /* 亮：柔黃 */
+                --danger: #f59aa7;           /* 亮：柔紅 */
+                --text-light: #fff;          /* 亮版仍用白字（你的要求） */
+                --text-dark: #111;           
+                --section-bg: rgba(30,58,95,0.65); /* 區塊背景加深透明度，讓白字有對比 */
+                --card-bg: rgba(255,255,255,0.10);  /* 卡片微亮，不刺眼 */
+            }
+            .theme-light body { 
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important; 
+                color: var(--text-light) !important; 
+            }
+            .theme-light .form-section, .theme-light .result-section, .theme-light .data-section { 
+                background: var(--section-bg) !important; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important; 
+            }
+            /* 亮版下：輸入欄與按鈕跟隨整體風格，加深邊界提升可讀性 */
+            .theme-light .input-control { 
+                background: rgba(255,255,255,0.12) !important; 
+                color: #fff !important; 
+                border-color: rgba(255,255,255,0.30) !important; 
+            }
+            .theme-light .btn { 
+                background: rgba(255,255,255,0.14) !important; 
+                color: #fff !important; 
+                border: 1px solid rgba(255,255,255,0.28) !important; 
+                box-shadow: none !important; 
+            }
+            .theme-light .btn:hover { 
+                background: rgba(255,255,255,0.18) !important; 
+            }
+            .theme-light .section-title { 
+                color: var(--accent) !important; 
+                border-color: var(--accent) !important; 
+            }
+            /* 需求：光明版輸入文字保持白色；按鈕用粉色與淺色系 */
+            /* 1) 光明版：輸入區與標籤、提示等文字全部保持白色 */
+            .theme-light label,
+            .theme-light .input-hint,
+            .theme-light .result-label,
+            .theme-light .result-value { color: #fff !important; }
+            .theme-light .input-control { color: #fff !important; }
+            .theme-light .input-control::placeholder { color: rgba(255,255,255,0.75) !important; }
+            /* 兼容部分瀏覽器的自動填充顏色 */
+            .theme-light input:-webkit-autofill,
+            .theme-light input:-webkit-autofill:focus {
+                -webkit-text-fill-color: #fff !important;
+                transition: background-color 5000s ease-in-out 0s !important;
+            }
+
+            /* 2) 光明版：按鈕用粉色與淺色系，保留原有類型但轉為柔和色階 */
+            .theme-light .btn { 
+                background: rgba(255,255,255,0.14) !important; 
+                color: #fff !important; 
+                border: 1px solid rgba(255,255,255,0.28) !important; 
+                box-shadow: none !important; 
+            }
+            .theme-light .btn:hover { background: rgba(255,255,255,0.18) !important; }
+            /* 類型色階（柔和粉系） */
+            .theme-light .btn-primary { 
+                background: linear-gradient(135deg, #f7a1c1, #ffd5a8) !important; 
+            }
+            .theme-light .btn-success { background: #8bd6b1 !important; }
+            .theme-light .btn-warning { background: #ffd07a !important; color: #333 !important; }
+            .theme-light .btn-danger  { background: #f59aa7 !important; }
+            /* 工具列按鈕也採用同一套柔和色階 */
+            .theme-light .display-controls .btn,
+            .theme-light .display-controls .btn-small { 
+                background: rgba(255,255,255,0.14) !important; 
+                color: #fff !important; 
+                border: 1px solid rgba(255,255,255,0.28) !important; 
+            }
+
+            /* 3) 光明版：輸入框邊界加深一點，確保白字易讀 */
+            .theme-light .input-control { 
+                border-color: rgba(255,255,255,0.30) !important; 
+                background: rgba(255,255,255,0.12) !important; 
+            }
     </style>
 </head>
 <body>
@@ -780,10 +1008,19 @@
             </div>
             
             <h1><i class="fas fa-calculator"></i> <span id="appTitle">宿舍分數計算器</span></h1>
+        <!-- 顯示調校工具列：字體縮放＋主題（亮／暗） 放在標題內部右下角 -->
+        <div class="display-controls" aria-label="顯示調校工具列">
+            
+            <button id="fontInc" class="btn btn-warning no-text-shadow btn-small" title="Increase text"><i class="fas fa-plus"></i></button>
+            <button id="fontDec" class="btn btn-warning no-text-shadow btn-small" title="Decrease text"><i class="fas fa-minus"></i></button>
+            
+            <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
+            
+        </div>
         </header>
         
-        <!-- 語言切換按鈕 - 移至右上角 -->
-        <button id="languageToggle" class="language-toggle">English</button>
+        <!-- 語言切換：浮動圓形按鈕，使用簡短標示避免影響版面 -->
+        <button id="languageToggle" class="language-toggle" aria-label="切換語言">EN</button>
         
         <div class="main-content">
             <div class="form-section">
@@ -886,9 +1123,14 @@
                     <button id="saveDataBtn" class="btn btn-success">
                         <i class="fas fa-save"></i> <span id="saveBtnText">儲存目前資料</span>
                     </button>
-                    <button id="savePdfBtn" class="btn btn-warning no-text-shadow">
-                        <i class="fas fa-file-pdf"></i> <span id="printBtnText">列印結果</span>
+                    <button id="cancelSaveBtn" class="btn btn-danger no-text-shadow" title="刪除已儲存的資料">
+                        <i class="fas fa-ban"></i> <span id="cancelSaveText">取消儲存</span>
                     </button>
+                    <select id="deleteSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
+                    <button id="loadBtn" class="btn btn-warning no-text-shadow">
+                        <i class="fas fa-download"></i> <span id="loadText">載入資料</span>
+                    </button>
+                    <select id="loadSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
                 </div>
             </div>
             
@@ -978,7 +1220,13 @@
                 'statusText': '系統準備就緒，請填寫表單開始計算',
                 'backupStatus': '自動備份已啟用',
                 'dataStatus': '已儲存',
-                'langButton': 'English'
+                'langButton': 'English',
+                'fontLabel': '字體',
+                'themeLabel': '主題',
+                'lightLabel': '亮',
+                'darkLabel': '暗',
+                'cancelSaveText': '取消儲存',
+                'loadText': '載入資料'
             },
             'en': {
                 'appTitle': 'Dormitory Score Calculator',
@@ -1015,13 +1263,24 @@
                 'statusText': 'System ready, please fill in the form to start calculation',
                 'backupStatus': 'Auto Backup Enabled',
                 'dataStatus': 'Saved',
-                'langButton': '中文'
+                'langButton': '中文',
+                'fontLabel': 'Font',
+                'themeLabel': 'Theme',
+                'lightLabel': 'Light',
+                'darkLabel': 'Dark',
+                'cancelSaveText': 'Cancel Save',
+                'loadText': 'Load Data'
             }
         };
         
         // 切換語言函數
         function setLanguage(lang) {
+            const h1El = document.querySelector('header h1');
             currentLang = lang;
+            // 英文允許標題換行；中文保持單行（先設置，稍後 fitTitle 再調字級）
+            if (h1El) {
+                h1El.style.setProperty('white-space', lang === 'en' ? 'normal' : 'nowrap', 'important');
+            }
             // 更新所有帶有ID的元素
             Object.keys(translations[lang]).forEach(key => {
                 const element = document.getElementById(key);
@@ -1032,10 +1291,15 @@
             
             // 更新語言按鈕文本 - 修正邏輯：顯示相反的語言名稱
             document.getElementById('languageToggle').textContent = 
-                lang === 'zh' ? 'English' : '中文';
+                lang === 'zh' ? 'EN' : '中';
             
             // 更新數據狀態文本
             updateDataCount();
+            
+            // 重新適配標題字級
+            if (typeof fitTitle === 'function') fitTitle();
+            // 調整標題以適配當前語言字長
+            fitTitle();
         }
         
         // 語言切換事件
@@ -1202,6 +1466,17 @@
                 `計算完成！總分: ${currentScore.toFixed(2)}` : 
                 `Calculation completed! Total score: ${currentScore.toFixed(2)}`;
             updateStatus(successMsg);
+            
+            // 計算完成後，自動滾動到結果區域
+            const resultSection = document.querySelector('.result-section');
+            if (resultSection) {
+                setTimeout(() => {
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            // 套用目前 UI 設定到結果區（避免字體大小或主題未生效）
+            const ui = getUiSettings();
+            applyUiSettings(ui);
+            }
         }
         
         // 顯示結果
@@ -1302,7 +1577,7 @@
             }
         }
         
-        // 保存目前資料
+        // 保存目前資料（命名：YYYYMMDD_HHMMSS_用家標籤）
         function saveCurrentData() {
             const salary = document.getElementById('salary').value;
             const divisor = document.getElementById('divisor').value;
@@ -1318,16 +1593,22 @@
                 return;
             }
             
-            const defaultName = currentLang === 'zh' ? '儲存記錄' : 'Saved Record';
+            // 生成預設名稱（不含秒）：YYYY-MM-DD_HHMM，並詢問用家
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const defaultName = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
             const promptMsg = currentLang === 'zh' ? 
-                "請輸入儲存名稱：" : 
-                "Please enter a name for this record:";
-                
-            const name = prompt(promptMsg, defaultName);
-            if (!name) return;
+                '輸入儲存名稱（可直接使用預設）：' : 
+                'Enter a name to save (you can keep default):';
+            const inputName = prompt(promptMsg, defaultName);
+            if (!inputName) {
+                const cancelMsg = currentLang === 'zh' ? '已取消儲存' : 'Save cancelled';
+                updateStatus(cancelMsg);
+                return;
+            }
+            const name = inputName.trim().replace(/\s+/g, '_');
             
             // 獲取表單數據
-            const now = new Date();
             const formData = {
                 salary,
                 divisor,
@@ -1342,11 +1623,18 @@
                 defect: document.getElementById('defect').value,
                 score: currentScore.toFixed(4),
                 timestamp: now.toLocaleString(),
+                createdAt: now.getTime(),
                 lang: currentLang
             };
             
-            // 保存到本地存儲
-            let savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            // 保存到本地存儲（如重名，追加序號）
+            let savedData = {};
+            try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
+            if (savedData[name]) {
+                let idx = 2;
+                while (savedData[`${name}_${idx}`]) idx++;
+                name = `${name}_${idx}`;
+            }
             savedData[name] = formData;
             localStorage.setItem('dormData', JSON.stringify(savedData));
             
@@ -1488,7 +1776,8 @@
             
             // 檢查是否還有數據
             if (Object.keys(savedData).length === 0) {
-                document.getElementById('noDataMessage').style.display = 'block';
+                const nd = document.getElementById('noDataMessage');
+                if (nd) nd.style.display = 'block';
             }
         }
         
@@ -1498,9 +1787,13 @@
             const blob = new Blob([savedData], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             
+            const pad = n => String(n).padStart(2, '0');
+            const now = new Date();
+            // 匯出檔名時間（不含秒）：YYYY-MM-DD_HHMM
+            const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'dormitory_data_backup.json';
+            a.download = `dormitory_data_backup_${dateStr}.json`;
             document.body.appendChild(a);
             a.click();
             
@@ -1566,16 +1859,26 @@
             input.click();
         }
         
-        // 更新數據計數
+        // 更新數據計數（修正：保留並重建 #dataCount 內嵌結構，避免被覆蓋）
         function updateDataCount() {
-            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
-            document.getElementById('dataCount').textContent = Object.keys(savedData).length;
+            const savedDataRaw = localStorage.getItem('dormData');
+            let savedData = {};
+            try {
+                savedData = savedDataRaw ? JSON.parse(savedDataRaw) : {};
+            } catch (e) {
+                // 若資料損壞，重設為空物件
+                savedData = {};
+            }
+            const count = Object.keys(savedData).length;
+            const dataStatusEl = document.getElementById('dataStatus');
+            if (!dataStatusEl) return;
             
-            // 更新數據狀態文本
-            const dataStatus = currentLang === 'zh' ? 
-                `已儲存 ${Object.keys(savedData).length} 筆資料` : 
-                `${Object.keys(savedData).length} records saved`;
-            document.getElementById('dataStatus').textContent = dataStatus;
+            // 依語言重建內容，確保 #dataCount 仍然存在於 DOM 中
+            if (currentLang === 'zh') {
+                dataStatusEl.innerHTML = `已儲存 <span id="dataCount">${count}</span> 筆資料`;
+            } else {
+                dataStatusEl.innerHTML = `<span id="dataCount">${count}</span> records saved`;
+            }
         }
         
         // 加載保存的數據
@@ -1583,11 +1886,13 @@
             const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
             
             if (Object.keys(savedData).length === 0) {
-                document.getElementById('noDataMessage').style.display = 'block';
+                const nd = document.getElementById('noDataMessage');
+                if (nd) nd.style.display = 'block';
                 return;
             }
             
-            document.getElementById('noDataMessage').style.display = 'none';
+            const nd2 = document.getElementById('noDataMessage');
+            if (nd2) nd2.style.display = 'none';
             
             for (const [name, data] of Object.entries(savedData)) {
                 addDataCard(name, data);
@@ -1596,19 +1901,218 @@
             updateDataCount();
         }
         
+        // 顯示調校：字體大小與主題（亮／暗）
+        // 字體縮放：只調整「內容」的文字（表單與結果區），不影響大標題與工具列
+        let __baselineSizes = null;
+        function captureBaselineSizes() {
+            const selectors = [
+                '.form-section label',
+                '.form-section .input-control',
+                '.result-section .highlight-score',
+                '.result-section .result-container',
+                '.result-section .result-item',
+                '.result-section .result-label',
+                '.result-section .result-value'
+            ];
+            __baselineSizes = {};
+            selectors.forEach(sel => {
+                document.querySelectorAll(sel).forEach((el, idx) => {
+                    const key = sel+':'+idx;
+                    const size = parseFloat(getComputedStyle(el).fontSize) || 16;
+                    __baselineSizes[key] = {el, size};
+                });
+            });
+        }
+        function applyFontScale(scale) {
+            if (!__baselineSizes) captureBaselineSizes();
+            Object.values(__baselineSizes).forEach(({el,size}) => {
+                const px = (size * scale) + 'px';
+                // 使用 !important 以覆蓋樣式表中的 !important 規則（例如 h1）
+                el.style.setProperty('font-size', px, 'important');
+            });
+        }
+        function applyUiSettings(settings) {
+            if (settings.fontScale) {
+                applyFontScale(settings.fontScale);
+            }
+            const theme = settings.theme === 'light' ? 'theme-light' : 'theme-dark';
+            document.documentElement.classList.remove('theme-light','theme-dark');
+            document.documentElement.classList.add(theme);
+            document.body.style.background = `linear-gradient(135deg, var(--primary), var(--primary-dark))`;
+            document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-light') || '#fff';
+        }
+        
+        function getUiSettings() {
+            try { return JSON.parse(localStorage.getItem('uiSettings')) || {}; } catch(e) { return {}; }
+        }
+        
+        function setUiSettings(next) {
+            localStorage.setItem('uiSettings', JSON.stringify(next));
+            applyUiSettings(next);
+        }
+        
+        function initUiControls() {
+            const settings = getUiSettings();
+            if (!settings.fontScale) settings.fontScale = 1.0; // 比例 0.8–1.6
+            if (!settings.theme) settings.theme = 'dark';
+            applyUiSettings(settings);
+            const inc = document.getElementById('fontInc');
+            const dec = document.getElementById('fontDec');
+            const themeBtn = document.getElementById('themeToggle');
+            
+            if (inc) inc.addEventListener('click', () => {
+                settings.fontScale = Math.min(settings.fontScale + 0.1, 1.6);
+                setUiSettings(settings);
+            });
+            if (dec) dec.addEventListener('click', () => {
+                settings.fontScale = Math.max(settings.fontScale - 0.1, 0.8);
+                setUiSettings(settings);
+            });
+            if (themeBtn) themeBtn.addEventListener('click', () => { settings.theme = settings.theme === 'light' ? 'dark' : 'light'; setUiSettings(settings); });
+            
+        }
+        
         // 事件監聽
         document.getElementById('calcBtn').addEventListener('click', calculateScore);
         document.getElementById('resetBtn').addEventListener('click', initForm);
         document.getElementById('saveDataBtn').addEventListener('click', saveCurrentData);
-        document.getElementById('savePdfBtn').addEventListener('click', () => window.print());
-        document.getElementById('exportBtn').addEventListener('click', exportAllData);
-        document.getElementById('importBtn').addEventListener('click', importData);
+        const loadBtnEl = document.getElementById('loadBtn');
+        const loadSelectEl = document.getElementById('loadSelect');
+        if (loadBtnEl && loadSelectEl) {
+            loadBtnEl.addEventListener('click', showLoadSelect);
+            loadSelectEl.addEventListener('change', function() {
+                const name = this.value;
+                if (name) loadSavedData(name);
+                // 選擇後收起下拉
+                this.style.display = 'none';
+            });
+        }
+        const cancelSaveBtn = document.getElementById('cancelSaveBtn');
+        const deleteSelectEl = document.getElementById('deleteSelect');
+        if (cancelSaveBtn && deleteSelectEl) {
+            cancelSaveBtn.addEventListener('click', showDeleteSelect);
+            deleteSelectEl.addEventListener('change', function() {
+                const name = this.value;
+                if (!name) { this.style.display = 'none'; return; }
+                if (name === '__DELETE_ALL__') {
+                    deleteAllSavedData();
+                } else {
+                    deleteSavedData(name);
+                }
+                this.style.display = 'none';
+            });
+        }
+        
+        // 顯示載入選單並填入所有儲存的檔名（依建立時間新到舊）
+        function showLoadSelect() {
+            let savedData = {};
+            try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
+            const keys = Object.keys(savedData);
+            if (keys.length === 0) {
+                const msg = currentLang === 'zh' ? "沒有可載入的資料" : "No data to load";
+                updateStatus(msg);
+                return;
+            }
+            // 排序：按 createdAt 降序（新到舊）；沒有 createdAt 的放最後
+            keys.sort((a,b) => (savedData[b].createdAt||0) - (savedData[a].createdAt||0));
+            const sel = document.getElementById('loadSelect');
+            sel.innerHTML = '';
+            // 先加一個提示選項
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = currentLang === 'zh' ? '選擇要載入的檔名…' : 'Select a record to load…';
+            sel.appendChild(placeholder);
+            for (const k of keys) {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.textContent = k;
+                sel.appendChild(opt);
+            }
+            sel.style.display = 'inline-block';
+            sel.focus();
+        }
+        
+        // 顯示刪除選單（包含「刪除全部」及所有檔名）
+        function showDeleteSelect() {
+            let savedData = {};
+            try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
+            const keys = Object.keys(savedData);
+            if (keys.length === 0) {
+                const msg = currentLang === 'zh' ? '目前沒有可刪除的資料' : 'No saved record to delete';
+                updateStatus(msg);
+                return;
+            }
+            // 排序（新到舊）
+            keys.sort((a,b) => (savedData[b].createdAt||0) - (savedData[a].createdAt||0));
+            const sel = document.getElementById('deleteSelect');
+            sel.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = currentLang === 'zh' ? '選擇要刪除的檔名…' : 'Select a record to delete…';
+            sel.appendChild(placeholder);
+            const deleteAll = document.createElement('option');
+            deleteAll.value = '__DELETE_ALL__';
+            deleteAll.textContent = currentLang === 'zh' ? '刪除全部（Danger）' : 'Delete ALL (Danger)';
+            sel.appendChild(deleteAll);
+            for (const k of keys) {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.textContent = k;
+                sel.appendChild(opt);
+            }
+            sel.style.display = 'inline-block';
+            sel.focus();
+        }
+        
+        // 刪除全部儲存資料
+        function deleteAllSavedData() {
+            if (!confirm(currentLang === 'zh' ? '確定要刪除全部儲存資料嗎？此操作不可恢復。' : 'Delete ALL saved records? This action cannot be undone.')) return;
+            localStorage.removeItem('dormData');
+            document.querySelector('.data-container')?.replaceChildren();
+            const nd = document.getElementById('noDataMessage');
+            if (nd) nd.style.display = 'block';
+            updateDataCount();
+            const msg = currentLang === 'zh' ? '已刪除全部儲存資料' : 'All saved records deleted';
+            updateStatus(msg);
+        }
+        
+        // 標題自適應：根據容器寬度自動縮放，保證單行完整顯示
+        let __fitTitleRaf = null;
+        function fitTitle() {
+            if (__fitTitleRaf) cancelAnimationFrame(__fitTitleRaf);
+            __fitTitleRaf = requestAnimationFrame(() => {
+                const header = document.querySelector('header');
+                const h1 = header ? header.querySelector('h1') : null;
+                if (!h1 || !header) return;
+                const maxPx = 32; // 大屏最高
+                const minPx = 16; // 小屏最低
+                let size = maxPx;
+                h1.style.setProperty('font-size', size + 'px', 'important');
+                const isEn = (typeof currentLang !== 'undefined') && currentLang === 'en';
+                h1.style.setProperty('white-space', isEn ? 'normal' : 'nowrap', 'important');
+                const available = header.clientWidth - 24; // 預留左右邊距
+                let steps = 0;
+                while (h1.scrollWidth > available && size > minPx && steps < 24) {
+                    size -= 1;
+                    h1.style.setProperty('font-size', size + 'px', 'important');
+                    steps++;
+                }
+            });
+        }
+        // 視窗改變時重新適配（防抖）
+        let __fitTitleTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(__fitTitleTimer);
+            __fitTitleTimer = setTimeout(fitTitle, 120);
+        });
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             initForm();
             loadAllSavedData();
             setLanguage('zh');
+            initUiControls();
+            fitTitle();
         });
     </script>
 </body>
