@@ -994,6 +994,66 @@
                 background: rgba(255,255,255,0.12) !important; 
             }
     </style>
+        <!-- 使用須知彈窗樣式 -->
+        <style>
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
+        .modal header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; }
+        .modal header h3 { font-size: 1.3rem; color: var(--accent); margin: 0; }
+        .modal .modal-body { padding: 16px 20px; }
+        .modal .modal-body ul { margin-left: 18px; }
+        .modal .modal-foot { padding: 12px 20px 18px; border-top: 1px solid rgba(255,255,255,0.2); text-align: right; }
+        .modal .close-btn { background: var(--warning); color: var(--text-dark); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+        .modal .close-btn:hover { background: var(--warning-dark); }
+        .modal .label { color: #a0c8ff; font-weight: bold; }
+        @media (max-width: 600px) { .modal header h3 { font-size: 1.1rem; } .modal .modal-body { font-size: 0.95rem; } }
+        </style>
+<!-- 指引未填欄位的視覺效果 -->
+<style>
+.shake { animation: shake 320ms ease-in-out 2; }
+@keyframes shake {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-4px); }
+    50%  { transform: translateX(4px); }
+    75%  { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+}
+</style>
+<!-- 輸入欄提示光暈樣式（紅／黃） -->
+<style>
+.glow-yellow { box-shadow: 0 0 0 3px rgba(255,193,7,0.45), 0 0 12px rgba(255,193,7,0.55) !important; }
+.glow-red { box-shadow: 0 0 0 3px rgba(232,79,79,0.45), 0 0 12px rgba(232,79,79,0.55) !important; }
+</style>
+<!-- 統一免責樣式 -->
+<style>
+.disclaimer { color: #ffd07a; font-size: 0.95rem; margin-top: 8px; opacity: 0.9; }
+</style>
+<!-- 光明版總分可讀性強化（對比更高） -->
+<style>
+/* 在光明版，將總分改為深色字＋白底，提升對比 */
+.theme-light .highlight-score {
+  color: #1a2b44 !important;              /* 深藍字，對比高 */
+  background: rgba(255,255,255,0.98) !important; /* 幾乎白底 */
+  border-color: #1a2b44 !important;       /* 同色邊框 */
+  text-shadow: none !important;           /* 移除光暈，字更銳利 */
+}
+</style>
+<!-- 使用須知彈窗：淡藍色背景框（更專業） -->
+<style>
+/* 淡藍框：令整體更專業、更易讀 */
+.modal {
+  border: 2px solid rgba(126, 200, 255, 0.45) !important; /* 外框淡藍 */
+  box-shadow: 0 12px 28px rgba(79, 157, 232, 0.25), 0 4px 10px rgba(0,0,0,0.25) !important; /* 藍色陰影＋柔和立體感 */
+}
+.modal header, .modal .modal-foot {
+  background: rgba(126, 200, 255, 0.08) !important; /* 頭／尾淡藍底 */
+}
+.modal .modal-body {
+  background: rgba(126, 200, 255, 0.12) !important; /* 內容區淡藍半透明底 */
+  border: 1px solid rgba(126, 200, 255, 0.30) !important; /* 內容區細框 */
+  border-radius: 10px !important;
+}
+</style>
 </head>
 <body>
     <div class="container">
@@ -1016,6 +1076,8 @@
             
             <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
             
+            <!-- 使用須知彈窗開關按鈕 -->
+            <button id="infoBtn" type="button" class="btn btn-warning no-text-shadow btn-small" title="使用須知"><i class="fas fa-info-circle"></i></button>
         </div>
         </header>
         
@@ -1111,6 +1173,7 @@
             
             <div class="result-section">
                 <h2 class="section-title"><i class="fas fa-chart-bar"></i> <span id="resultSectionTitle">計算結果</span></h2>
+<p id="disclaimerResult" class="disclaimer">此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。</p>
                 
                 <div class="result-container">
                     <div class="result-placeholder" id="resultPlaceholder">
@@ -1163,7 +1226,7 @@
         </div>
         
         <footer>
-            <!-- 已刪除版權和技術支援信息 -->
+            <p id="disclaimerFooter" class="disclaimer">此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。</p>
         </footer>
     </div>
     
@@ -1226,7 +1289,22 @@
                 'lightLabel': '亮',
                 'darkLabel': '暗',
                 'cancelSaveText': '取消儲存',
-                'loadText': '載入資料'
+                'loadText': '載入資料',
+                    'disclaimerResult': '此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。',
+                    'disclaimerFooter': '此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。',
+                    'infoTitle': '使用須知',
+                    'scoringLabel': '計分準則（簡述）：',
+                    'salaryRule': '薪金分數：薪金 ÷ 除數（預設 538）。',
+                    'serviceRule': '年資分數：入職至截止日期的天數 ÷ 365.25 × 年資乘數（預設 6）。',
+                    'familyRule': '家庭加分：配偶 +20；每名子女 +10；海外就讀子女 +5；新生 +10；其他子女（除首名）按子女分數並可能有首名加成 +20。',
+                    'specialRule': '特殊情況：被指示離開 +72；宿舍有缺陷 +20。',
+                    'noticeLabel': '注意事項：',
+                    'refOnlyRule': '此計算結果僅供參考，參數或規則可能會改變；請自行核實。',
+                    'dateRule': '請確保日期輸入正確（截止日期不可早於入職日期）。',
+                    'storageRule': '本工具只在瀏覽器本機儲存資料（localStorage），不會上載伺服器；請自行妥善保管。',
+                    'privacyRule': '本工具僅在瀏覽器本機處理及儲存資料；資料不會傳送到任何伺服器或第三方。',
+                    'liabilityRule': '任何因使用本工具而引致的後果或損失，本工具不承擔責任。',
+                    'closeModalText': '我明白'
             },
             'en': {
                 'appTitle': 'Dormitory Score Calculator',
@@ -1269,7 +1347,22 @@
                 'lightLabel': 'Light',
                 'darkLabel': 'Dark',
                 'cancelSaveText': 'Cancel Save',
-                'loadText': 'Load Data'
+                'loadText': 'Load Data',
+                    'disclaimerResult': 'Disclaimer: This calculation result is for reference only; accuracy is not guaranteed; this tool is not responsible for any consequences of use.',
+                    'disclaimerFooter': 'Disclaimer: This calculation result is for reference only; accuracy is not guaranteed; this tool is not responsible for any consequences of use.',
+                    'infoTitle': 'Usage Guide',
+                    'scoringLabel': 'Scoring rules (brief):',
+                    'salaryRule': 'Salary score: salary ÷ divisor (default 538).',
+                    'serviceRule': 'Service score: days from hire to end ÷ 365.25 × multiplier (default 6).',
+                    'familyRule': 'Family points: spouse +20; each child +10; child studying overseas +5; newborn +10; other children (except first) per child score, with possible first-child bonus +20.',
+                    'specialRule': 'Special cases: instructed to leave +72; dormitory defects +20.',
+                    'noticeLabel': 'Notes:',
+                    'refOnlyRule': 'The calculation result is for reference only; parameters or rules may change—please verify.',
+                    'dateRule': 'Ensure dates are correct (end date cannot be earlier than hire date).',
+                    'storageRule': 'This tool only stores data locally in your browser (localStorage); nothing is uploaded—please keep your data safe.',
+                    'privacyRule': 'This tool processes and stores your data locally in your browser; no data is transmitted to any server or third party.',
+                    'liabilityRule': 'This tool is not responsible for any consequences or losses arising from use.',
+                    'closeModalText': 'Got it'
             }
         };
         
@@ -1332,6 +1425,24 @@
             oneYearAgo.setFullYear(today.getFullYear() - 1);
             document.getElementById('hireDate').valueAsDate = oneYearAgo;
             
+            // 完全清空與重置預設值（避免殘留）
+            const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+            setVal('salary', '');            // 清空薪金
+            setVal('divisor', '538');       // 回復預設除數
+            setVal('spouse', 'no');
+            setVal('children', '0');
+            setVal('overseas', '0');
+            setVal('newborn', '0');
+            setVal('otherChildren', '0');
+            setVal('instruction', 'no');
+            setVal('defect', 'no');
+            
+            // 收起載入／刪除下拉（如果有打開）
+            const loadSelect = document.getElementById('loadSelect');
+            const deleteSelect = document.getElementById('deleteSelect');
+            if (loadSelect) loadSelect.style.display = 'none';
+            if (deleteSelect) deleteSelect.style.display = 'none';
+            
             // 重置結果區域
             document.querySelector('.result-container').innerHTML = `
                 <div class="result-placeholder" id="resultPlaceholder">
@@ -1356,6 +1467,26 @@
             document.getElementById('statusText').textContent = message;
         }
         
+        // 平滑捲動到指定元素（正常速度 ~500ms），避免定位混亂
+        function scrollToElement(el, duration = 1400, offset = -80) {
+            if (!el) return;
+            const startY = window.pageYOffset;
+            const rect = el.getBoundingClientRect();
+            // 目標位置：元素頂部再向上預留少少空間（offset）
+            const targetY = rect.top + window.pageYOffset + offset;
+            const diff = targetY - startY;
+            let startTime = null;
+            function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+            function step(ts) {
+                if (!startTime) startTime = ts;
+                const progress = Math.min((ts - startTime) / duration, 1);
+                const eased = easeInOutQuad(progress);
+                window.scrollTo(0, startY + diff * eased);
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
         // 驗證必填字段
         function validateRequiredFields() {
             const requiredFields = [
@@ -1367,17 +1498,25 @@
             
             let isValid = true;
             let missingFields = [];
+            let firstMissingEl = null;
             
             requiredFields.forEach(field => {
                 const element = document.getElementById(field.id);
-                const value = element.value.trim();
+                const value = (element && typeof element.value === 'string') ? element.value.trim() : '';
                 
                 if (!value) {
-                    element.classList.add('error');
+                    if (element) {
+                        element.classList.add('error');
+                        element.classList.add('glow-yellow'); // 未填：黃色光暈
+                        element.classList.remove('glow-red');
+                        if (!firstMissingEl) firstMissingEl = element; // 記錄第一個未填欄位
+                    }
                     missingFields.push(field.name);
                     isValid = false;
-                } else {
+                } else if (element) {
                     element.classList.remove('error');
+                    element.classList.remove('glow-yellow');
+                    element.classList.remove('glow-red');
                 }
             });
             
@@ -1386,6 +1525,14 @@
                     `錯誤：請填寫必填欄位 - ${missingFields.join('、')}` :
                     `Error: Please fill in required fields - ${missingFields.join(', ')}`;
                 updateStatus(errorMsg);
+                // 自動引導：聚焦、滾動到視窗中間、視覺提示
+                if (firstMissingEl) {
+                    try { firstMissingEl.focus(); } catch(e) {}
+                    // 用自訂動畫（約 500ms），速度正常而唔會太慢；預留 80px 空間
+                    scrollToElement(firstMissingEl, 1400, -80);
+                    firstMissingEl.classList.add('shake');
+                    setTimeout(() => firstMissingEl.classList.remove('shake'), 700);
+                }
             }
             
             return isValid;
@@ -1407,17 +1554,37 @@
             const hire = new Date(hireDate);
             const end = new Date(endDate);
             
+            // 額外邏輯檢查：海外子女不可大於子女人數
+            const childrenValCalc = parseInt(document.getElementById('children').value) || 0;
+            const overseasValCalc = parseInt(document.getElementById('overseas').value) || 0;
+            if (overseasValCalc > childrenValCalc) {
+                const overMsg = currentLang === 'zh' ? '錯誤：海外子女不可多於子女人數' : 'Error: Overseas children cannot exceed total children';
+                updateStatus(overMsg);
+                const overseasEl2 = document.getElementById('overseas');
+                if (overseasEl2) overseasEl2.classList.add('error','glow-red');
+                scrollToElement(overseasEl2, 900, -80);
+                return;
+            }
+
             if (end < hire) {
                 const errorMsg = currentLang === 'zh' ? 
                     "錯誤：截止日期不能早於入職日期" : 
                     "Error: End date cannot be earlier than hire date";
                 updateStatus(errorMsg);
-                document.getElementById('endDate').classList.add('error');
-                document.getElementById('hireDate').classList.add('error');
+                const endEl = document.getElementById('endDate');
+    const childrenEl = document.getElementById('children');
+    const overseasEl = document.getElementById('overseas');
+    const newbornEl = document.getElementById('newborn');
+    const otherChildrenEl = document.getElementById('otherChildren');
+                const hireEl = document.getElementById('hireDate');
+                if (endEl) { endEl.classList.add('error'); endEl.classList.add('glow-red'); }
+                if (hireEl) { hireEl.classList.add('error'); hireEl.classList.add('glow-red'); }
                 return;
             } else {
-                document.getElementById('endDate').classList.remove('error');
-                document.getElementById('hireDate').classList.remove('error');
+                const endEl = document.getElementById('endDate');
+                const hireEl = document.getElementById('hireDate');
+                if (endEl) { endEl.classList.remove('error'); endEl.classList.remove('glow-red'); }
+                if (hireEl) { hireEl.classList.remove('error'); hireEl.classList.remove('glow-red'); }
             }
             
             const spouse = document.getElementById('spouse').value === 'yes';
@@ -1661,35 +1828,42 @@
             
             const card = document.createElement('div');
             card.className = 'data-card';
+            // 安全處理：避免把用戶輸入直接注入 HTML
+            const safe = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+            const safeName = safe(name);
+            const safeTime = safe(data.timestamp || '');
+            const safeSalary = safe(data.salary || '0');
+            const safeChildren = safe(data.children || '0');
+            const safeSpouse = data.spouse === 'yes' ? (currentLang === 'zh' ? '是' : 'Yes') : (currentLang === 'zh' ? '否' : 'No');
             card.innerHTML = `
                 <div class="card-header">
-                    <div class="card-name">${name}</div>
-                    <div class="card-date">${data.timestamp}</div>
+                    <div class="card-name">${safeName}</div>
+                    <div class="card-date">${safeTime}</div>
                 </div>
-                <div class="card-score">${data.score} ${currentLang === 'zh' ? '分' : ''}</div>
+                <div class="card-score">${safe(data.score || '0')} ${currentLang === 'zh' ? '分' : ''}</div>
                 <div class="card-details">
                     <div class="detail-item">
                         <div class="detail-label">${currentLang === 'zh' ? '薪金' : 'Salary'}</div>
-                        <div class="detail-value">HK$ ${data.salary || '0'}</div>
+                        <div class="detail-value">HK$ ${safeSalary}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">${currentLang === 'zh' ? '子女' : 'Children'}</div>
-                        <div class="detail-value">${data.children || '0'} ${currentLang === 'zh' ? '人' : ''}</div>
+                        <div class="detail-value">${safeChildren} ${currentLang === 'zh' ? '人' : ''}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">${currentLang === 'zh' ? '配偶在港' : 'Spouse in HK'}</div>
-                        <div class="detail-value">${data.spouse === 'yes' ? (currentLang === 'zh' ? '是' : 'Yes') : (currentLang === 'zh' ? '否' : 'No')}</div>
+                        <div class="detail-value">${safe(safeSpouse)}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">${currentLang === 'zh' ? '保存時間' : 'Saved Time'}</div>
-                        <div class="detail-value">${data.timestamp}</div>
+                        <div class="detail-value">${safeTime}</div>
                     </div>
                 </div>
                 <div class="card-actions">
-                    <div class="action-btn load-btn" data-name="${name}">
+                    <div class="action-btn load-btn" data-name="${safeName}">
                         <i class="fas fa-download"></i> <span>${currentLang === 'zh' ? '載入' : 'Load'}</span>
                     </div>
-                    <div class="action-btn delete-btn" data-name="${name}">
+                    <div class="action-btn delete-btn" data-name="${safeName}">
                         <i class="fas fa-trash"></i> <span>${currentLang === 'zh' ? '刪除' : 'Delete'}</span>
                     </div>
                 </div>
@@ -2106,15 +2280,145 @@
             __fitTitleTimer = setTimeout(fitTitle, 120);
         });
         
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        // 即時（Live）驗證：在輸入時就提示
+function validateLiveFields() {
+    // 必填：薪金、除數、入職、截止
+    const salaryEl = document.getElementById('salary');
+    const divisorEl = document.getElementById('divisor');
+    const hireEl = document.getElementById('hireDate');
+    const endEl = document.getElementById('endDate');
+    const childrenEl = document.getElementById('children');
+    const overseasEl = document.getElementById('overseas');
+    const newbornEl = document.getElementById('newborn');
+    const otherChildrenEl = document.getElementById('otherChildren');
+
+    const salary = parseFloat((salaryEl && salaryEl.value) || '');
+    const divisor = parseFloat((divisorEl && divisorEl.value) || '');
+    const hire = new Date((hireEl && hireEl.value) || '');
+    const end = new Date((endEl && endEl.value) || '');
+    const childrenVal = parseFloat((childrenEl && childrenEl.value) || '0');
+    const overseasVal = parseFloat((overseasEl && overseasEl.value) || '0');
+    const newbornVal = parseFloat((newbornEl && newbornEl.value) || '0');
+    const otherChildrenVal = parseFloat((otherChildrenEl && otherChildrenEl.value) || '0');
+
+    // 清理舊狀態
+    [salaryEl, divisorEl, hireEl, endEl, childrenEl, overseasEl, newbornEl, otherChildrenEl].forEach(el => { if (el) { el.classList.remove('glow-yellow','glow-red'); el.classList.remove('error'); } });
+
+    // 空白提示：黃色光
+    [{el: salaryEl},{el: divisorEl},{el: hireEl},{el: endEl},{el: childrenEl},{el: overseasEl},{el: newbornEl},{el: otherChildrenEl}].forEach(item => {
+        if (item.el && item.el.value === '') { item.el.classList.add('glow-yellow'); }
+    });
+
+    // 數值基本檢查
+    if (salaryEl && !isNaN(salary) && salary < 0) { salaryEl.classList.add('error','glow-red'); }
+    if (divisorEl && !isNaN(divisor) && divisor < 1) { divisorEl.classList.add('error','glow-red'); }
+
+    // 非負整數檢查（子女、海外、新生、其他子女）
+    function isNonNegativeInteger(n){ return Number.isInteger(n) && n >= 0; }
+    if (childrenEl && !isNonNegativeInteger(childrenVal)) { childrenEl.classList.add('error','glow-red'); }
+    if (overseasEl && !isNonNegativeInteger(overseasVal)) { overseasEl.classList.add('error','glow-red'); }
+    if (newbornEl && !isNonNegativeInteger(newbornVal)) { newbornEl.classList.add('error','glow-red'); }
+    if (otherChildrenEl && !isNonNegativeInteger(otherChildrenVal)) { otherChildrenEl.classList.add('error','glow-red'); }
+
+    // 邏輯檢查：海外子女人數不可大於子女人數
+    if (childrenEl && overseasEl && isNonNegativeInteger(childrenVal) && isNonNegativeInteger(overseasVal)) {
+        if (overseasVal > childrenVal) {
+            overseasEl.classList.add('error','glow-red');
+            const msg = currentLang === 'zh' ? '錯誤：海外子女不可多於子女人數' : 'Error: Overseas children cannot exceed total children';
+            updateStatus(msg);
+        }
+    }
+
+    // 日期先做基本：都填咗先檢查先後
+    if (hire.toString() !== 'Invalid Date' && end.toString() !== 'Invalid Date') {
+        if (end < hire) {
+            // 即時錯誤提示（跟語言）
+            const msg = currentLang === 'zh' ? "錯誤：截止日期不能早於入職日期" : "Error: End date cannot be earlier than hire date";
+            updateStatus(msg);
+            if (endEl) endEl.classList.add('error','glow-red');
+            if (hireEl) hireEl.classList.add('error','glow-red');
+        }
+    }
+}
+
+function attachLiveValidation() {
+    const ids = ['salary','divisor','hireDate','endDate'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        ['input','change','blur'].forEach(evt => el.addEventListener(evt, validateLiveFields));
+    });
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
             initForm();
             loadAllSavedData();
             setLanguage('zh');
             initUiControls();
             fitTitle();
+            attachLiveValidation();
+            validateLiveFields();
+            // 綁定「使用須知」彈窗事件
+            const infoBtn = document.getElementById('infoBtn');
+            const overlay = document.getElementById('infoOverlay');
+            const modal = document.getElementById('infoModal');
+            const closeBtn = document.getElementById('closeModal');
+            const closeX = document.getElementById('closeModalX');
+            function openInfo() {
+                if (!overlay || !modal) return;
+                overlay.style.display = 'block';
+                modal.style.display = 'block';
+                modal.setAttribute('aria-hidden', 'false');
+                overlay.setAttribute('aria-hidden', 'false');
+            }
+            function closeInfo() {
+                if (!overlay || !modal) return;
+                overlay.style.display = 'none';
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+            if (infoBtn) infoBtn.addEventListener('click', openInfo);
+            // 事件委派保險：即使按鈕未綁定亦可正常開窗
+            document.addEventListener('click', function(e){
+                const btn = e.target.closest('#infoBtn');
+                if (btn) { e.preventDefault(); openInfo(); }
+            });
+            if (closeBtn) closeBtn.addEventListener('click', closeInfo);
+            if (closeX) closeX.addEventListener('click', closeInfo);
+            if (overlay) overlay.addEventListener('click', closeInfo);
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInfo(); });
         });
     </script>
+        <!-- 使用須知彈窗 -->
+        <div id="infoOverlay" class="modal-overlay" aria-hidden="true"></div>
+        <div id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle" aria-hidden="true">
+            <header>
+                <h3 id="infoTitle"><i class="fas fa-info-circle"></i> 使用須知</h3>
+                <button id="closeModalX" class="btn btn-warning no-text-shadow btn-small" aria-label="關閉"><i class="fas fa-times"></i></button>
+            </header>
+            <div class="modal-body">
+                <p id="scoringLabel" class="label">計分準則（簡述）：</p>
+                <ul>
+                    <li id="salaryRule">薪金分數：薪金 ÷ 除數（預設 538）。</li>
+                    <li id="serviceRule">年資分數：入職至截止日期的天數 ÷ 365.25 × 年資乘數（預設 6）。</li>
+                    <li id="familyRule">家庭加分：配偶 +20；每名子女 +10；海外就讀子女 +5；新生 +10；其他子女（除首名）按子女分數並可能有首名加成 +20。</li>
+                    <li id="specialRule">特殊情況：被指示離開 +72；宿舍有缺陷 +20。</li>
+                </ul>
+                <p id="noticeLabel" class="label">注意事項：</p>
+                <ul>
+                    <li id="refOnlyRule">此計算結果僅供參考，參數或規則可能會改變；請自行核實。</li>
+                    <li id="dateRule">請確保日期輸入正確（截止日期不可早於入職日期）。</li>
+                    <li id="storageRule">本工具只在瀏覽器本機儲存資料（localStorage），不會上載伺服器；請自行妥善保管。</li>
+                    <li id="privacyRule">本工具僅在瀏覽器本機處理及儲存資料；資料不會傳送到任何伺服器或第三方。</li>
+                    <li id="liabilityRule">任何因使用本工具而引致的後果或損失，本工具不承擔責任。</li>
+                </ul>
+            </div>
+            <div class="modal-foot">
+                <button id="closeModal" class="close-btn"><span id="closeModalText">我明白</span></button>
+            </div>
+        </div>
 </body>
 </html>
 
