@@ -993,7 +993,29 @@
                 border-color: rgba(255,255,255,0.30) !important; 
                 background: rgba(255,255,255,0.12) !important; 
             }
-    </style>
+    /* 歡迎視窗樣式與動畫 */
+.welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; }
+.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 28px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; }
+.welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
+.welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
+.welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
+.welcome-body { margin-top: 10px; font-size: 1rem; line-height: 1.7; opacity: 0.94; }
+.welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; }
+.welcome-btn { border: 0; border-radius: 12px; padding: 10px 16px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; }
+.welcome-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.22); }
+.welcome-btn.primary { background: #fff; color: #2b6cb0; font-weight: 700; }
+.welcome-btn.primary:hover { background: #f6f7fb; }
+@keyframes modalIn { 0% { transform: translateY(16px) scale(0.98); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+/* 主題相容：在光明主題時調整對比 */
+.theme-light .welcome-modal { background: linear-gradient(135deg, #fff, #f6f7fb); color: #2b6cb0; }
+.theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0; }
+.theme-light .welcome-btn.primary { background: #2b6cb0; color: #fff; }
+
+/* 霧化彩帶/雪花畫布（只在歡迎視窗顯示） */
+.confetti-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.welcome-modal { z-index: 1; }
+</style>
         <style>
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
@@ -2324,6 +2346,201 @@ document.addEventListener('DOMContentLoaded', function() {
             loadAllSavedData();
             setLanguage('zh');
             initUiControls();
+
+// 初始化歡迎視窗（僅首次顯示）
+(function initWelcomeOnce(){
+  try {
+    const FLAG_KEY = 'welcomeShown';
+    const shown = localStorage.getItem(FLAG_KEY);
+    const overlay = document.getElementById('welcomeOverlay');
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+    const btnLater = document.getElementById('welcomeLater');
+    const btnStart = document.getElementById('welcomeStart');
+    if (!overlay || !btnLater || !btnStart) return;
+
+    // 霓彩金銀片／雪花效果
+    let particles = [];
+    let rafId = null;
+    function resizeCanvas(){
+      if (!canvas) return;
+      const rect = overlay.getBoundingClientRect();
+      canvas.width = rect.width; canvas.height = rect.height;
+    }
+    function makeParticle(){
+      const w = canvas.width, h = canvas.height;
+      const types = ['circle','rect','triangle'];
+      const colors = ['#ffd700','#fff8dc','#e6e6e6','#c0c0c0','#ff69b4']; // 金、奶白、銀、淡銀、粉
+      return {
+        x: Math.random()*w,
+        y: -10 - Math.random()*h*0.3,
+        size: 3 + Math.random()*6,
+        dx: -0.5 + Math.random()*1,
+        dy: 1.2 + Math.random()*2.2,
+        rot: Math.random()*Math.PI*2,
+        drot: (-0.02 + Math.random()*0.04),
+        swing: Math.random()*0.6,
+        type: types[(Math.random()*types.length)|0],
+        color: colors[(Math.random()*colors.length)|0],
+        twinkle: Math.random()<0.3
+      };
+    }
+    function drawParticle(p){
+      if (!ctx) return;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      const s = p.size;
+      ctx.fillStyle = p.color;
+      if (p.twinkle){
+        const alpha = 0.7 + 0.3*Math.sin(Date.now()/200 + p.x);
+        ctx.globalAlpha = alpha;
+      }
+      switch(p.type){
+        case 'circle':
+          ctx.beginPath(); ctx.arc(0,0,s*0.6,0,Math.PI*2); ctx.fill(); break;
+        case 'rect':
+          ctx.fillRect(-s/2,-s/2,s,s*0.7); break;
+        case 'triangle':
+          ctx.beginPath(); ctx.moveTo(-s/2,s/2); ctx.lineTo(0,-s/2); ctx.lineTo(s/2,s/2); ctx.closePath(); ctx.fill(); break;
+        case 'star':
+          drawStar(ctx, s);
+          break;
+      }
+      ctx.restore();
+    }
+    function step(){
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p=>{
+        p.y += p.dy; p.x += p.dx + Math.sin(Date.now()/400 + p.y)*p.swing; p.rot += p.drot;
+        drawParticle(p);
+      });
+      // recycle
+      const w = canvas.width, h = canvas.height;
+      for (let i=0;i<particles.length;i++){
+        const p = particles[i];
+        if (p.y > h + 20){ particles[i] = makeParticle(); particles[i].y = -10; }
+        if (p.x < -20 || p.x > w+20){ particles[i].x = Math.random()*w; }
+      }
+      rafId = requestAnimationFrame(step);
+    }
+    function drawStar(ctx, r){
+      ctx.beginPath();
+      for (let i=0;i<10;i++){
+        const angle = i * Math.PI/5;
+        const rad = (i%2===0? r : r*0.45);
+        ctx.lineTo(Math.cos(angle)*rad, Math.sin(angle)*rad);
+      }
+      ctx.closePath(); ctx.fill();
+    }
+    function startConfetti(){
+      if (!canvas) return;
+      resizeCanvas();
+      particles = new Array(280).fill(0).map(()=>makeParticle());
+      const extraColors = ['#87CEFA','#7B68EE','#BA55D3'];
+      particles.forEach(p=>{ if (Math.random()<0.25){ p.type='star'; p.color=extraColors[(Math.random()*extraColors.length)|0]; } });
+      cancelAnimationFrame(rafId); rafId = requestAnimationFrame(step);
+      window.addEventListener('resize', resizeCanvas);
+      if (window.__confettiBurstTimer) clearInterval(window.__confettiBurstTimer);
+      window.__confettiBurstTimer = setInterval(()=>{
+        const w = canvas.width;
+        for (let i=0;i<50;i++){
+          const p = makeParticle();
+          p.x = w*0.5 + (Math.random()-0.5)*w*0.2;
+          p.y = -15 - Math.random()*40;
+          p.dy += 0.8; p.size += 1.2; p.twinkle = true;
+          particles[(Math.random()*particles.length)|0] = p;
+        }
+      }, 2800);
+    }
+    function stopConfetti(){
+      cancelAnimationFrame(rafId); rafId = null; particles = [];
+      if (ctx && canvas) ctx.clearRect(0,0,canvas.width,canvas.height);
+      window.removeEventListener('resize', resizeCanvas);
+      if (window.__confettiBurstTimer) { clearInterval(window.__confettiBurstTimer); window.__confettiBurstTimer = null; }
+    }
+
+    const force = (location.hash === '#welcome');
+    const openWelcome = () => {
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      startConfetti();
+    };
+    const closeWelcome = () => {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden','true');
+      localStorage.setItem(FLAG_KEY, '1');
+      document.body.style.overflow = '';
+      stopConfetti();
+    };
+
+    if (!shown || force) { openWelcome(); }
+
+    // 事件綁定
+    btnLater.addEventListener('click', closeWelcome);
+    btnStart.addEventListener('click', closeWelcome);
+    overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeWelcome(); });
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeWelcome(); });
+
+    // 提供測試/手動顯示 API
+    window.showWelcomeOverlay = openWelcome;
+    window.resetWelcomeFlag = () => localStorage.removeItem(FLAG_KEY);
+
+    // 快捷鍵：Shift + W 顯示歡迎視窗（桌面）
+    document.addEventListener('keydown', (e)=>{
+      if (e.shiftKey && (e.key === 'W' || e.key === 'w')) {
+        openWelcome();
+      }
+    });
+
+    // 手機：長按主標題 800ms 顯示歡迎視窗
+    const appTitle = document.getElementById('appTitle');
+    if (appTitle) {
+      let pressTimer = null;
+      const start = ()=>{ pressTimer = setTimeout(openWelcome, 800); };
+      const cancel = ()=>{ if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
+      appTitle.addEventListener('touchstart', start, {passive:true});
+      appTitle.addEventListener('touchend', cancel, {passive:true});
+      appTitle.addEventListener('touchmove', cancel, {passive:true});
+      appTitle.addEventListener('touchcancel', cancel, {passive:true});
+    }
+  } catch (e) { /* 忽略錯誤以避免阻塞主流程 */ }
+})();
+
+// 手機浮動鍵盤遮擋自動避讓（僅數字鍵盤觸發）
+(function initKeyboardAvoidance(){
+  const inputs = document.querySelectorAll('input, textarea'); // select 不處理，避免下拉時畫面移動
+  let focusedEl = null;
+  function isNumeric(el){
+    if (!el) return false;
+    const t = (el.getAttribute('type')||'').toLowerCase();
+    const im = (el.getAttribute('inputmode')||'').toLowerCase();
+    const cls = (el.className||'');
+    // 以 number / numeric / decimal / tel 視為「數字鍵盤」場景；也容許自訂 class "numeric"
+    if (t === 'number') return true;
+    if (im === 'numeric' || im === 'decimal' || im === 'tel') return true;
+    if (/\bnumeric\b/.test(cls)) return true;
+    return false;
+  }
+  function scrollCenter(el){ try { el.scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){} }
+  function applyBottomPadding(){
+    const vv = window.visualViewport;
+    if (vv && focusedEl && isNumeric(focusedEl)){
+      const keyboard = Math.max(0, window.innerHeight - vv.height);
+      document.body.style.paddingBottom = keyboard ? (keyboard + 12) + 'px' : '';
+    }
+  }
+  inputs.forEach(el=>{
+    el.addEventListener('focus', ()=>{ focusedEl = el; if (isNumeric(el)) { applyBottomPadding(); scrollCenter(el); } });
+    el.addEventListener('blur', ()=>{ focusedEl = null; document.body.style.paddingBottom = ''; });
+  });
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', ()=>{ if (focusedEl && isNumeric(focusedEl)) { applyBottomPadding(); scrollCenter(focusedEl); } });
+    window.visualViewport.addEventListener('scroll', ()=>{ if (focusedEl && isNumeric(focusedEl)) { applyBottomPadding(); } });
+  }
+})();
             fitTitle();
             attachLiveValidation();
             validateLiveFields();
@@ -2475,5 +2692,23 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
-</body>
+  <!-- 歡迎視窗（僅首次） -->
+  <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true" role="dialog">
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+    <div class="welcome-modal" role="document" aria-label="歡迎">
+      <div class="welcome-title">
+        <span class="emoji">🎉</span>
+        🎈🥳 歡迎！ 🎊
+      </div>
+      <div class="welcome-body">
+        開心開始吧！
+      </div>
+      <div class="welcome-actions">
+        <button id="welcomeLater" class="welcome-btn" type="button">稍後再看</button>
+        <button id="welcomeStart" class="welcome-btn primary" type="button">開始使用</button>
+      </div>
+    </div>
+  </div>
+
+  </body>
 </html>
