@@ -995,7 +995,7 @@
             }
     /* 歡迎視窗樣式與動畫 */
 .welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; }
-.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 28px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; }
+.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.5) 0%, rgba(59,130,246,0.5) 40%, rgba(168,85,247,0.5) 70%, rgba(245,158,11,0.5) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
 .welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
@@ -1008,7 +1008,7 @@
 @keyframes modalIn { 0% { transform: translateY(16px) scale(0.98); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* 主題相容：在光明主題時調整對比 */
-.theme-light .welcome-modal { background: linear-gradient(135deg, #fff, #f6f7fb); color: #2b6cb0; }
+.theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(253,230,138,0.5) 30%, rgba(252,165,165,0.5) 60%, rgba(196,181,253,0.5) 100%); color: #2b6cb0; }
 .theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0; }
 .theme-light .welcome-btn.primary { background: #2b6cb0; color: #fff; }
 
@@ -2476,7 +2476,7 @@ document.addEventListener('DOMContentLoaded', function() {
       stopConfetti();
     };
 
-    if (!shown || force) { openWelcome(); }
+    openWelcome();
 
     // 事件綁定
     btnLater.addEventListener('click', closeWelcome);
