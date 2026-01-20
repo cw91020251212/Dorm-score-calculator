@@ -2096,7 +2096,7 @@
         function initUiControls() {
             const settings = getUiSettings();
             if (!settings.fontScale) settings.fontScale = 1.0; // 比例 0.8–1.6
-            settings.theme = 'dark'; // 強制預設黑暗版
+            if (!settings.theme) settings.theme = 'dark'; // 第一次載入預設黑暗，之後記憶使用者選擇
             applyUiSettings(settings);
             const inc = document.getElementById('fontInc');
             const dec = document.getElementById('fontDec');
