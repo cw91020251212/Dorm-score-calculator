@@ -1094,6 +1094,22 @@
         }
 
     </style>
+<style>
+        .welcome-disclaimer {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            line-height: 1.4;
+            text-align: center;
+        }
+        /* Light theme adjustment */
+        .theme-light .welcome-disclaimer {
+             color: rgba(43, 108, 176, 0.7);
+             border-top-color: rgba(43, 108, 176, 0.15);
+        }
+</style>
 </head>
 <body>
     <div class="container">
@@ -2479,7 +2495,21 @@ document.addEventListener('DOMContentLoaded', function() {
     openWelcome();
 
     // 事件綁定
-    btnLater.addEventListener('click', closeWelcome);
+    
+    btnLater.addEventListener('click', () => {
+        // Try to close the window
+        try { window.close(); } catch(e) {}
+
+        // If window.close() fails (most browsers), replace body with exit message
+        document.body.innerHTML = `
+            <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#1e3a5f;color:white;flex-direction:column;text-align:center;font-family:sans-serif;">
+                <h1 style="font-size:2rem;margin-bottom:1rem;">已離開程式</h1>
+                <p style="font-size:1.2rem;opacity:0.8;">您可以直接關閉此視窗。</p>
+            </div>
+        `;
+        document.body.style.overflow = ''; // Reset overflow
+    });
+
     btnStart.addEventListener('click', closeWelcome);
     overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeWelcome(); });
     document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeWelcome(); });
@@ -2703,7 +2733,12 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="welcome-body">
         開心開始吧！
       </div>
-      <div class="welcome-actions">
+      
+            <div class="welcome-disclaimer">
+                此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。
+            </div>
+
+            <div class="welcome-actions">
         <button id="welcomeLater" class="welcome-btn" type="button">稍後再看</button>
         <button id="welcomeStart" class="welcome-btn primary" type="button">開始使用</button>
       </div>
