@@ -1140,6 +1140,9 @@
         <div class="main-content">
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-edit"></i> <span id="inputSectionTitle">輸入資料</span></h2>
+                <div style="font-size: 0.8rem; color: var(--hint-pink); margin-top: -10px; margin-bottom: 15px; margin-left: 2px; opacity: 0.8;">
+                    <span style="color: var(--required); font-weight: bold;">*</span> <span id="requiredLegend">代表必填資料</span>
+                </div>
                 
                 <div class="form-group">
                     <label for="salary" class="required"><span id="salaryLabel">薪金（港幣）</span></label>
@@ -1302,21 +1305,6 @@
         let currentLang = 'zh';
         
     function exitApp() {
-        // Destroy UI immediately
-        document.body.innerHTML = '';
-        document.body.style.backgroundColor = '#000';
-        document.body.style.color = '#fff';
-        document.body.style.display = 'flex';
-        document.body.style.justifyContent = 'center';
-        document.body.style.alignItems = 'center';
-        document.body.style.height = '100vh';
-        document.body.style.margin = '0';
-
-        var msg = document.createElement('h1');
-        msg.innerText = '已離開程式';
-        document.body.appendChild(msg);
-
-        // Try close
         try { window.close(); } catch(e) {}
     }
 
@@ -1325,6 +1313,8 @@ const translations = {
                 'appTitle': '宿舍分數計算器',
                 'inputSectionTitle': '輸入資料',
                 'salaryLabel': '薪金（港幣）',
+                'salaryPlaceholder': '例如：30000',
+                'requiredLegend': '代表必填資料',
                 'divisorLabel': '除數',
                 'divisorHint': '目前預設值538，請參考最新宿舍手冊',
                 'hireDateLabel': '入職日期',
@@ -1383,6 +1373,8 @@ const translations = {
                 'appTitle': 'Dormitory Score Calculator',
                 'inputSectionTitle': 'Input Data',
                 'salaryLabel': 'Salary (HKD)',
+                'salaryPlaceholder': 'e.g. 30000',
+                'requiredLegend': 'indicates required fields',
                 'divisorLabel': 'Divisor',
                 'divisorHint': 'Default value is 538, please refer to the latest dormitory manual',
                 'hireDateLabel': 'Hire Date',
@@ -1454,6 +1446,12 @@ const translations = {
                     element.textContent = translations[lang][key];
                 }
             });
+
+            // 【新增】更新 placeholder 屬性
+            const salaryInput = document.getElementById('salary');
+            if (salaryInput && translations[lang]['salaryPlaceholder']) {
+                salaryInput.placeholder = translations[lang]['salaryPlaceholder'];
+            }
 
             // 【修正】更新所有 lang-zh 和 lang-en 的元素顯示狀態
             document.querySelectorAll('.lang-zh').forEach(el => {
@@ -1625,7 +1623,7 @@ const translations = {
                 if (firstMissingEl) {
                     try { firstMissingEl.focus(); } catch(e) {}
                     // 用自訂動畫（約 500ms），速度正常而唔會太慢；預留 80px 空間
-                    scrollToElement(firstMissingEl, 1400, -80);
+                    scrollToElement(firstMissingEl, 800, -80);
                     firstMissingEl.classList.add('shake');
                     setTimeout(() => firstMissingEl.classList.remove('shake'), 700);
                 }
@@ -1647,8 +1645,11 @@ const translations = {
             const hireDate = document.getElementById('hireDate').value;
             const endDate = document.getElementById('endDate').value;
             
-            const hire = new Date(hireDate);
-            const end = new Date(endDate);
+            // Date fix: parse explicitly to avoid timezone issues
+            const hireParts = hireDate.split('-');
+            const hire = new Date(hireParts[0], hireParts[1]-1, hireParts[2]);
+            const endParts = endDate.split('-');
+            const end = new Date(endParts[0], endParts[1]-1, endParts[2]);
             
             // 額外邏輯檢查：海外子女不可大於子女人數
             const childrenValCalc = parseInt(document.getElementById('children').value) || 0;
