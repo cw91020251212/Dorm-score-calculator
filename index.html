@@ -1015,6 +1015,46 @@
 /* 霧化彩帶/雪花畫布（只在歡迎視窗顯示） */
 .confetti-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .welcome-modal { z-index: 1; }
+
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
 </style>
         <style>
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
@@ -1028,7 +1068,47 @@
         .modal .close-btn:hover { background: var(--warning-dark); }
         .modal .label { color: #a0c8ff; font-weight: bold; }
         @media (max-width: 600px) { .modal header h3 { font-size: 1.1rem; } .modal .modal-body { font-size: 0.95rem; } }
-        </style>
+        
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
+</style>
 <style>
 .shake { animation: shake 320ms ease-in-out 2; }
 @keyframes shake {
@@ -1038,13 +1118,133 @@
     75%  { transform: translateX(-3px); }
     100% { transform: translateX(0); }
 }
+
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
 </style>
 <style>
 .glow-yellow { box-shadow: 0 0 0 3px rgba(255,193,7,0.45), 0 0 12px rgba(255,193,7,0.55) !important; }
 .glow-red { box-shadow: 0 0 0 3px rgba(232,79,79,0.45), 0 0 12px rgba(232,79,79,0.55) !important; }
+
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
 </style>
 <style>
 .disclaimer { color: #ffd07a; font-size: 0.95rem; margin-top: 8px; opacity: 0.9; }
+
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
 </style>
 <style>
 /* 在光明版，將總分改為深色字＋白底，提升對比 */
@@ -1054,6 +1254,46 @@
   border-color: #1a2b44 !important;       /* 同色邊框 */
   text-shadow: none !important;           /* 移除光暈，字更銳利 */
 }
+
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
 </style>
 <style>
 /* 淡藍框：令整體更專業、更易讀 */
@@ -1093,7 +1333,47 @@
             text-shadow: none !important;
         }
 
-    </style>
+    
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
+</style>
 <style>
         .welcome-disclaimer {
             font-size: 0.75rem;
@@ -1109,6 +1389,46 @@
              color: rgba(43, 108, 176, 0.7);
              border-top-color: rgba(43, 108, 176, 0.15);
         }
+
+        /* Animation classes */
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        @keyframes doze-off { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            30% { transform: rotate(15deg); } 
+            40% { transform: rotate(0deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+
+        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
+        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
+        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
+
+        .welcome-title {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap !important;
+            gap: 10px;
+            width: 100%;
+        }
+        .welcome-title .welcome-text {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .welcome-title .emoji {
+            flex-shrink: 1;
+            min-width: 0;
+            font-size: 3rem;
+            transition: font-size 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .welcome-title .emoji { font-size: 1.8rem !important; }
+            .welcome-title { gap: 5px; }
+        }
+
 </style>
 </head>
 <body>
@@ -1146,12 +1466,12 @@
                 
                 <div class="form-group">
                     <label for="salary" class="required"><span id="salaryLabel">薪金（港幣）</span></label>
-                    <input type="number" id="salary" class="input-control" placeholder="例如：30000" min="0">
+                    <input type="text" inputmode="decimal" id="salary" class="input-control" placeholder="例如：30000" min="0" oninput="validateNumberInput(this)" onkeydown="blockFloatKeys(event)" oninput="sanitizeFloat(this)">
                 </div>
                 
                 <div class="form-group">
                     <label for="divisor" class="required"><span id="divisorLabel">除數</span></label>
-                    <input type="number" id="divisor" class="input-control" value="538" min="1">
+                    <input type="text" inputmode="decimal" id="divisor" class="input-control" value="538" min="1" oninput="validateNumberInput(this)" onkeydown="blockFloatKeys(event)" oninput="sanitizeFloat(this)">
                     <div class="input-hint"><span id="divisorHint">目前預設值538，請參考最新宿舍手冊</span></div>
                 </div>
                 
@@ -1178,24 +1498,24 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="children"><span id="childrenLabel">子女人數</span></label>
-                        <input type="number" id="children" class="input-control" value="0" min="0">
+                        <input type="text" inputmode="numeric" id="children" class="input-control" value="0" min="0" onkeydown="blockIntegerKeys(event)" oninput="sanitizeInteger(this)">
                     </div>
                     
                     <div class="form-group">
                         <label for="overseas"><span id="overseasLabel">海外就讀子女人數</span></label>
-                        <input type="number" id="overseas" class="input-control" value="0" min="0">
+                        <input type="text" inputmode="numeric" id="overseas" class="input-control" value="0" min="0" onkeydown="blockIntegerKeys(event)" oninput="sanitizeInteger(this)">
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="newborn"><span id="newbornLabel">新生（在一個月內出生）</span></label>
-                        <input type="number" id="newborn" class="input-control" value="0" min="0">
+                        <input type="text" inputmode="numeric" id="newborn" class="input-control" value="0" min="0" onkeydown="blockIntegerKeys(event)" oninput="sanitizeInteger(this)">
                     </div>
                     
                     <div class="form-group">
                         <label for="otherChildren"><span id="otherChildrenLabel">其他子女（除首名）</span></label>
-                        <input type="number" id="otherChildren" class="input-control" value="0" min="0">
+                        <input type="text" inputmode="numeric" id="otherChildren" class="input-control" value="0" min="0" onkeydown="blockIntegerKeys(event)" oninput="sanitizeInteger(this)">
                     </div>
                 </div>
                 
@@ -1638,6 +1958,13 @@ const translations = {
             if (!validateRequiredFields()) {
                 return;
             }
+            const logicRes = validateLogic();
+            if (!logicRes.valid) {
+                updateStatus(logicRes.msg);
+                if (logicRes.el) { shakeInput(logicRes.el); try { logicRes.el.focus(); } catch(e){} }
+                return;
+            }
+
             
             // 獲取表單值
             const salary = parseFloat(document.getElementById('salary').value) || 0;
@@ -1645,7 +1972,7 @@ const translations = {
             const hireDate = document.getElementById('hireDate').value;
             const endDate = document.getElementById('endDate').value;
             
-            // Date fix: parse explicitly to avoid timezone issues
+            // Date fix: parse explicitly
             const hireParts = hireDate.split('-');
             const hire = new Date(hireParts[0], hireParts[1]-1, hireParts[2]);
             const endParts = endDate.split('-');
@@ -2685,7 +3012,126 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-    </script>
+    
+        // Real-time Number Validation
+        function validateNumberInput(input) {
+            // Remove any non-numeric chars (allow dot for decimals)
+            // But wait, type="number" already restricts most non-numeric input in modern browsers.
+            // The issue is usually copy-paste or 'e' chars.
+
+            const value = input.value;
+            // Check if value is valid number
+            if (value && isNaN(parseFloat(value))) {
+                const msg = translations[currentLang]['inputError'];
+                // Show toast or simple alert? 
+                // Using the existing updateStatus function might be too aggressive/permanent.
+                // Let's use a temporary tooltip or the existing status bar but clear it quickly.
+                updateStatus(msg);
+                input.value = ''; // Clear invalid input
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+            }
+
+            // Also check for negative numbers if necessary
+            if (parseFloat(value) < 0) {
+                 const msg = currentLang === 'zh' ? '數值不能為負數' : 'Value cannot be negative';
+                 updateStatus(msg);
+                 input.value = Math.abs(parseFloat(value));
+            }
+        }
+
+    // === ABSOLUTE CONTROL SANITIZERS (TEXT MODE) ===
+
+    function shakeInput(el) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+        setTimeout(() => el.classList.remove('shake'), 500);
+    }
+
+    // 1. Integer Sanitize (Whitelist 0-9)
+    function sanitizeInteger(input) {
+        let original = input.value;
+        let val = original;
+
+        // Remove ANY char that is not 0-9
+        val = val.replace(/[^0-9]/g, '');
+
+        // Remove Leading Zero (01 -> 1)
+        if (val.length > 1 && val.startsWith('0')) {
+            val = val.replace(/^0+/, '');
+        }
+
+        if (val !== original) {
+            input.value = val;
+            updateStatus(translations[currentLang]['logicErrorInteger']);
+            shakeInput(input);
+        }
+    }
+
+    // 2. Float Sanitize (Whitelist 0-9 and .)
+    function sanitizeFloat(input) {
+        let original = input.value;
+        let val = original;
+
+        // Remove ANY char that is not 0-9 or .
+        val = val.replace(/[^0-9.]/g, '');
+
+        // Handle Multiple Dots
+        const parts = val.split('.');
+        if (parts.length > 2) {
+            val = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        if (val !== original) {
+            input.value = val;
+            updateStatus(translations[currentLang]['inputSignError']);
+            shakeInput(input);
+        }
+    }
+
+    // Key Blockers (Backup)
+    function blockIntegerKeys(e) {
+        if (e.key.length > 1) return; // Allow arrows, backspace
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+            updateStatus(translations[currentLang]['logicErrorInteger']);
+            shakeInput(e.target);
+        }
+    }
+
+    function blockFloatKeys(e) {
+        if (e.key.length > 1) return;
+        if (!/[0-9.]/.test(e.key)) {
+            e.preventDefault();
+            updateStatus(translations[currentLang]['inputSignError']);
+            shakeInput(e.target);
+        }
+    }
+
+    // Logic Validation
+    function validateLogic() {
+        const getVal = (id) => { const el = document.getElementById(id); return el && el.value ? parseFloat(el.value) : NaN; };
+        const getEl = (id) => document.getElementById(id);
+
+        const sal = getVal('salary');
+        if (!isNaN(sal) && sal <= 0) return { valid: false, msg: translations[currentLang]['logicErrorSalary'], el: getEl('salary') };
+
+        const div = getVal('divisor');
+        if (!isNaN(div) && div <= 0) return { valid: false, msg: translations[currentLang]['logicErrorDivisor'], el: getEl('divisor') };
+
+        const intIds = ['children', 'overseas', 'newborn', 'otherChildren'];
+        for (let id of intIds) {
+            const val = getVal(id);
+            const el = getEl(id);
+            if (el && el.value !== '') {
+                if (val < 0 || !Number.isInteger(val)) return { valid: false, msg: translations[currentLang]['logicErrorInteger'], el: el };
+            }
+        }
+        return { valid: true };
+    }
+
+</script>
         <div id="infoOverlay" class="modal-overlay" aria-hidden="true"></div>
         <div id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle" aria-hidden="true">
             <header>
@@ -2751,9 +3197,11 @@ document.addEventListener('DOMContentLoaded', function() {
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
     <div class="welcome-modal" role="document" aria-label="歡迎">
       <div class="welcome-title">
-        <span class="emoji">🎉</span>
-        🎈🥳 歡迎！ 🎊
-      </div>
+            <span class="emoji anim-shake">🎉</span>
+            <span class="emoji anim-float">🎈</span>
+            <span class="emoji anim-doze">🥳</span>
+            <span class="welcome-text">歡迎！</span>
+            <span class="emoji anim-shake">🎊</span></div>
       <div class="welcome-body">
         開心開始吧！
       </div>
