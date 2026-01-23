@@ -209,7 +209,7 @@
         
         /* 計算按鈕 - 醒目漸變設計 */
         .btn-primary {
-            background: linear-gradient(135deg, #4f9de8, #ffc107);
+            background: #0d6efd;
             color: white;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             position: relative;
@@ -224,7 +224,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #ffc107, #4f9de8);
+            background: #0b5ed7;
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: -1;
@@ -975,7 +975,7 @@
             .theme-light .btn:hover { background: rgba(255,255,255,0.18) !important; }
             /* 類型色階（柔和粉系） */
             .theme-light .btn-primary { 
-                background: linear-gradient(135deg, #f7a1c1, #ffd5a8) !important; 
+                background: #0d6efd !important; 
             }
             .theme-light .btn-success { background: #8bd6b1 !important; }
             .theme-light .btn-warning { background: #ffd07a !important; color: #333 !important; }
@@ -1215,7 +1215,7 @@
                 </div>
                 
                 <div class="button-group">
-                    <button id="calcBtn" class="btn btn-primary">
+                    <button id="calcBtn" class="btn btn-warning">
                         <i class="fas fa-calculator"></i> <span id="calcBtnText">計算分數</span>
                     </button>
                     <button id="resetBtn" class="btn btn-danger">
@@ -1243,7 +1243,7 @@
                         <i class="fas fa-ban"></i> <span id="cancelSaveText">取消儲存</span>
                     </button>
                     <select id="deleteSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
-                    <button id="loadBtn" class="btn btn-warning no-text-shadow">
+                    <button id="loadBtn" class="btn btn-primary no-text-shadow">
                         <i class="fas fa-download"></i> <span id="loadText">載入資料</span>
                     </button>
                     <select id="loadSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
@@ -1263,7 +1263,7 @@
                         <i class="fas fa-file-export"></i> <span id="exportBtnText">匯出所有資料</span>
                     </button>
                     
-                    <button id="importBtn" class="btn btn-success">
+                    <button id="importBtn" class="btn btn-primary">
                         <i class="fas fa-file-import"></i> <span id="importBtnText">匯入資料</span>
                     </button>
                 </div>
@@ -1300,7 +1300,27 @@
     <script>
         // 語言設置
         let currentLang = 'zh';
-        const translations = {
+        
+    function exitApp() {
+        // Destroy UI immediately
+        document.body.innerHTML = '';
+        document.body.style.backgroundColor = '#000';
+        document.body.style.color = '#fff';
+        document.body.style.display = 'flex';
+        document.body.style.justifyContent = 'center';
+        document.body.style.alignItems = 'center';
+        document.body.style.height = '100vh';
+        document.body.style.margin = '0';
+
+        var msg = document.createElement('h1');
+        msg.innerText = '已離開程式';
+        document.body.appendChild(msg);
+
+        // Try close
+        try { window.close(); } catch(e) {}
+    }
+
+const translations = {
             'zh': {
                 'appTitle': '宿舍分數計算器',
                 'inputSectionTitle': '輸入資料',
@@ -1450,6 +1470,21 @@
             // 更新數據狀態文本
             updateDataCount();
             
+            // 另外強制更新下拉選單的 Yes/No 顯示，避免部分瀏覽器不渲染 option 內部 span
+            const yesNoMap = [
+                { sel: '#spouse', no: 'spouseNo', yes: 'spouseYes' },
+                { sel: '#instruction', no: 'instructionNo', yes: 'instructionYes' },
+                { sel: '#defect', no: 'defectNo', yes: 'defectYes' },
+            ];
+            yesNoMap.forEach(m => {
+                const selectEl = document.querySelector(m.sel);
+                if (!selectEl) return;
+                const noOpt = selectEl.querySelector('option[value="no"]');
+                const yesOpt = selectEl.querySelector('option[value="yes"]');
+                if (noOpt) noOpt.textContent = translations[lang][m.no];
+                if (yesOpt) yesOpt.textContent = translations[lang][m.yes];
+            });
+
             // 重新適配標題字級
             if (typeof fitTitle === 'function') fitTitle();
             // 調整標題以適配當前語言字長
@@ -2496,23 +2531,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 事件綁定
     
-    btnLater.addEventListener('click', () => {
-        // Try to close the window
-        try { window.close(); } catch(e) {}
-
-        // If window.close() fails (most browsers), replace body with exit message
-        document.body.innerHTML = `
-            <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#1e3a5f;color:white;flex-direction:column;text-align:center;font-family:sans-serif;">
-                <h1 style="font-size:2rem;margin-bottom:1rem;">已離開程式</h1>
-                <p style="font-size:1.2rem;opacity:0.8;">您可以直接關閉此視窗。</p>
-            </div>
-        `;
-        document.body.style.overflow = ''; // Reset overflow
-    });
+    // Old listener removed
 
     btnStart.addEventListener('click', closeWelcome);
-    overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeWelcome(); });
-    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeWelcome(); });
+    // click disabled
+    // escape disabled
 
     // 提供測試/手動顯示 API
     window.showWelcomeOverlay = openWelcome;
@@ -2647,9 +2670,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 timestamp: now.toLocaleString(currentLang === 'zh' ? 'zh-HK' : 'en-US')
             };
 
-            let records = JSON.parse(localStorage.getItem('dormRecords') || '[]');
-            records.push(data);
-            localStorage.setItem('dormRecords', JSON.stringify(records));
+            let savedData = JSON.parse(localStorage.getItem('dormData') || '{}');
+            savedData[data.name] = data;
+            localStorage.setItem('dormData', JSON.stringify(savedData));
 
             const msg = currentLang === 'zh' ? 
                 '✅ 資料已儲存到您的設備' : 
@@ -2739,7 +2762,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <div class="welcome-actions">
-        <button id="welcomeLater" class="welcome-btn" type="button">稍後再看</button>
+        <button id="welcomeLater" class="welcome-btn" type="button" onclick="exitApp()">稍後再看</button>
         <button id="welcomeStart" class="welcome-btn primary" type="button">開始使用</button>
       </div>
     </div>
