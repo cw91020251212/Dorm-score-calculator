@@ -998,7 +998,25 @@
 .welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.5) 0%, rgba(59,130,246,0.5) 40%, rgba(168,85,247,0.5) 70%, rgba(245,158,11,0.5) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
-.welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
+.welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
+/* Override default bounce: we will use staggered up/down bobbing per icon */
+.welcome-title .emoji { animation: none; }
+/* Staggered up/down bobbing */
+@keyframes bobbing {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-8px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(8px); }
+  100% { transform: translateY(0); }
+}
+.emoji-bob { display: inline-block; animation-name: bobbing; animation-duration: 2.4s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+.emoji-bob.up { animation-direction: normal; }
+.emoji-bob.down { animation-direction: reverse; }
+/* helper delay classes */
+.bob-delay-0 { animation-delay: 0s; }
+.bob-delay-1 { animation-delay: 0.3s; }
+.bob-delay-2 { animation-delay: 0.6s; }
+.bob-delay-3 { animation-delay: 0.9s; }
 .welcome-body { margin-top: 10px; font-size: 1rem; line-height: 1.7; opacity: 0.94; }
 .welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; }
 .welcome-btn { border: 0; border-radius: 12px; padding: 10px 16px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; }
@@ -1057,6 +1075,15 @@
 
 </style>
         <style>
+        /* 強制覆蓋歡迎視窗圖示動畫，避免被其它樣式清掉 */
+        .welcome-title .emoji.emoji-bob { animation: bobbing 2.4s ease-in-out infinite; }
+        .welcome-title .emoji.emoji-bob.up { animation-direction: normal; }
+        .welcome-title .emoji.emoji-bob.down { animation-direction: reverse; }
+        .welcome-title .emoji.bob-delay-0 { animation-delay: 0s; }
+        .welcome-title .emoji.bob-delay-1 { animation-delay: 0.3s; }
+        .welcome-title .emoji.bob-delay-2 { animation-delay: 0.6s; }
+        .welcome-title .emoji.bob-delay-3 { animation-delay: 0.9s; }
+        
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
         .modal header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; }
@@ -1466,12 +1493,12 @@
                 
                 <div class="form-group">
                     <label for="salary" class="required"><span id="salaryLabel">薪金（港幣）</span></label>
-                    <input type="text" inputmode="decimal" id="salary" class="input-control" placeholder="例如：30000" min="0" oninput="validateNumberInput(this)" onkeydown="blockFloatKeys(event)" oninput="sanitizeFloat(this)">
+                    <input type="text" inputmode="decimal" id="salary" class="input-control" placeholder="例如：30000" min="0" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)">
                 </div>
                 
                 <div class="form-group">
                     <label for="divisor" class="required"><span id="divisorLabel">除數</span></label>
-                    <input type="text" inputmode="decimal" id="divisor" class="input-control" value="538" min="1" oninput="validateNumberInput(this)" onkeydown="blockFloatKeys(event)" oninput="sanitizeFloat(this)">
+                    <input type="text" inputmode="decimal" id="divisor" class="input-control" value="538" min="1" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)">
                     <div class="input-hint"><span id="divisorHint">目前預設值538，請參考最新宿舍手冊</span></div>
                 </div>
                 
@@ -1967,8 +1994,24 @@ const translations = {
 
             
             // 獲取表單值
-            const salary = parseFloat(document.getElementById('salary').value) || 0;
-            const divisor = parseFloat(document.getElementById('divisor').value) || 538;
+            const salaryRaw = (document.getElementById('salary').value || '').trim();
+            if (!/^\d+(?:\.\d+)?$/.test(salaryRaw)) {
+                const msg = currentLang === 'zh' ? '錯誤：薪金只允許數字及單一小數點' : 'Error: Salary allows only digits and a single decimal point';
+                updateStatus(msg);
+                const el = document.getElementById('salary');
+                if (el) { el.classList.add('error','glow-red'); shakeInput(el); try { el.focus(); } catch(e){} }
+                return;
+            }
+            const salary = parseFloat(salaryRaw);
+            const divisorRaw = (document.getElementById('divisor').value || '').trim();
+            if (!/^\d+(?:\.\d+)?$/.test(divisorRaw)) {
+                const msg = currentLang === 'zh' ? '錯誤：除數只允許數字及單一小數點' : 'Error: Divisor allows only digits and a single decimal point';
+                updateStatus(msg);
+                const el = document.getElementById('divisor');
+                if (el) { el.classList.add('error','glow-red'); shakeInput(el); try { el.focus(); } catch(e){} }
+                return;
+            }
+            const divisor = parseFloat(divisorRaw);
             const hireDate = document.getElementById('hireDate').value;
             const endDate = document.getElementById('endDate').value;
             
@@ -2854,6 +2897,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.style.overflow = '';
       stopConfetti();
     };
+    window.closeWelcome = closeWelcome;
 
     openWelcome();
 
@@ -2862,6 +2906,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Old listener removed
 
     btnStart.addEventListener('click', closeWelcome);
+// 僅限「開始使用」開啟程式；不允許其他方式關閉歡迎視窗
+// 移除稍後再看、遮罩點擊、ESC 關閉的行為，以免誤觸
     // click disabled
     // escape disabled
 
@@ -3015,28 +3061,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Real-time Number Validation
         function validateNumberInput(input) {
-            // Remove any non-numeric chars (allow dot for decimals)
-            // But wait, type="number" already restricts most non-numeric input in modern browsers.
-            // The issue is usually copy-paste or 'e' chars.
-
-            const value = input.value;
-            // Check if value is valid number
-            if (value && isNaN(parseFloat(value))) {
-                const msg = translations[currentLang]['inputError'];
-                // Show toast or simple alert? 
-                // Using the existing updateStatus function might be too aggressive/permanent.
-                // Let's use a temporary tooltip or the existing status bar but clear it quickly.
+            const value = (input.value || '').trim();
+            if (value === '') { input.classList.remove('error','glow-red'); return; }
+            const isValid = /^\d+(?:\.\d+)?$/.test(value);
+            if (!isValid) {
+                const msg = currentLang === 'zh' ? '錯誤：只允許數字及單一小數點' : 'Error: Only digits and a single decimal point are allowed';
                 updateStatus(msg);
-                input.value = ''; // Clear invalid input
-                input.classList.add('shake');
-                setTimeout(() => input.classList.remove('shake'), 500);
-            }
-
-            // Also check for negative numbers if necessary
-            if (parseFloat(value) < 0) {
-                 const msg = currentLang === 'zh' ? '數值不能為負數' : 'Value cannot be negative';
-                 updateStatus(msg);
-                 input.value = Math.abs(parseFloat(value));
+                input.classList.add('error','glow-red');
+                shakeInput(input);
+            } else {
+                input.classList.remove('error','glow-red');
             }
         }
 
@@ -3071,22 +3105,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Float Sanitize (Whitelist 0-9 and .)
     function sanitizeFloat(input) {
-        let original = input.value;
-        let val = original;
-
-        // Remove ANY char that is not 0-9 or .
-        val = val.replace(/[^0-9.]/g, '');
-
-        // Handle Multiple Dots
-        const parts = val.split('.');
-        if (parts.length > 2) {
-            val = parts[0] + '.' + parts.slice(1).join('');
-        }
-
-        if (val !== original) {
-            input.value = val;
-            updateStatus(translations[currentLang]['inputSignError']);
+        const value = (input.value || '').trim();
+        if (value === '') { input.classList.remove('error','glow-red'); return; }
+        const isValid = /^\d+(?:\.\d+)?$/.test(value);
+        // Reject any expression like 12+9, 45-9, 1.2.3, etc.
+        if (!isValid) {
+            const msg = currentLang === 'zh' ? '錯誤：只允許數字及單一小數點' : 'Error: Only digits and a single decimal point are allowed';
+            updateStatus(msg);
+            input.classList.add('error','glow-red');
             shakeInput(input);
+        } else {
+            input.classList.remove('error','glow-red');
         }
     }
 
@@ -3101,17 +3130,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function blockFloatKeys(e) {
-        if (e.key.length > 1) return;
-        if (!/[0-9.]/.test(e.key)) {
+        if (e.key.length > 1) return; // allow control keys
+        const key = e.key;
+        const cur = e.target.value || '';
+        // Only digits and '.' allowed
+        if (!/[0-9.]/.test(key)) {
             e.preventDefault();
             updateStatus(translations[currentLang]['inputSignError']);
+            shakeInput(e.target);
+            return;
+        }
+        // Prevent multiple dots
+        if (key === '.' && cur.includes('.')) {
+            e.preventDefault();
+            updateStatus(currentLang === 'zh' ? '錯誤：只允許單一小數點' : 'Error: Only one decimal point is allowed');
             shakeInput(e.target);
         }
     }
 
     // Logic Validation
     function validateLogic() {
-        const getVal = (id) => { const el = document.getElementById(id); return el && el.value ? parseFloat(el.value) : NaN; };
+        const getVal = (id) => { const el = document.getElementById(id); const v = el && typeof el.value === 'string' ? el.value.trim() : ''; return v && /^\d+(?:\.\d+)?$/.test(v) ? parseFloat(v) : NaN; };
         const getEl = (id) => document.getElementById(id);
 
         const sal = getVal('salary');
@@ -3197,11 +3236,11 @@ document.addEventListener('DOMContentLoaded', function() {
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
     <div class="welcome-modal" role="document" aria-label="歡迎">
       <div class="welcome-title">
-            <span class="emoji anim-shake">🎉</span>
-            <span class="emoji anim-float">🎈</span>
-            <span class="emoji anim-doze">🥳</span>
+            <span class="emoji emoji-bob up bob-delay-0">🎉</span>
+            <span class="emoji emoji-bob down bob-delay-1">🎈</span>
+            <span class="emoji emoji-bob up bob-delay-2">🥳</span>
             <span class="welcome-text">歡迎！</span>
-            <span class="emoji anim-shake">🎊</span></div>
+            <span class="emoji emoji-bob down bob-delay-3">🎊</span></div>
       <div class="welcome-body">
         開心開始吧！
       </div>
@@ -3213,6 +3252,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="welcome-actions">
         <button id="welcomeLater" class="welcome-btn" type="button" onclick="exitApp()">稍後再看</button>
         <button id="welcomeStart" class="welcome-btn primary" type="button">開始使用</button>
+      </div>
+    </div>
+  </div>
+
+  </body>
+</html>��使用</button>
       </div>
     </div>
   </div>
