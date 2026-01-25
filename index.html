@@ -523,7 +523,10 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.35);
+            transition: transform .3s ease;
+        }
+        .status-bar.collapsed { transform: translateY(100%); }
             padding: 8px 20px;
             display: flex;
             justify-content: space-between;
@@ -532,14 +535,23 @@
         }
         
         .status-message {
+            display: flex;
+            align-items: center;
             font-size: 0.95rem;
-            color: yellow;
+            color: yellow !important;
+        }
+        
+        /* 強制狀態列文字黃色 */
+        .status-message span, #statusText {
+            color: yellow !important;
         }
         
         .status-actions {
             display: flex;
             gap: 10px;
         }
+        .status-toggle { margin-left: 12px; }
+        .status-toggle .status-btn { background: rgba(255,255,255,0.12); color: #fff; }
         
         .status-btn {
             padding: 6px 12px;
@@ -548,6 +560,8 @@
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        
+        .status-icon { margin-right: 8px; font-size: 1.05rem; line-height: 1; }
         
         .status-btn span {
             text-shadow: 
@@ -998,25 +1012,7 @@
 .welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.5) 0%, rgba(59,130,246,0.5) 40%, rgba(168,85,247,0.5) 70%, rgba(245,158,11,0.5) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
-.welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
-/* Override default bounce: we will use staggered up/down bobbing per icon */
-.welcome-title .emoji { animation: none; }
-/* Staggered up/down bobbing */
-@keyframes bobbing {
-  0% { transform: translateY(0); }
-  25% { transform: translateY(-8px); }
-  50% { transform: translateY(0); }
-  75% { transform: translateY(8px); }
-  100% { transform: translateY(0); }
-}
-.emoji-bob { display: inline-block; animation-name: bobbing; animation-duration: 2.4s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
-.emoji-bob.up { animation-direction: normal; }
-.emoji-bob.down { animation-direction: reverse; }
-/* helper delay classes */
-.bob-delay-0 { animation-delay: 0s; }
-.bob-delay-1 { animation-delay: 0.3s; }
-.bob-delay-2 { animation-delay: 0.6s; }
-.bob-delay-3 { animation-delay: 0.9s; }
+.welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
 .welcome-body { margin-top: 10px; font-size: 1rem; line-height: 1.7; opacity: 0.94; }
 .welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; }
 .welcome-btn { border: 0; border-radius: 12px; padding: 10px 16px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; }
@@ -1075,15 +1071,6 @@
 
 </style>
         <style>
-        /* 強制覆蓋歡迎視窗圖示動畫，避免被其它樣式清掉 */
-        .welcome-title .emoji.emoji-bob { animation: bobbing 2.4s ease-in-out infinite; }
-        .welcome-title .emoji.emoji-bob.up { animation-direction: normal; }
-        .welcome-title .emoji.emoji-bob.down { animation-direction: reverse; }
-        .welcome-title .emoji.bob-delay-0 { animation-delay: 0s; }
-        .welcome-title .emoji.bob-delay-1 { animation-delay: 0.3s; }
-        .welcome-title .emoji.bob-delay-2 { animation-delay: 0.6s; }
-        .welcome-title .emoji.bob-delay-3 { animation-delay: 0.9s; }
-        
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
         .modal header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; }
@@ -1635,7 +1622,7 @@
     
     <div class="status-bar">
         <div class="status-message">
-            <i class="fas fa-info-circle"></i> <span id="statusText">系統準備就緒，請填寫表單開始計算</span>
+            <span class="status-icon" aria-hidden="true">ℹ️</span><span id="statusText">系統準備就緒，請填寫表單開始計算</span>
         </div>
         <div class="status-actions">
             <button class="status-btn" style="background: var(--accent); color: white;">
@@ -1644,14 +1631,33 @@
             <button class="status-btn" style="background: var(--success); color: white;">
                 <i class="fas fa-database"></i> <span id="dataStatus">已儲存 <span id="dataCount">0</span> 筆資料</span>
             </button>
+            <div class="status-toggle">
+                <button id="statusToggleBtn" class="status-btn" type="button"><span id="statusToggleLabel">隱藏狀態列</span></button>
+            </div>
         </div>
     </div>
 
     <script>
         // 語言設置
         let currentLang = 'zh';
+        function updateStatusToggleLabel(){
+            const bar = document.querySelector('.status-bar');
+            const lab = document.getElementById('statusToggleLabel');
+            if (!bar || !lab) return;
+            const collapsed = bar.classList.contains('collapsed');
+            lab.textContent = (currentLang === 'zh') ? (collapsed ? '顯示狀態列' : '隱藏狀態列') : (collapsed ? 'Show bar' : 'Hide bar');
+        }
+        function toggleStatusBarVisibility(){
+            const bar = document.querySelector('.status-bar');
+            if (!bar) return;
+            bar.classList.toggle('collapsed');
+            updateStatusToggleLabel();
+        }
         
     function exitApp() {
+        const toggleBtn = document.getElementById('statusToggleBtn');
+        if (toggleBtn) toggleBtn.addEventListener('click', toggleStatusBarVisibility);
+        updateStatusToggleLabel();
         try { window.close(); } catch(e) {}
     }
 
@@ -1811,6 +1817,8 @@ const translations = {
             // 更新語言按鈕文本 - 修正邏輯：顯示相反的語言名稱
             document.getElementById('languageToggle').textContent = 
                 lang === 'zh' ? 'EN' : '中';
+            // 同步更新狀態列切換按鈕文字
+            updateStatusToggleLabel();
             
             // 更新數據狀態文本
             updateDataCount();
@@ -2897,7 +2905,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.style.overflow = '';
       stopConfetti();
     };
-    window.closeWelcome = closeWelcome;
 
     openWelcome();
 
@@ -2906,8 +2913,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Old listener removed
 
     btnStart.addEventListener('click', closeWelcome);
-// 僅限「開始使用」開啟程式；不允許其他方式關閉歡迎視窗
-// 移除稍後再看、遮罩點擊、ESC 關閉的行為，以免誤觸
     // click disabled
     // escape disabled
 
@@ -3231,18 +3236,37 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
+  <style>
+    /* 梅花間竹：相鄰相反相位，上下交替 */
+
+    @keyframes alt-up { 
+      0% { transform: translateY(-8px); }
+      50% { transform: translateY(8px); }
+      100% { transform: translateY(-8px); }
+    }
+    @keyframes alt-down { 
+      0% { transform: translateY(8px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(8px); }
+    }
+    .alt-up { animation: alt-up 2.8s ease-in-out infinite !important; }
+    .alt-down { animation: alt-down 2.8s ease-in-out infinite !important; }
+    /* 其餘使用 A/B 交替類名即可 */
+    /* 無需設定任何 delay，確保純相位相反、速度一致 */
+  </style>
+
   <!-- 歡迎視窗（僅首次） -->
   <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true" role="dialog">
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
     <div class="welcome-modal" role="document" aria-label="歡迎">
       <div class="welcome-title">
-            <span class="emoji emoji-bob up bob-delay-0">🎉</span>
-            <span class="emoji emoji-bob down bob-delay-1">🎈</span>
-            <span class="emoji emoji-bob up bob-delay-2">🥳</span>
+            <span class="emoji alt-up">🎉</span>
+            <span class="emoji alt-down">🎈</span>
+            <span class="emoji alt-up">🥳</span>
             <span class="welcome-text">歡迎！</span>
-            <span class="emoji emoji-bob down bob-delay-3">🎊</span></div>
+            <span class="emoji alt-down">🎊</span></div>
       <div class="welcome-body">
-        開心開始吧！
+        祝您使用愉快。
       </div>
       
             <div class="welcome-disclaimer">
@@ -3252,12 +3276,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="welcome-actions">
         <button id="welcomeLater" class="welcome-btn" type="button" onclick="exitApp()">稍後再看</button>
         <button id="welcomeStart" class="welcome-btn primary" type="button">開始使用</button>
-      </div>
-    </div>
-  </div>
-
-  </body>
-</html>��使用</button>
       </div>
     </div>
   </div>
