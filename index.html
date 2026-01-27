@@ -1098,6 +1098,27 @@
   color: var(--hint-pink) !important; /* 使用淺粉紅提示色 */
 }
 
+/* 是/否選項可讀性強化：避免白底白字撞色 */
+/* 與 .input-control 統一（深色主題預設） */
+select {
+  color: inherit !important;
+  background: rgba(255, 255, 255, 0.1) !important; /* 與 .input-control 相同 */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important; /* 與 .input-control 相同 */
+}
+/* 選單的每個 option 在可支援的瀏覽器中也強制深色文字 */
+select option { color: inherit !important; background: inherit !important; }
+
+/* 深色主題下反轉顏色以保持對比 */
+html[data-theme="dark"] select,
+.theme-dark select { color: inherit !important; background: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
+html[data-theme="dark"] select option,
+.theme-dark select option { color: #fff !important; background: #1c1c1c !important; }
+
+/* 焦點狀態：明顯的外框，提升可見度與可用性 */
+select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px; }
+
+/* 移動端（Android/部分瀏覽器）option 樣式支援有限，至少確保 select 本體文字為深色並且有邊框 */
+
 </style>
         <style>
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
