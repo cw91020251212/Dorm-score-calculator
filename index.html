@@ -23,7 +23,7 @@
             --section-bg: rgba(30, 58, 95, 0.7);
             --required: #ff6b6b;
             --hint-pink: #ffb6c1;
-            --language-bg: rgba(144, 238, 144, 0.8); /* 淺綠色背景 */
+            --language-bg: #90EE90; /* 淺綠色背景（不透明） */
         }
         
         * {
@@ -842,9 +842,9 @@
                 width: 42px;
                 height: 42px;
                 border-radius: 50%;
-                background: var(--language-bg);
-                color: #333;
-                border: 1px solid rgba(255, 255, 255, 0.5);
+                background: #f0f0f0; /* 實色，不透明 */
+                color: #000;       /* 黑色文字 */
+                border: 1px solid #ccc;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -853,8 +853,8 @@
                 cursor: pointer;
                 transition: all 0.2s ease;
                 z-index: 1000;
-                box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-                font-weight: bold;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.20);
+                font-weight: 700;
                 text-shadow: none;
             }
             .language-toggle:hover { transform: translateY(-1px) scale(1.03); }
@@ -862,6 +862,36 @@
             @media (max-width: 600px) {
                 .language-toggle { width: 36px; height: 36px; font-size: 0.8rem; }
             }
+            /* QR 圓形按鈕（位於語言切換下方） */
+            .qr-toggle {
+                position: fixed;
+                top: calc(10px + env(safe-area-inset-top) + 52px); /* 與語言鍵垂直對齊，下方留 10px */
+                right: calc(10px + env(safe-area-inset-right));
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #f0f0f0; /* 實色，不透明 */
+                color: #000;       /* 黑色文字 */
+                border: 1px solid #ccc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                z-index: 1000;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.20);
+                text-shadow: none;
+                font-weight: 700;
+            }
+            .qr-toggle:hover { transform: translateY(-1px) scale(1.03); }
+            .qr-toggle:active { transform: translateY(0) scale(0.98); }
+            @media (max-width: 600px) {
+                .language-toggle { width: 36px; height: 36px; }
+                .qr-toggle { width: 36px; height: 36px; font-size: 0.9rem; top: calc(10px + env(safe-area-inset-top) + 45px); }
+            }
+
             /* 工具列按鈕風格：跟輸入欄的淺藍透明效果，降低存在感 */
             .display-controls .btn,
             .display-controls .btn-small {
@@ -1118,6 +1148,14 @@ html[data-theme="dark"] select option,
 select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px; }
 
 /* 移動端（Android/部分瀏覽器）option 樣式支援有限，至少確保 select 本體文字為深色並且有邊框 */
+
+/* 迷你確認浮層樣式（簡潔小巧） */
+.mini-confirm { position: fixed; display: none; padding: 10px 12px; background: rgba(0,0,0,0.78); color: #fff; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.28); font-size: 1.05rem; z-index: 2500; }
+.mini-confirm .mini-lines { display: flex; flex-direction: column; line-height: 1.2; gap: 4px; }
+.mini-confirm .mini-sub { opacity: 0.85; font-size: 0.92em; }
+.mini-confirm .mini-actions { display: flex; gap: 8px; margin-top: 6px; justify-content: flex-end; }
+.mini-confirm .mini-btn { background: rgba(255,255,255,0.18); color: #fff; border: 0; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.95rem; }
+.mini-confirm .mini-btn.ok { background: var(--warning); color: #333; }
 
 </style>
         <style>
@@ -1592,7 +1630,8 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         </div>
         </header>
         
-        <button id="languageToggle" class="language-toggle" aria-label="切換語言">EN</button>
+        <button id="languageToggle" class="language-toggle" aria-label="切換語言" style="background-color:#90EE90 !important; color:#000 !important; border:1px solid #7fd67f !important;">EN</button>
+            <button id="qrButton" class="qr-toggle" aria-label="QR Code" style="background-color:#555 !important; color:#fff !important; border:1px solid #333 !important;">QR</button>
         
         <div class="main-content">
             <div class="form-section">
@@ -2693,8 +2732,76 @@ const translations = {
         
         // 事件監聽
         document.getElementById('calcBtn').addEventListener('click', calculateScore);
-        document.getElementById('resetBtn').addEventListener('click', initForm);
+        (function(){
+  const resetBtn = document.getElementById('resetBtn');
+  if (!resetBtn) return;
+  let mini = document.getElementById('resetConfirmMini');
+  if (!mini){
+    mini = document.createElement('div');
+    mini.id = 'resetConfirmMini';
+    mini.className = 'mini-confirm';
+    mini.innerHTML = '<div class="mini-lines"><span id="miniMsg1">確定重置？</span></div><div class="mini-actions"><button class="mini-btn cancel" type="button">取消</button><button class="mini-btn ok" type="button">確定</button></div>';
+    document.body.appendChild(mini);
+  }
+  function showMini(){
+    const r = resetBtn.getBoundingClientRect();
+    // 置於按鈕右上，避免遮住主要按鈕
+    // 目標寬度：跟主要輸入欄一致（若找不到則用 resetBtn 所在容器寬度）
+    const inputEl = document.querySelector('.form-section .input-control') || document.querySelector('.input-control');
+    const containerEl = document.querySelector('.form-section') || resetBtn.closest('.form-section') || document.body;
+    const inputBox = inputEl ? inputEl.getBoundingClientRect() : resetBtn.getBoundingClientRect();
+    const containerBox = containerEl.getBoundingClientRect();
+    const targetWidth = Math.min(inputBox.width, window.innerWidth - 24); // 留邊距
+    mini.style.width = Math.round(targetWidth) + 'px';
+    // 置中：以容器中心計算
+    const left = containerBox.left + (containerBox.width - targetWidth)/2;
+    mini.style.left = Math.round(Math.max(12, Math.min(left, window.innerWidth - targetWidth - 12))) + 'px';
+    // 放在 reset 按鈕上方一點
+    mini.style.top = Math.round(Math.max(r.top - 12 - 64, 10)) + 'px';
+    mini.style.display = 'block';
+    const zh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
+    document.getElementById('miniMsg1').textContent = zh ? '確定重置？' : 'Reset?';
+    mini.querySelector('.cancel').textContent = zh ? '取消' : 'Cancel';
+    mini.querySelector('.ok').textContent = zh ? '確定' : 'OK';
+  }
+  mini.addEventListener('click', (ev)=>{
+    const t = ev.target;
+    if (t.classList.contains('cancel')){ mini.style.display='none'; }
+    if (t.classList.contains('ok')){ mini.style.display='none'; initForm(); }
+  });
+  resetBtn.addEventListener('click', (e)=>{ e.preventDefault(); showMini(); });
+})();
         document.getElementById('saveDataBtn').addEventListener('click', saveCurrentData);
+// 語言圓形按鈕文字自適應，避免出界
+(function(){
+  const langBtn = document.getElementById('langToggle');
+  function fitLangBtn(){
+    if(!langBtn) return;
+    langBtn.style.fontSize='0.78rem';
+    const max=0.78, min=0.52;
+    let cur=max;
+    // 建立隱形測量器
+    const meas=document.createElement('span');
+    meas.style.position='absolute';
+    meas.style.visibility='hidden';
+    meas.style.whiteSpace='nowrap';
+    meas.style.fontWeight='700';
+    document.body.appendChild(meas);
+    meas.textContent=(langBtn.textContent||'').trim();
+    const limit = langBtn.clientWidth*0.86; // 文字寬度上限
+    while(cur>=min){
+      meas.style.fontSize=cur+'rem';
+      if(meas.getBoundingClientRect().width<=limit) break;
+      cur-=0.02;
+    }
+    langBtn.style.fontSize=cur+'rem';
+    document.body.removeChild(meas);
+  }
+  fitLangBtn();
+  window.addEventListener('resize', fitLangBtn);
+  const obs = new MutationObserver(fitLangBtn);
+  if(langBtn) obs.observe(langBtn, {childList:true, characterData:true, subtree:true});
+})();
         const loadBtnEl = document.getElementById('loadBtn');
         const loadSelectEl = document.getElementById('loadSelect');
         if (loadBtnEl && loadSelectEl) {
@@ -3580,16 +3687,18 @@ document.addEventListener('DOMContentLoaded', function() {
     #welcomeOverlay[data-lang="en"] .welcome-title .welcome-text { font-size: 2.1rem; text-align: center; }
     #welcomeOverlay[data-lang="zh"] .welcome-title .welcome-text { font-size: 2.4rem; text-align: center; }
 
-    /* 語言切換細方掣 */
+    /* 語言切換圓形按鈕（文字不出界） */
     .lang-toggle {
       position: absolute;
       top: 10px; right: 10px;
-      width: 36px; height: 36px;
-      border-radius: 6px;
+      width: 48px; height: 48px;
+      border-radius: 50%;
       background: rgba(255,255,255,0.18);
       color: #fff; border: 0; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; line-height: 1; user-select: none; white-space: nowrap;
+      padding: 0; margin: 0;
+      font-size: 0.72rem; font-weight: 700; line-height: 1; user-select: none; white-space: nowrap;
+      overflow: hidden; text-overflow: clip;
       transition: background .2s ease, transform .12s ease;
     }
     .lang-toggle:hover { background: rgba(255,255,255,0.26); transform: translateY(-1px); }
@@ -3622,5 +3731,131 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
-  </body>
+  
+    <!-- QR Modal -->
+    <div id="qrModal" class="qr-modal" aria-hidden="true" style="display:none;">
+        <div class="qr-backdrop"></div>
+        <div class="qr-dialog" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+            <button class="qr-close" id="qrClose" aria-label="關閉"><i class="fas fa-times"></i></button>
+            <h3 id="qrTitle" class="qr-header"><i class="fas fa-qrcode"></i> QR Code</h3>
+            <div id="qrCode" class="qr-code"></div>
+            <div class="qr-info">
+                <div class="qr-row"><span class="qr-label">名稱：</span><span id="qrName" class="qr-value"></span></div>
+                <div class="qr-row"><span class="qr-label">網址：</span><a id="qrUrl" class="qr-link" href="#" target="_blank" rel="noopener"></a></div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1100; }
+        .qr-dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--section-bg); color: inherit; border-radius: 16px; box-shadow: 0 12px 30px rgba(0,0,0,0.35); width: min(92vw, 420px); padding: 18px 18px 22px; z-index: 1110; border: 1px solid rgba(255,255,255,0.25); }
+        .qr-header { margin: 0 0 12px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .qr-close { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.35); color: inherit; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .qr-close:hover { background: rgba(255,255,255,0.35); }
+        .qr-code { width: 220px; height: 220px; margin: 8px auto 14px; background: rgba(255,255,255,0.9); border-radius: 12px; display:flex; align-items:center; justify-content:center; }
+        .qr-info { font-size: 0.95rem; line-height: 1.6; }
+        .qr-row { display: flex; align-items: center; gap: 6px; }
+        .qr-label { color: var(--text-light); opacity: 0.85; }
+        .qr-link { color: #2b6cb0; word-break: break-all; }
+        @media (prefers-color-scheme: dark) { .qr-link { color: #7ab0ff; } }
+    </style>
+
+    <style>
+        /* 最終覆蓋：強制對齊與顏色（不透明灰、黑字） */
+        button#languageToggle.language-toggle,
+        button#qrButton.qr-toggle { 
+            position: fixed !important;
+            right: calc(10px + env(safe-area-inset-right)) !important;
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 50% !important;
+            background: #f0f0f0 !important; /* 灰色、不透明 */
+            color: #000 !important;          /* 黑色文字 */
+            border: 1px solid #ccc !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            font-size: 0.9rem !important;
+            font-weight: 700 !important;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.20) !important;
+            text-shadow: none !important;
+            z-index: 1000 !important;
+            transition: none !important; /* 取消任何變色過渡 */
+        }
+        button#languageToggle.language-toggle { top: calc(10px + env(safe-area-inset-top)) !important; }
+        button#qrButton.qr-toggle { top: calc(10px + env(safe-area-inset-top) + 52px) !important; }
+        button#languageToggle.language-toggle:hover,
+        button#qrButton.qr-toggle:hover,
+        button#languageToggle.language-toggle:active,
+        button#qrButton.qr-toggle:active { 
+            background: #f0f0f0 !important; color: #000 !important; transform: none !important; 
+        }
+        @media (max-width: 600px) {
+            button#languageToggle.language-toggle,
+            button#qrButton.qr-toggle { width: 36px !important; height: 36px !important; font-size: 0.85rem !important; }
+            button#qrButton.qr-toggle { top: calc(10px + env(safe-area-inset-top) + 45px) !important; }
+        }
+        /* QR 視窗改為灰色主題 */
+        .qr-backdrop { background: rgba(0,0,0,0.5) !important; }
+        .qr-dialog { background: #e9e9e9 !important; color: #000 !important; border-radius: 14px !important; border: 1px solid #cfcfcf !important; }
+        .qr-header { color: #000 !important; }
+        .qr-close { background: #d9d9d9 !important; color: #000 !important; border-color: #c0c0c0 !important; }
+        .qr-close:hover { background: #cfcfcf !important; }
+        .qr-code { background: #fff !important; }
+        .qr-label { color: #333 !important; }
+        .qr-link { color: #000 !important; }
+    </style>
+
+    <style>
+        /* 以類名 fixed-btn 作最後保險覆蓋（含 !important）*/
+        .fixed-btn { /* 保留個別按鈕色彩，由 inline 與下方覆蓋決定 */ }
+    </style>
+
+    <style>
+  /* 最終色彩保險：強制顏色顯示 */
+  :root { --language-bg: #90EE90; }
+  #languageToggle.language-toggle { background-color: var(--language-bg) !important; color: #000 !important; border: 1px solid #7fd67f !important; }
+  #qrButton.qr-toggle { background-color: #555 !important; color: #fff !important; border: 1px solid #333 !important; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        (function(){
+            const appUrl = 'https://cw91020251212.github.io/Dorm-score-calculator/';
+            const appName = (document.getElementById('appTitle')?.textContent || document.title || '宿舍分數計算器').trim();
+            const btn = document.getElementById('qrButton');
+            const modal = document.getElementById('qrModal');
+            const closeBtn = document.getElementById('qrClose');
+            const qrBox = document.getElementById('qrCode');
+            const nameEl = document.getElementById('qrName');
+            const urlEl = document.getElementById('qrUrl');
+            function openModal(){
+                // Clear previous QR
+                qrBox.innerHTML = '';
+                // Generate QR
+                new QRCode(qrBox, { text: appUrl, width: 220, height: 220 });
+                // Fill info
+                nameEl.textContent = appName;
+                urlEl.textContent = appUrl;
+                urlEl.href = appUrl;
+                // Show
+                modal.style.display = 'block';
+                modal.setAttribute('aria-hidden','false');
+                // ESC to close
+                document.addEventListener('keydown', onEsc);
+            }
+            function closeModal(){
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden','true');
+                document.removeEventListener('keydown', onEsc);
+            }
+            function onEsc(e){ if(e.key === 'Escape') closeModal(); }
+            // Backdrop click closes
+            modal.addEventListener('click', function(e){ if(e.target.classList.contains('qr-backdrop')) closeModal(); });
+            closeBtn.addEventListener('click', closeModal);
+            if(btn) btn.addEventListener('click', openModal);
+        })();
+    </script>
+
+</body>
 </html>
