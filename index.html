@@ -842,9 +842,9 @@
                 width: 42px;
                 height: 42px;
                 border-radius: 50%;
-                background: #f0f0f0; /* 實色，不透明 */
+                background: var(--language-bg); /* 淺綠背景 */
                 color: #000;       /* 黑色文字 */
-                border: 1px solid #ccc;
+                border: 1px solid #7fd67f;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -853,7 +853,7 @@
                 cursor: pointer;
                 transition: all 0.2s ease;
                 z-index: 1000;
-                box-shadow: 0 3px 8px rgba(0,0,0,0.20);
+                box-shadow: 0 6px 14px rgba(0,0,0,0.25); /* 3D 陰影 */
                 font-weight: 700;
                 text-shadow: none;
             }
@@ -870,9 +870,9 @@
                 width: 42px;
                 height: 42px;
                 border-radius: 50%;
-                background: #f0f0f0; /* 實色，不透明 */
+                background: var(--language-bg); /* 淺綠背景 */
                 color: #000;       /* 黑色文字 */
-                border: 1px solid #ccc;
+                border: 1px solid #7fd67f;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -881,7 +881,7 @@
                 cursor: pointer;
                 transition: all 0.2s ease;
                 z-index: 1000;
-                box-shadow: 0 3px 8px rgba(0,0,0,0.20);
+                box-shadow: 0 6px 14px rgba(0,0,0,0.25); /* 3D 陰影 */
                 text-shadow: none;
                 font-weight: 700;
             }
@@ -1976,6 +1976,9 @@ const translations = {
             });
             document.querySelectorAll('.lang-en').forEach(el => {
                 el.style.display = lang === 'en' ? '' : 'none';
+                // 同步更新 QR 關閉按鈕 aria-label
+                const qrClose = document.getElementById('qrClose');
+                if (qrClose) qrClose.setAttribute('aria-label', lang === 'en' ? 'Close' : '關閉');
             });
             
             // 更新語言按鈕文本 - 修正邏輯：顯示相反的語言名稱
@@ -3740,8 +3743,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 id="qrTitle" class="qr-header"><i class="fas fa-qrcode"></i> QR Code</h3>
             <div id="qrCode" class="qr-code"></div>
             <div class="qr-info">
-                <div class="qr-row"><span class="qr-label">名稱：</span><span id="qrName" class="qr-value"></span></div>
-                <div class="qr-row"><span class="qr-label">網址：</span><a id="qrUrl" class="qr-link" href="#" target="_blank" rel="noopener"></a></div>
+                <div class="qr-row"><span class="qr-label"><span class="lang-zh">名稱：</span><span class="lang-en" style="display:none;">Name:</span></span><span id="qrName" class="qr-value"></span></div>
+                <div class="qr-row"><span class="qr-label"><span class="lang-zh">網址：</span><span class="lang-en" style="display:none;">URL:</span></span><a id="qrUrl" class="qr-link" href="#" target="_blank" rel="noopener"></a></div>
             </div>
         </div>
     </div>
@@ -3822,7 +3825,17 @@ document.addEventListener('DOMContentLoaded', function() {
     <script>
         (function(){
             const appUrl = 'https://cw91020251212.github.io/Dorm-score-calculator/';
-            const appName = (document.getElementById('appTitle')?.textContent || document.title || '宿舍分數計算器').trim();
+            function getAppName(){
+                try {
+                    // 優先使用翻譯字典（隨語言切換）
+                    if (typeof translations !== 'undefined' && translations[currentLang] && translations[currentLang]['appTitle']) {
+                        return translations[currentLang]['appTitle'];
+                    }
+                } catch(e){}
+                // 回退：讀取 DOM 當前標題或文件標題
+                const domTitle = document.getElementById('appTitle')?.textContent || document.title || 'Dormitory Score Calculator';
+                return domTitle.trim();
+            }
             const btn = document.getElementById('qrButton');
             const modal = document.getElementById('qrModal');
             const closeBtn = document.getElementById('qrClose');
@@ -3835,7 +3848,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Generate QR
                 new QRCode(qrBox, { text: appUrl, width: 220, height: 220 });
                 // Fill info
-                nameEl.textContent = appName;
+                nameEl.textContent = getAppName();
                 urlEl.textContent = appUrl;
                 urlEl.href = appUrl;
                 // Show
