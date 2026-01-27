@@ -181,7 +181,7 @@
         .btn {
             flex: 1;
             min-width: 120px;
-            padding: 16px;
+            padding: 0 16px; /* 由固定高度決定垂直尺寸 */
             font-size: 18px;
             font-weight: bold;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -194,6 +194,7 @@
             gap: 8px;
             position: relative;
             white-space: nowrap; /* 防止文字換行導致高度變大 */
+            line-height: 44px; /* 垂直置中配合固定高度 */
         }
         
         /* 按鈕文字黑色邊框效果 */
@@ -201,6 +202,7 @@
             position: relative;
             z-index: 2;
             text-shadow: none;
+            line-height: 1; display: inline-block;
         }
         
         /* 特殊按鈕 - 無文字陰影 */
@@ -242,6 +244,7 @@
         
         .btn-primary i {
             animation: pulse 2s infinite;
+            font-size: 1em; /* 防止圖示放大令高度變化 */
         }
         
         @keyframes pulse {
@@ -793,7 +796,7 @@
             /* 強制兩個主要按鈕水平排列 */
             .button-group { flex-direction: row !important; justify-content: flex-start; align-items: center; gap: 12px; }
             /* 統一按鈕高度，避免不同語言造成尺寸變化 */
-            .button-group .btn { min-height: 44px; padding: 12px 16px; }
+            .button-group .btn { height: 44px; padding: 0 16px; }
             .button-group .btn { flex: 0 0 auto; min-width: 160px; }
             /* 顯示調校控制：A+/A- + 亮度 */
             /* 顯示調校工具列（置於標題區右下角，不遮標題） */
@@ -1074,6 +1077,10 @@
 
   /* 語言為英文時，縮細「計算分數」按鈕文字避免變大 */
   html[data-lang="en"] #calcBtnText { font-size: 16px; }
+  /* 英文時縮細「計算分數」文字，確保按鈕唔會變高 */
+  html[data-lang="en"] #calcBtnText { font-size: 16px; }
+  /* 保證兩個掣高度一致（圖示不影響高度） */
+  .button-group .btn i { font-size: 1em; }
 </style>
         <style>
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
