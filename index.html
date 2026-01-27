@@ -1008,16 +1008,16 @@
                 background: rgba(255,255,255,0.12) !important; 
             }
     /* 歡迎視窗樣式與動畫 */
-.welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; }
-.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.5) 0%, rgba(59,130,246,0.5) 40%, rgba(168,85,247,0.5) 70%, rgba(245,158,11,0.5) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); }
+.welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 420ms ease; }
+.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.5) 0%, rgba(59,130,246,0.5) 40%, rgba(168,85,247,0.5) 70%, rgba(245,158,11,0.5) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
 .welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
-.welcome-body { margin-top: 10px; font-size: 1rem; line-height: 1.7; opacity: 0.94; }
-.welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; }
-.welcome-btn { border: 0; border-radius: 12px; padding: 10px 16px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; }
+.welcome-body { margin-top: 10px; font-size: 1.15rem; line-height: 1.75; opacity: 0.95; }
+.welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; align-items: center; } .welcome-actions .welcome-btn > * { line-height: 1; }
+.welcome-btn { border: 0; border-radius: 12px; padding: 12px 18px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem; }
 .welcome-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.22); }
-.welcome-btn.primary { background: #fff; color: #2b6cb0; font-weight: 700; }
+.welcome-btn.primary { background: #fff; color: #2b6cb0; font-weight: 700; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem; }
 .welcome-btn.primary:hover { background: #f6f7fb; }
 @keyframes modalIn { 0% { transform: translateY(16px) scale(0.98); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -1325,6 +1325,79 @@
 }
 
         /* ===== 光明版：只改紅圈位置文字為黑色 ===== */
+
+/* ==== 計算分數按鈕：反光／光澤效果（醒目） ==== */
+#calcBtn {
+  backdrop-filter: saturate(1.25) blur(8px); /* 玻璃質感 */
+  -webkit-backdrop-filter: saturate(1.25) blur(8px);
+
+  position: relative;
+  overflow: hidden;
+  color: #331; /* 深色字提高對比 */
+  background: linear-gradient(180deg, rgba(255,224,138,0.75) 0%, rgba(255,208,100,0.70) 40%, rgba(247,185,72,0.65) 70%, rgba(230,154,45,0.60) 100%);
+  border: 1px solid rgba(255,255,255,0.55); /* 玻璃邊界 */
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08);
+  border-radius: 12px;
+}
+#calcBtn i { font-size: 1.38rem; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)); }
+#calcBtn #calcBtnText { font-size: 1.46rem; font-weight: 900; letter-spacing: .02em; }
+
+/* 上半部「高光」反光層 */
+#calcBtn::before {
+  backdrop-filter: saturate(1.1);
+  content: '';
+  position: absolute; left: 0; top: 0; right: 0;
+  height: 52%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.0) 100%);
+  border-top-left-radius: 12px; border-top-right-radius: 12px;
+  pointer-events: none;
+}
+
+/* 斜向掃光（Sheen） */
+#calcBtn::after {
+  content: '';
+  position: absolute; top: -30%; left: -40%;
+  width: 70%; height: 160%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.0) 90%);
+  transform: rotate(18deg);
+  filter: blur(1px);
+  animation: calcBtnSheen 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes calcBtnSheen {
+  0%   { transform: translateX(-40%) rotate(18deg); opacity: .0; }
+  18%  { opacity: .85; }
+  42%  { transform: translateX(160%) rotate(18deg); opacity: .0; }
+  100% { transform: translateX(160%) rotate(18deg); opacity: .0; }
+}
+
+/* Hover 狀態：稍微抬起、加強光澤 */
+#calcBtn:hover {
+  backdrop-filter: saturate(1.35) blur(8px);
+  transform: translateY(-2px); 
+  box-shadow: 0 12px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* Active 狀態：按下的立體感 */
+#calcBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* 光明版配色微調（保持反光效果） */
+.theme-light #calcBtn {
+  color: #222 !important;
+  background: linear-gradient(180deg, #ffd88c 0%, #ffcd70 40%, #f7b24c 70%, #e59a32 100%) !important;
+  border-color: rgba(130, 80, 0, 0.32) !important;
+}
+.theme-light #calcBtn::before { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.45) 60%, rgba(255,255,255,0.0) 100%) !important; }
+
+/* 令計算分數更搶眼：群組排版微調 */
+.button-group #calcBtn { min-width: 180px; }
+
+/* 保持其他警告按鈕正常 */
+.button-group #resetBtn.btn-danger { /* 只示意，不改色 */ }
+
         .theme-light #calcBtn, .theme-light #resetBtn {
             color: #000 !important;
         }
@@ -2894,19 +2967,213 @@ document.addEventListener('DOMContentLoaded', function() {
     const force = (location.hash === '#welcome');
     const openWelcome = () => {
       overlay.style.display = 'flex';
+      overlay.style.opacity = '0';
       overlay.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
       startConfetti();
+      requestAnimationFrame(() => { overlay.style.opacity = '1'; });
     };
     const closeWelcome = () => {
-      overlay.style.display = 'none';
-      overlay.setAttribute('aria-hidden','true');
-      localStorage.setItem(FLAG_KEY, '1');
-      document.body.style.overflow = '';
-      stopConfetti();
+      // 平滑淡出
+      overlay.style.opacity = '1';
+      const modalEl = overlay.querySelector('.welcome-modal');
+      if (modalEl){ modalEl.style.opacity = '0'; modalEl.style.transform = 'translateY(12px) scale(0.98)'; }
+      requestAnimationFrame(() => { overlay.style.opacity = '0'; });
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+        localStorage.setItem(FLAG_KEY, '1');
+        document.body.style.overflow = '';
+        stopConfetti();
+        if (welcomeLangTimer) { clearInterval(welcomeLangTimer); welcomeLangTimer = null; }
+        if (modalEl){ modalEl.style.opacity = ''; modalEl.style.transform = ''; }
+      }, 450);
     };
 
     openWelcome();
+
+    // 語言自動切換（每約2秒）
+    const elTitle = overlay.querySelector('.welcome-text');
+    const elBody = overlay.querySelector('.welcome-body');
+    const elDisclaimer = overlay.querySelector('.welcome-disclaimer');
+    const elBtnLater = document.getElementById('welcomeLater');
+    const elBtnStart = document.getElementById('welcomeStart');
+    const elLangToggle = document.getElementById('langToggle');
+
+    // 初始化 Cross-fade 結構與樣式（同層重疊過渡）
+    function setupCrossFade(el, candidates){
+      if (!el) return null;
+      const initial = (el.textContent || '').trim();
+      // 建立占位幽靈層（保持版位與基線，避免元素脫離 Flex 流）
+      const ghost = document.createElement('span');
+      ghost.className = 'xfade-ghost';
+      const longest = Array.isArray(candidates) && candidates.length
+        ? candidates.reduce((a, b) => (a.length >= b.length ? a : b))
+        : initial;
+      ghost.textContent = longest;
+      Object.assign(ghost.style, {
+        visibility: 'hidden',
+        whiteSpace: 'pre-wrap'
+      });
+
+      // 建立兩層重疊 layer（不影響排版流，由幽靈層保留空間）
+      const layerA = document.createElement('span');
+      const layerB = document.createElement('span');
+      [layerA, layerB].forEach(layer => {
+        layer.className = 'xfade-layer';
+        const baseStyle = {
+          position: 'absolute', left: '0', width: '100%',
+          transition: 'opacity 360ms ease', opacity: '0', willChange: 'opacity',
+          whiteSpace: 'pre-wrap', textAlign: 'center'
+        };
+        // 對於按鈕，使用 top:50% + translate(-50%) 垂直置中
+        if (el.tagName === 'BUTTON') {
+          Object.assign(layer.style, baseStyle, { top: '50%', transform: 'translateY(-50%)' });
+        } else {
+          Object.assign(layer.style, baseStyle, { top: '0' });
+        }
+      });
+
+      // 容器設定：保持 inline-block（不改變 Flex 對齊）、相對定位以承載重疊層
+      el.setAttribute('data-xfade-ready', '1');
+      el.style.position = 'relative';
+      el.style.display = 'inline-block';
+      if (el.tagName === 'BUTTON') {
+        el.style.lineHeight = '1';
+      }
+      el.textContent = '';
+
+      // 插入幽靈層作為版位，重疊層位於其上（不改變外部間距與基線）
+      el.appendChild(ghost);
+      layerA.textContent = initial;
+      layerA.style.opacity = '1';
+      el.appendChild(layerA);
+      el.appendChild(layerB);
+
+      el.dataset.xfadeActive = 'A';
+      return { layerA, layerB, ghost };
+    }
+
+    const WELCOME_LANGS = [
+      {
+        title: '歡迎！',
+        body: '祝您使用愉快。',
+        disclaimer: '此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。',
+        later: '稍後再看',
+        start: '開始使用'
+      },
+      {
+        title: 'Welcome!',
+        body: 'Enjoy your experience.',
+        disclaimer: 'Results are for reference only; accuracy is not guaranteed; this tool is not responsible for any consequences of use.',
+        later: 'Later',
+        start: 'Get Started'
+      }
+    ];
+
+    // 以所有候選文字建立 Cross-fade（幽靈層確保位置不變）
+    const titleXF = setupCrossFade(elTitle, [WELCOME_LANGS[0].title, WELCOME_LANGS[1].title]);
+    const bodyXF = setupCrossFade(elBody, [WELCOME_LANGS[0].body, WELCOME_LANGS[1].body]);
+    const disclaimerXF = setupCrossFade(elDisclaimer, [WELCOME_LANGS[0].disclaimer, WELCOME_LANGS[1].disclaimer]);
+    const laterXF = setupCrossFade(elBtnLater, [WELCOME_LANGS[0].later, WELCOME_LANGS[1].later]);
+    const startXF = setupCrossFade(elBtnStart, [WELCOME_LANGS[0].start, WELCOME_LANGS[1].start]);
+
+    let welcomeLangIndex = 0;
+    let welcomeLangTimer = null;
+
+    function crossFadeSwap(el, xf, nextText){
+      if (!el || !xf) return;
+      const active = el.dataset.xfadeActive === 'A' ? xf.layerA : xf.layerB;
+      const idle   = el.dataset.xfadeActive === 'A' ? xf.layerB : xf.layerA;
+      // 預載下一段文字於閒置層，先置透明
+      idle.textContent = nextText;
+      idle.style.opacity = '0';
+      // 交叉淡入淡出
+      requestAnimationFrame(() => {
+        active.style.opacity = '0';
+        idle.style.opacity = '1';
+        // 完成後交換層狀態
+        setTimeout(() => {
+          el.dataset.xfadeActive = (el.dataset.xfadeActive === 'A') ? 'B' : 'A';
+          ensureWelcomeFits();
+        }, 380);
+      });
+    }
+
+    function applyWelcomeLang(i){
+      const L = WELCOME_LANGS[i];
+      // 依語言設定置中與字級
+      overlay.setAttribute('data-lang', i === 1 ? 'en' : 'zh');
+      // Cross-fade 內容
+      crossFadeSwap(elTitle, titleXF, L.title);
+      crossFadeSwap(elBody, bodyXF, L.body);
+      crossFadeSwap(elDisclaimer, disclaimerXF, L.disclaimer);
+      crossFadeSwap(elBtnLater, laterXF, L.later);
+      crossFadeSwap(elBtnStart, startXF, L.start);
+      // 對齊尺寸
+      ensureWelcomeFits();
+    }
+
+    function ensureWelcomeFits(){
+      const modal = overlay.querySelector('.welcome-modal');
+      if (!modal) return;
+      const maxH = Math.min(window.innerHeight * 0.64, 640); // align with CSS max-height
+      // Reset sizing
+      modal.style.fontSize = '100%';
+      const emojis = overlay.querySelectorAll('.welcome-title .emoji');
+      emojis.forEach(e => e.style.fontSize = '2.4rem');
+      const titleEl = overlay.querySelector('.welcome-title .welcome-text');
+
+      // Downscale globally until fits vertically
+      let scale = 1.0;
+      const minScale = 0.78; // do not shrink too much
+      while (modal.scrollHeight > maxH && scale > minScale){
+        scale -= 0.04;
+        modal.style.fontSize = `${Math.round(scale*100)}%`;
+        emojis.forEach(e => e.style.fontSize = `calc(2.4rem * ${scale})`);
+        if (titleEl){
+          // Prevent title overflow horizontally
+          const titleBox = titleEl.getBoundingClientRect();
+          const modalBox = modal.getBoundingClientRect();
+          if (titleBox.width > modalBox.width * 0.92){
+            const tfs = parseFloat(getComputedStyle(titleEl).fontSize);
+            titleEl.style.fontSize = `${Math.max(tfs * 0.9, 18)}px`;
+          }
+        }
+      }
+
+      // If still overflowing, allow modal to scroll within max height
+      if (modal.scrollHeight > maxH){
+        modal.style.overflowY = 'auto';
+      } else {
+        modal.style.overflowY = 'hidden';
+      }
+    }
+
+    function startWelcomeLangCycle(){
+      // 停用自動切換，僅套用一次
+      if (welcomeLangTimer) { clearInterval(welcomeLangTimer); welcomeLangTimer = null; }
+      applyWelcomeLang(welcomeLangIndex);
+    }
+
+    // 保持排版在視窗尺寸變更時仍然合適
+    window.addEventListener('resize', ensureWelcomeFits);
+
+    // 初始化語言：使用偏好或預設中文
+    const pref = localStorage.getItem('welcomeLangPref');
+    if (pref === 'en') { welcomeLangIndex = 1; }
+    overlay.setAttribute('data-lang', welcomeLangIndex === 1 ? 'en' : 'zh');
+    applyWelcomeLang(welcomeLangIndex);
+
+    // 語言切換按鈕事件
+    if (elLangToggle){
+      elLangToggle.addEventListener('click', () => {
+        welcomeLangIndex = (welcomeLangIndex === 1) ? 0 : 1;
+        localStorage.setItem('welcomeLangPref', welcomeLangIndex === 1 ? 'en' : 'zh');
+        overlay.setAttribute('data-lang', welcomeLangIndex === 1 ? 'en' : 'zh');
+        applyWelcomeLang(welcomeLangIndex);
+      });
+    }
 
     // 事件綁定
     
@@ -3253,12 +3520,38 @@ document.addEventListener('DOMContentLoaded', function() {
     .alt-down { animation: alt-down 2.8s ease-in-out infinite !important; }
     /* 其餘使用 A/B 交替類名即可 */
     /* 無需設定任何 delay，確保純相位相反、速度一致 */
+    /* 版位與對齊優化（標題置中、按鈕文字垂直置中） */
+    .welcome-title { justify-content: center; text-align: center; }
+    .welcome-actions { align-items: center; }
+    .welcome-btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+    /* 按鈕高度一致，文字上下居中 */
+    .welcome-btn, .welcome-btn.primary { min-height: 40px; }
+
+    /* 依語言調整標題字級，避免英文過度迫近圖案 */
+    #welcomeOverlay[data-lang="en"] .welcome-title .welcome-text { font-size: 2.1rem; text-align: center; }
+    #welcomeOverlay[data-lang="zh"] .welcome-title .welcome-text { font-size: 2.4rem; text-align: center; }
+
+    /* 語言切換細方掣 */
+    .lang-toggle {
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.18);
+      color: #fff; border: 0; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; line-height: 1; user-select: none;
+      transition: background .2s ease, transform .12s ease;
+    }
+    .lang-toggle:hover { background: rgba(255,255,255,0.26); transform: translateY(-1px); }
+
   </style>
 
   <!-- 歡迎視窗（僅首次） -->
   <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true" role="dialog">
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
     <div class="welcome-modal" role="document" aria-label="歡迎">
+      <button id="langToggle" class="lang-toggle" type="button" aria-label="語言切換">中/EN</button>
       <div class="welcome-title">
             <span class="emoji alt-up">🎉</span>
             <span class="emoji alt-down">🎈</span>
