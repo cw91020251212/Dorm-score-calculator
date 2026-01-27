@@ -127,7 +127,7 @@
         
         .required::after {
             content: "*";
-            color: var(--required);
+            color: var(--required) !important;
             margin-left: 4px;
             font-weight: bold;
         }
@@ -164,7 +164,7 @@
         
         .input-hint {
             font-size: 0.75rem; /* 縮小字體兩級 */
-            color: var(--hint-pink);
+            color: var(--required);
             margin-top: 5px;
             padding: 5px;
             border-radius: 4px;
@@ -1081,6 +1081,23 @@
   html[data-lang="en"] #calcBtnText { font-size: 16px; }
   /* 保證兩個掣高度一致（圖示不影響高度） */
   .button-group .btn i { font-size: 1em; }
+/* 3D 按鈕陰影樣式統一 */
+.btn-3d {
+  box-shadow: 0 6px 14px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.6);
+  transform: translateY(0);
+  transition: box-shadow .18s ease, transform .12s ease;
+}
+.btn-3d:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.65); transform: translateY(-1px); }
+.btn-3d:active { box-shadow: 0 4px 10px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.55); transform: translateY(0); }
+
+/* 讓提示文字僅保留文字本身，移除背景/陰影 */
+.input-hint, .input-hint span#divisorHint {
+  background: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  color: var(--hint-pink) !important; /* 使用淺粉紅提示色 */
+}
+
 </style>
         <style>
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
@@ -1545,12 +1562,12 @@
             <h1><i class="fas fa-calculator"></i> <span id="appTitle">宿舍分數計算器</span></h1>
         <div class="display-controls" aria-label="顯示調校工具列">
             
-            <button id="fontInc" class="btn btn-warning no-text-shadow btn-small" title="Increase text"><i class="fas fa-plus"></i></button>
-            <button id="fontDec" class="btn btn-warning no-text-shadow btn-small" title="Decrease text"><i class="fas fa-minus"></i></button>
+            <button id="fontInc" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Increase text"><i class="fas fa-plus"></i></button>
+            <button id="fontDec" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Decrease text"><i class="fas fa-minus"></i></button>
             
-            <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
+            <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
             
-            <button id="infoBtn" type="button" class="btn btn-warning no-text-shadow btn-small" title="使用須知"><i class="fas fa-info-circle"></i></button>
+            <button id="infoBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="使用須知"><i class="fas fa-info-circle"></i></button>
         </div>
         </header>
         
@@ -1637,10 +1654,10 @@
                 </div>
                 
                 <div class="button-group">
-                    <button id="calcBtn" class="btn btn-warning">
+                    <button id="calcBtn" class="btn btn-warning btn-3d">
                         <i class="fas fa-calculator"></i> <span id="calcBtnText">計算分數</span>
                     </button>
-                    <button id="resetBtn" class="btn btn-danger">
+                    <button id="resetBtn" class="btn btn-danger btn-3d">
                         <i class="fas fa-redo"></i> <span id="resetBtnText">重置表單</span>
                     </button>
                 </div>
@@ -1658,14 +1675,14 @@
                 </div>
                 
                 <div class="button-group">
-                    <button id="saveDataBtn" class="btn btn-success">
+                    <button id="saveDataBtn" class="btn btn-success btn-3d">
                         <i class="fas fa-save"></i> <span id="saveBtnText">儲存目前資料</span>
                     </button>
-                    <button id="cancelSaveBtn" class="btn btn-danger no-text-shadow" title="刪除已儲存的資料">
+                    <button id="cancelSaveBtn" class="btn btn-danger no-text-shadow btn-3d" title="刪除已儲存的資料">
                         <i class="fas fa-ban"></i> <span id="cancelSaveText">取消儲存</span>
                     </button>
                     <select id="deleteSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
-                    <button id="loadBtn" class="btn btn-primary no-text-shadow">
+                    <button id="loadBtn" class="btn btn-primary no-text-shadow btn-3d">
                         <i class="fas fa-download"></i> <span id="loadText">載入資料</span>
                     </button>
                     <select id="loadSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
@@ -1681,11 +1698,11 @@
                         <input type="text" id="searchData" class="input-control" placeholder="搜尋儲存資料...">
                     </div>
                     
-                    <button id="exportBtn" class="btn btn-warning no-text-shadow">
+                    <button id="exportBtn" class="btn btn-warning no-text-shadow btn-3d">
                         <i class="fas fa-file-export"></i> <span id="exportBtnText">匯出所有資料</span>
                     </button>
                     
-                    <button id="importBtn" class="btn btn-primary">
+                    <button id="importBtn" class="btn btn-primary btn-3d">
                         <i class="fas fa-file-import"></i> <span id="importBtnText">匯入資料</span>
                     </button>
                 </div>
@@ -1710,14 +1727,14 @@
             <span class="status-icon" aria-hidden="true">ℹ️</span><span id="statusText">系統準備就緒，請填寫表單開始計算</span>
         </div>
         <div class="status-actions">
-            <button class="status-btn" style="background: var(--accent); color: white;">
+            <button class="status-btn btn-3d" style="background: var(--accent); color: white;">
                 <i class="fas fa-cloud"></i> <span id="backupStatus">自動備份已啟用</span>
             </button>
-            <button class="status-btn" style="background: var(--success); color: white;">
+            <button class="status-btn btn-3d" style="background: var(--success); color: white;">
                 <i class="fas fa-database"></i> <span id="dataStatus">已儲存 <span id="dataCount">0</span> 筆資料</span>
             </button>
             <div class="status-toggle">
-                <button id="statusToggleBtn" class="status-btn" type="button"><span id="statusToggleLabel">隱藏狀態列</span></button>
+                <button id="statusToggleBtn" class="status-btn btn-3d" type="button"><span id="statusToggleLabel">隱藏狀態列</span></button>
             </div>
         </div>
     </div>
@@ -3458,7 +3475,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle" aria-hidden="true">
             <header>
                 <h3 id="infoTitle"><i class="fas fa-info-circle"></i> 使用須知</h3>
-                <button id="closeModalX" class="btn btn-warning no-text-shadow btn-small" aria-label="關閉"><i class="fas fa-times"></i></button>
+                <button id="closeModalX" class="btn btn-warning no-text-shadow btn-small btn-3d" aria-label="關閉"><i class="fas fa-times"></i></button>
             </header>
             <div class="modal-body">
                 <p id="scoringLabel" class="label">計分準則（簡述）：</p>
@@ -3478,7 +3495,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </ul>
             </div>
             <div class="modal-foot">
-                <button id="closeModal" class="close-btn"><span id="closeModalText">我明白</span></button>
+                <button id="closeModal" class="close-btn btn-3d"><span id="closeModalText">我明白</span></button>
             </div>
         </div>
 
@@ -3502,11 +3519,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </p>
             </div>
             <div class="modal-foot">
-                <button onclick="proceedSave()" class="btn btn-success" style="margin-right: 10px;">
+                <button onclick="proceedSave()" class="btn btn-success btn-3d" style="margin-right: 10px;">
                     <span class="lang-zh">✓ 確認</span>
                     <span class="lang-en" style="display:none;">✓ Confirm</span>
                 </button>
-                <button onclick="document.getElementById('saveNoticeModal').style.display='none'" class="btn btn-danger">
+                <button onclick="document.getElementById('saveNoticeModal').style.display='none'" class="btn btn-danger btn-3d">
                     <span class="lang-zh">✕ 取消</span>
                     <span class="lang-en" style="display:none;">✕ Cancel</span>
                 </button>
