@@ -2743,7 +2743,11 @@ const translations = {
     mini = document.createElement('div');
     mini.id = 'resetConfirmMini';
     mini.className = 'mini-confirm';
-    mini.innerHTML = '<div class="mini-lines"><span id="miniMsg1">確定重置？</span></div><div class="mini-actions"><button class="mini-btn cancel" type="button">取消</button><button class="mini-btn ok" type="button">確定</button></div>';
+    mini.innerHTML = '<div class="mini-lines"><span id="miniMsg1"></span></div><div class="mini-actions"><button class="mini-btn cancel" type="button"></button><button class="mini-btn ok" type="button"></button></div>'; 
+            var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh');
+            mini.querySelector('#miniMsg1').textContent = isZh ? '確定重置？' : 'Reset all fields?';
+            mini.querySelector('.mini-btn.cancel').textContent = isZh ? '取消' : 'Cancel';
+            mini.querySelector('.mini-btn.ok').textContent = isZh ? '確定' : 'OK';
     document.body.appendChild(mini);
   }
   function showMini(){
@@ -3870,5 +3874,276 @@ document.addEventListener('DOMContentLoaded', function() {
         })();
     </script>
 
+
+<script>
+(function(){
+    // 1. STYLES
+    var style = document.createElement('style');
+    style.innerHTML = `
+
+/* === UI ENLARGEMENT === */
+body { font-size: 19px; } 
+.form-section, .result-section { padding: 25px; }
+.input-control { font-size: 20px; padding: 12px 14px; height: auto; }
+.button-group .btn { height: 58px !important; font-size: 21px !important; padding: 0 20px !important; min-width: 180px !important; }
+
+/* === SAVE MODAL (Big) === */
+#saveNoticeModal .modal {
+    background: #1e3a5f !important;
+    border: 2px solid rgba(126, 200, 255, 0.45) !important;
+    border-radius: 16px !important;
+    width: min(90%, 460px) !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5) !important;
+}
+#saveNoticeModal header { padding: 24px 28px 10px !important; }
+#saveNoticeModal h3 { font-size: 1.7rem !important; gap: 12px; }
+#saveNoticeModal .modal-body {
+    padding: 28px !important;
+    font-size: 1.25rem !important;
+}
+#saveNoticeModal .btn { height: 60px !important; font-size: 22px !important; }
+.modal-overlay { background: rgba(0, 0, 0, 0.75) !important; backdrop-filter: blur(3px); }
+
+`;
+    document.head.appendChild(style);
+
+    // 2. SAVE MODAL HTML
+    var div = document.createElement('div');
+    div.innerHTML = `<div id="saveNoticeModal" class="modal-overlay" style="display: none; z-index: 3000;">    <div class="modal" style="display: block;">        <header>            <h3><i class="fas fa-save"></i> <span id="saveModalTitle">儲存確認</span></h3>        </header>        <div class="modal-body">            <p id="saveModalMsg" style="margin-bottom: 12px;">資料將儲存於您的設備。</p>            <p id="saveModalSubMsg" style="font-size: 0.8em; color: #aaa;">(不會上傳伺服器，請自行備份)</p>        </div>        <div class="modal-foot">            <button id="confirmSaveBtn" class="btn btn-success">✓ 確認</button>            <button id="cancelSaveModalBtn" class="btn btn-danger">✕ 取消</button>        </div>    </div></div>`;
+    document.body.appendChild(div);
+
+    // 3. SAVE LOGIC
+    var saveModal = document.getElementById('saveNoticeModal');
+    if(saveModal) {
+        saveModal.addEventListener('click', function(e){ if(e.target === saveModal) saveModal.style.display = 'none'; });
+        document.getElementById('cancelSaveModalBtn').onclick = function(){ saveModal.style.display = 'none'; };
+        document.getElementById('confirmSaveBtn').onclick = function(){ proceedSave(); };
+    }
+
+    
+    function proceedSave() {
+        document.getElementById('saveNoticeModal').style.display = 'none';
+        const salary = document.getElementById('salary').value;
+        const divisor = document.getElementById('divisor').value;
+        const hireDate = document.getElementById('hireDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+        const timeStr = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+        const defaultName = `${dateStr}_${timeStr}`;
+        const isZh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
+        const recordName = prompt(isZh ? '請輸入記錄名稱(選填)：' : 'Enter record name (optional):', defaultName);
+        if (recordName === null) return;
+
+        const data = {
+            name: recordName || defaultName,
+            salary: salary, divisor: divisor, hireDate: hireDate, endDate: endDate,
+            spouse: document.getElementById('spouse').value,
+            children: document.getElementById('children').value,
+            overseas: document.getElementById('overseas').value,
+            newborn: document.getElementById('newborn').value,
+            otherChildren: document.getElementById('otherChildren').value,
+            instruction: document.getElementById('instruction').value,
+            defect: document.getElementById('defect').value,
+            score: typeof currentScore !== 'undefined' ? currentScore : 0,
+            timestamp: now.toLocaleString(isZh ? 'zh-HK' : 'en-US')
+        };
+        let savedData = JSON.parse(localStorage.getItem('dormData') || '{}');
+        savedData[data.name] = data;
+        localStorage.setItem('dormData', JSON.stringify(savedData));
+        const msg = isZh ? '✅ 資料已儲存到您的設備' : '✅ Data saved to your device';
+        if(typeof updateStatus === 'function') updateStatus(msg);
+        if (typeof loadAllSavedData === 'function') loadAllSavedData();
+    }
+
+    window.updateSaveModalText = function() {
+        const lang = document.documentElement.getAttribute('data-lang') || 'zh';
+        const isZh = (lang === 'zh');
+
+        const title = document.getElementById('saveModalTitle');
+        const msg = document.getElementById('saveModalMsg');
+        const sub = document.getElementById('saveModalSubMsg');
+        const btnOk = document.getElementById('confirmSaveBtn');
+        const btnCancel = document.getElementById('cancelSaveModalBtn');
+
+        if(title) title.textContent = isZh ? '儲存確認' : 'Save Confirmation';
+        if(msg) msg.textContent = isZh ? '資料將儲存於您的設備。' : 'Data will be saved on your device.';
+        if(sub) sub.textContent = isZh ? '(不會上傳伺服器，請自行備份)' : '(Not uploaded to server, please backup yourself)';
+        if(btnOk) btnOk.textContent = isZh ? '✓ 確認' : '✓ Confirm';
+        if(btnCancel) btnCancel.textContent = isZh ? '✕ 取消' : '✕ Cancel';
+    }
+
+
+    window.saveCurrentData = function() {
+        const salary = document.getElementById('salary').value;
+        if (!salary) { alert("請先計算分數 / Please calculate first"); return; }
+        if(typeof updateSaveModalText === 'function') updateSaveModalText();
+        document.getElementById('saveNoticeModal').style.display = 'flex';
+    };
+
+    // 4. RESET FIX
+    function ensureMini() {
+        let mini = document.getElementById('resetConfirmMini');
+        if (!mini) {
+            mini = document.createElement('div');
+            mini.id = 'resetConfirmMini';
+            mini.className = 'mini-confirm';
+            mini.style.zIndex = '2147483647';
+            mini.style.position = 'fixed';
+            mini.innerHTML = '<div class="mini-lines"><span id="miniMsg1">確定重置？</span></div><div class="mini-actions"><button class="mini-btn cancel" type="button">取消</button><button class="mini-btn ok" type="button">確定</button></div>';
+            document.body.appendChild(mini);
+            mini.addEventListener('click', (ev) => {
+                const t = ev.target;
+                if (t.classList.contains('cancel')) mini.style.display = 'none';
+                if (t.classList.contains('ok')) { mini.style.display = 'none'; if(typeof initForm === 'function') initForm(); }
+            });
+        }
+        return mini;
+    }
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#resetBtn');
+        if (!btn) return;
+        e.preventDefault();
+        const mini = ensureMini();
+        const isZh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
+        document.getElementById('miniMsg1').textContent = isZh ? '確定重置？' : 'Reset?';
+        mini.querySelector('.cancel').textContent = isZh ? '取消' : 'Cancel';
+        mini.querySelector('.ok').textContent = isZh ? '確定' : 'OK';
+
+        const rect = btn.getBoundingClientRect();
+        const w = 220; 
+        mini.style.width = w + 'px';
+        let l = rect.left + (rect.width - w)/2;
+        l = Math.max(10, Math.min(l, window.innerWidth - w - 10));
+        mini.style.left = l + 'px';
+        let t = rect.top - 80;
+        if (t < 10) t = rect.bottom + 10;
+        mini.style.top = t + 'px';
+        mini.style.display = 'block';
+    });
+
+    // 5. LOAD/DELETE MODAL (Injected & Modified)
+    (function(){
+  function makeOverlay(){
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+    const box = document.createElement('div');
+    box.style.cssText = 'max-width:90vw;width:620px;background:#1f2937;color:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px;';
+    ov.appendChild(box);
+    ov.addEventListener('click', function(e){ if(e.target===ov) document.body.removeChild(ov); });
+    return {ov: ov, box: box};
+  }
+  function mkBtn(text, type){
+    var b = document.createElement('button');
+    b.textContent = text;
+    b.style.cssText = 'margin:8px 6px;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-size:1.2rem; min-height:50px; min-width:100px;color:#fff;';
+    if (type==='primary') b.style.background = '#3b82f6';
+    else if (type==='danger') b.style.background = '#ef4444';
+    else b.style.background = '#374151';
+    return b;
+  }
+
+  function customLoadModal(keys){
+    var ovBox = makeOverlay(); var ov = ovBox.ov; var box = ovBox.box;
+    var h3 = document.createElement('h3'); var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh'); h3.textContent = isZh ? '選擇要載入的檔名' : 'Select a record to load'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; box.appendChild(h3);
+    var list = document.createElement('div'); box.appendChild(list);
+    var chosen = null;
+    keys.forEach(function(k){
+      var row = document.createElement('div'); row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;';
+      var r = document.createElement('input'); r.type='radio'; r.style.transform='scale(1.5)'; r.style.marginRight='12px'; r.name='load_one'; r.value=k; r.addEventListener('change', function(){ chosen = k; });
+      var lab = document.createElement('label'); lab.textContent = k; lab.style.cursor = 'pointer'; lab.style.fontSize = '1.35rem'; lab.style.lineHeight='1.6';
+      row.appendChild(r); row.appendChild(lab); list.appendChild(row);
+    });
+    var foot = document.createElement('div'); foot.style.cssText='display:flex;justify-content:flex-end;margin-top:12px;';
+    var cancelB = mkBtn(isZh ? '取消' : 'Cancel'); cancelB.onclick = function(){ document.body.removeChild(ov); };
+    var okB = mkBtn(isZh ? '載入' : 'Load', 'primary'); okB.onclick = function(){ if(chosen){ try{ loadSavedData(chosen); }catch(e){} document.body.removeChild(ov);} };
+    foot.appendChild(cancelB); foot.appendChild(okB); box.appendChild(foot);
+    document.body.appendChild(ov);
+  }
+
+  function customDeleteModal(keys){
+    var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh');
+    var ovBox = makeOverlay(); var ov = ovBox.ov; var box = ovBox.box;
+    var h3 = document.createElement('h3'); h3.textContent = isZh ? '選擇要刪除的檔名（可多選）' : 'Select records to delete (multi-select)'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; box.appendChild(h3);
+    var list = document.createElement('div'); box.appendChild(list);
+    var chosen = {};
+    var row0 = document.createElement('div'); row0.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;';
+    var c0 = document.createElement('input'); c0.type='checkbox'; c0.value='__DELETE_ALL__';
+    var lab0 = document.createElement('label'); lab0.textContent= isZh ? '刪除全部（危險）' : 'Delete ALL (Danger)';
+    c0.addEventListener('change', function(){ if(c0.checked){ chosen = {'__DELETE_ALL__': true}; } else { delete chosen['__DELETE_ALL__']; } });
+    row0.appendChild(c0); row0.appendChild(lab0); list.appendChild(row0);
+    keys.forEach(function(k){
+      var row = document.createElement('div'); row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;';
+      var c = document.createElement('input'); c.type='checkbox'; c.style.transform='scale(1.5)'; c.style.marginRight='12px'; c.value=k;
+      var lab = document.createElement('label'); lab.textContent = k; lab.style.cursor='pointer';
+      c.addEventListener('change', function(){ if(c.checked){ if(!chosen['__DELETE_ALL__']) chosen[k] = true; } else { delete chosen[k]; } });
+      row.appendChild(c); row.appendChild(lab); list.appendChild(row);
+    });
+    var foot = document.createElement('div'); foot.style.cssText='display:flex;justify-content:flex-end;margin-top:12px;';
+    var cancelB = mkBtn(isZh ? '取消' : 'Cancel'); cancelB.onclick = function(){ document.body.removeChild(ov); };
+    var okB = mkBtn(isZh ? '刪除' : 'Delete','danger'); okB.onclick = function(){
+      if (chosen['__DELETE_ALL__']) { deleteAllSavedData(); document.body.removeChild(ov); return; }
+      var keysToDelete = Object.keys(chosen);
+      if (keysToDelete.length){ keysToDelete.forEach(function(k){ try{ deleteSavedData(k); }catch(e){} }); }
+      document.body.removeChild(ov);
+    };
+    foot.appendChild(cancelB); foot.appendChild(okB); box.appendChild(foot);
+    document.body.appendChild(ov);
+  }
+
+  // Override handlers with safe logic
+  window.showLoadSelect = function(){
+    var savedData = {};
+    try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
+    var keys = Object.keys(savedData);
+    if (!keys.length) return;
+    keys.sort(function(a,b){ return (savedData[b].createdAt||0) - (savedData[a].createdAt||0); });
+    var sel = document.getElementById('loadSelect');
+    if (!sel) { customLoadModal(keys); return; }
+    sel.innerHTML = '';
+    keys.forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=k; sel.appendChild(o); });
+    if (typeof sel.showPicker === 'function') {
+      sel.onchange = function(){ var v = sel.value; if(v){ try{ loadSavedData(v); }catch(e){} } };
+      try { sel.showPicker(); setTimeout(function(){ if(!sel.value) customLoadModal(keys); }, 600); } catch(e) { customLoadModal(keys); }
+    } else { customLoadModal(keys); }
+  };
+
+  window.showDeleteSelect = function(){
+    var savedData = {};
+    try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
+    var keys = Object.keys(savedData);
+    if (!keys.length) return;
+    keys.sort(function(a,b){ return (savedData[b].createdAt||0) - (savedData[a].createdAt||0); });
+    var sel = document.getElementById('deleteSelect');
+    if (!sel) { customDeleteModal(keys); return; }
+    sel.innerHTML = '';
+    var delAll = document.createElement('option'); delAll.value='__DELETE_ALL__'; delAll.textContent='刪除全部'; sel.appendChild(delAll);
+    keys.forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=k; sel.appendChild(o); });
+    if (typeof sel.showPicker === 'function') {
+      sel.onchange = function(){ var v = sel.value; if (v==='__DELETE_ALL__') deleteAllSavedData(); else if (v) deleteSavedData(v); };
+      try { sel.showPicker(); setTimeout(function(){ if(!sel.value) customDeleteModal(keys); }, 600); } catch(e) { customDeleteModal(keys); }
+    } else { customDeleteModal(keys); }
+  };
+})();
+
+    // 6. SWAP BUTTONS
+    function swapButton(id, newHandlerName) {
+        var oldBtn = document.getElementById(id);
+        if(!oldBtn) return;
+        var newBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        newBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            if(window[newHandlerName]) window[newHandlerName]();
+        });
+    }
+    setTimeout(function(){
+        swapButton('loadBtn', 'showLoadSelect');
+        swapButton('cancelSaveBtn', 'showDeleteSelect');
+        swapButton('saveDataBtn', 'saveCurrentData');
+    }, 200);
+})();
+</script>
 </body>
 </html>
