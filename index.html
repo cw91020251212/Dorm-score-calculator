@@ -1607,6 +1607,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 </style>
 </head>
 <body>
+<div id="fouc-shield" style="position:fixed; inset:0; background: #0f0f0f; z-index: 2147483647; transition: opacity 0.8s ease;"></div></div>
     <div class="container">
         <header>
             <div class="header-decoration">
@@ -3824,6 +3825,77 @@ document.addEventListener('DOMContentLoaded', function() {
   :root { --language-bg: #90EE90; }
   #languageToggle.language-toggle { background-color: var(--language-bg) !important; color: #000 !important; border: 1px solid #7fd67f !important; }
   #qrButton.qr-toggle { background-color: #555 !important; color: #fff !important; border: 1px solid #333 !important; }
+
+            
+            /* --- 2026-02-09 V16: STABILITY + NO-FLASH ONLY --- */
+
+            /* A. BUTTONS: FORCE CIRCLE (User Requirement) */
+            #fontInc, #fontDec, #themeToggle, #infoBtn {
+                box-sizing: border-box !important;
+                width: 28px !important;
+                height: 28px !important;
+                min-width: 28px !important;
+                max-width: 28px !important;
+                min-height: 28px !important;
+                border-radius: 50% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background: rgba(255, 255, 255, 0.15) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                color: rgba(255, 255, 255, 0.8) !important;
+                box-shadow: none !important;
+                transform: none !important;
+                line-height: 1 !important;
+                font-size: 12px !important;
+            }
+            #fontInc:hover, #fontDec:hover, #themeToggle:hover, #infoBtn:hover {
+                background: rgba(255, 255, 255, 0.3) !important;
+                transform: scale(1.05) !important;
+            }
+            .display-controls {
+                background: transparent !important;
+                border: none !important;
+                padding: 5px 0 !important;
+                margin-top: 5px !important;
+                width: 100% !important;
+                justify-content: center !important;
+                display: flex !important;
+                gap: 15px !important;
+            }
+
+            /* B. HEADER: FIT CONTENT (Stability) */
+            h1 {
+                width: fit-content;
+                width: -moz-fit-content;
+                margin: 0 auto !important;
+                padding-left: 20px;
+                padding-right: 20px;
+                display: block;
+            }
+            h1:after { width: 100%; left: 0; }
+
+            /* C. WELCOME: CALM ANIMATION (Prevents shaking) */
+            .welcome-box, .welcome-content, .welcome-modal {
+                animation: gentleFadeIn 0.8s ease-out forwards !important; /* Slower */
+                transform: none !important;
+            }
+            @keyframes gentleFadeIn {
+                from { opacity: 0; transform: translateY(5px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            /* D. REMOVED ALIGNMENT FIXES (Reverted to Default as requested) */
+
+            /* E. PREVENT WHITE FLASH ON HTML */
+            html {
+                background-color: #121212; /* Dark background default */
+            }
+
+            /* --- END V16 --- */
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
@@ -4144,6 +4216,31 @@ body { font-size: 19px; }
         swapButton('saveDataBtn', 'saveCurrentData');
     }, 200);
 })();
+</script>
+
+<script>
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        const shield = document.getElementById('fouc-shield');
+        if(shield) {
+            shield.style.opacity = '0';
+            setTimeout(() => shield.remove(), 500);
+        }
+    }, 600);
+
+    const stopSnow = function() {
+        const c = document.getElementById('confettiCanvas');
+        if(c) {
+             c.style.display = 'none';
+             setTimeout(() => c.remove(), 1000);
+        }
+    };
+
+    const btnStart = document.getElementById('welcomeStart');
+    const btnLater = document.getElementById('welcomeLater');
+    if(btnStart) btnStart.addEventListener('click', stopSnow);
+    if(btnLater) btnLater.addEventListener('click', stopSnow);
+});
 </script>
 </body>
 </html>
