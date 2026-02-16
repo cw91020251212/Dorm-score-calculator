@@ -25,6 +25,9 @@
             --hint-pink: #ffb6c1;
             --language-bg: #90EE90; /* 淺綠色背景（不透明） */
         }
+
+        /* 強調：本機儲存（中英文共用同一元素） */
+        #storageRule { color: #ffb300; }
         
         * {
             box-sizing: border-box;
@@ -4121,11 +4124,36 @@ body { font-size: 19px; }
     var h3 = document.createElement('h3'); var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh'); h3.textContent = isZh ? '選擇要載入的檔名' : 'Select a record to load'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; box.appendChild(h3);
     var list = document.createElement('div'); box.appendChild(list);
     var chosen = null;
-    keys.forEach(function(k){
-      var row = document.createElement('div'); row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;';
-      var r = document.createElement('input'); r.type='radio'; r.style.transform='scale(1.5)'; r.style.marginRight='12px'; r.name='load_one'; r.value=k; r.addEventListener('change', function(){ chosen = k; });
-      var lab = document.createElement('label'); lab.textContent = k; lab.style.cursor = 'pointer'; lab.style.fontSize = '1.35rem'; lab.style.lineHeight='1.6';
-      row.appendChild(r); row.appendChild(lab); list.appendChild(row);
+    keys.forEach(function(k, idx){
+      var row = document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;cursor:pointer;';
+
+      var r = document.createElement('input');
+      r.type='radio';
+      r.style.transform='scale(1.5)';
+      r.style.marginRight='12px';
+      r.name='load_one';
+      r.value=k;
+      r.id = 'load_one_' + idx;
+      r.addEventListener('change', function(){ chosen = k; });
+
+      var lab = document.createElement('label');
+      lab.textContent = k;
+      lab.htmlFor = r.id; // 點檔名即等於點 radio
+      lab.style.cursor = 'pointer';
+      lab.style.fontSize = '1.35rem';
+      lab.style.lineHeight='1.6';
+
+      // 讓點整列任意位置也能選取（避免重複觸發）
+      row.addEventListener('click', function(e){
+        if (e.target === r) return;
+        r.checked = true;
+        r.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+
+      row.appendChild(r);
+      row.appendChild(lab);
+      list.appendChild(row);
     });
     var foot = document.createElement('div'); foot.style.cssText='display:flex;justify-content:flex-end;margin-top:12px;';
     var cancelB = mkBtn(isZh ? '取消' : 'Cancel'); cancelB.onclick = function(){ document.body.removeChild(ov); };
@@ -4140,16 +4168,28 @@ body { font-size: 19px; }
     var h3 = document.createElement('h3'); h3.textContent = isZh ? '選擇要刪除的檔名（可多選）' : 'Select records to delete (multi-select)'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; box.appendChild(h3);
     var list = document.createElement('div'); box.appendChild(list);
     var chosen = {};
-    var row0 = document.createElement('div'); row0.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;';
-    var c0 = document.createElement('input'); c0.type='checkbox'; c0.value='__DELETE_ALL__';
-    var lab0 = document.createElement('label'); lab0.textContent= isZh ? '刪除全部（危險）' : 'Delete ALL (Danger)';
+    var row0 = document.createElement('div'); row0.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;cursor:pointer;';
+    var c0 = document.createElement('input'); c0.type='checkbox'; c0.value='__DELETE_ALL__'; c0.id='delete_all';
+    var lab0 = document.createElement('label'); lab0.textContent= isZh ? '刪除全部（危險）' : 'Delete ALL (Danger)'; lab0.htmlFor=c0.id; lab0.style.cursor='pointer';
     c0.addEventListener('change', function(){ if(c0.checked){ chosen = {'__DELETE_ALL__': true}; } else { delete chosen['__DELETE_ALL__']; } });
+    row0.addEventListener('click', function(e){
+      if (e.target===c0) return;
+      if (e.target===lab0 || (e.target && e.target.closest && e.target.closest('label'))) return;
+      c0.checked = !c0.checked;
+      c0.dispatchEvent(new Event('change',{bubbles:true}));
+    });
     row0.appendChild(c0); row0.appendChild(lab0); list.appendChild(row0);
-    keys.forEach(function(k){
-      var row = document.createElement('div'); row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;';
-      var c = document.createElement('input'); c.type='checkbox'; c.style.transform='scale(1.5)'; c.style.marginRight='12px'; c.value=k;
-      var lab = document.createElement('label'); lab.textContent = k; lab.style.cursor='pointer';
+    keys.forEach(function(k, idx){
+      var row = document.createElement('div'); row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;cursor:pointer;';
+      var c = document.createElement('input'); c.type='checkbox'; c.style.transform='scale(1.5)'; c.style.marginRight='12px'; c.value=k; c.id='delete_one_' + idx;
+      var lab = document.createElement('label'); lab.textContent = k; lab.htmlFor=c.id; lab.style.cursor='pointer';
       c.addEventListener('change', function(){ if(c.checked){ if(!chosen['__DELETE_ALL__']) chosen[k] = true; } else { delete chosen[k]; } });
+      row.addEventListener('click', function(e){
+        if (e.target===c) return;
+        if (e.target===lab || (e.target && e.target.closest && e.target.closest('label'))) return;
+        c.checked = !c.checked;
+        c.dispatchEvent(new Event('change',{bubbles:true}));
+      });
       row.appendChild(c); row.appendChild(lab); list.appendChild(row);
     });
     var foot = document.createElement('div'); foot.style.cssText='display:flex;justify-content:flex-end;margin-top:12px;';
