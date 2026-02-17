@@ -1162,6 +1162,18 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 
 </style>
         <style>
+        /* ===== 背景模糊化（任何彈窗顯示時）===== */
+        body.popup-blur-active .container {
+            filter: blur(6px);
+            -webkit-filter: blur(6px);
+            transition: filter 150ms ease;
+            will-change: filter;
+            pointer-events: none; /* 避免彈窗開啟時操作到背景 */
+        }
+        body:not(.popup-blur-active) .container {
+            transition: filter 150ms ease;
+        }
+
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
         .modal header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; }
@@ -3610,11 +3622,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 </script>
+
+    <!-- 背景模糊控制：偵測任何彈窗顯示即套用 blur -->
+    <script>
+    (function() {
+        function isVisible(el) {
+            if (!el) return false;
+            const cs = window.getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) return false;
+            return el.getClientRects && el.getClientRects().length > 0;
+        }
+
+        function hasActivePopup() {
+            const candidates = document.querySelectorAll('.modal, .modal-overlay, .mini-confirm, [role="dialog"], [aria-modal="true"]');
+            for (const el of candidates) {
+                if (isVisible(el)) return true;
+            }
+            return false;
+        }
+
+        function updateBlurState() {
+            document.body.classList.toggle('popup-blur-active', hasActivePopup());
+        }
+
+        // 初始檢查
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateBlurState, { once: true });
+        } else {
+            updateBlurState();
+        }
+
+        // 監聽彈窗 display/style/class/aria-hidden 變更
+        const mo = new MutationObserver(() => updateBlurState());
+        mo.observe(document.documentElement, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['style', 'class', 'aria-hidden', 'open', 'hidden']
+        });
+
+        // 保險：某些情況下 inline style 變更不觸發預期重算，做輕量輪詢
+        setInterval(updateBlurState, 350);
+    })();
+    </script>
+
         <div id="infoOverlay" class="modal-overlay" aria-hidden="true"></div>
         <div id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle" aria-hidden="true">
             <header>
                 <h3 id="infoTitle"><i class="fas fa-info-circle"></i> 使用須知</h3>
-                <button id="closeModalX" class="btn btn-warning no-text-shadow btn-small btn-3d" aria-label="關閉"><i class="fas fa-times"></i></button>
             </header>
             <div class="modal-body">
                 <p id="scoringLabel" class="label">計分準則（簡述）：</p>
