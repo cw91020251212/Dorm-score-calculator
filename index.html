@@ -3962,22 +3962,23 @@ body { font-size: 19px; }
 /* 未點選前都要清楚見到：提升第二色透明度 */
 /* 淺紫＋藍（左→右橫向漸變） */
 :root {
-  --input-grad-1: rgba(186, 164, 255, 0.20);  /* light purple */
-  --input-grad-2: rgba(126, 200, 255, 0.32);  /* light blue */
-  --input-grad-1-focus: rgba(186, 164, 255, 0.28);
-  --input-grad-2-focus: rgba(126, 200, 255, 0.40);
+  /* 更明顯：加深顏色層透明度 */
+  --input-grad-1: rgba(186, 164, 255, 0.32);  /* light purple */
+  --input-grad-2: rgba(126, 200, 255, 0.46);  /* light blue */
+  --input-grad-1-focus: rgba(186, 164, 255, 0.44);
+  --input-grad-2-focus: rgba(126, 200, 255, 0.58);
 }
 .theme-dark {
-  --input-grad-1: rgba(186, 164, 255, 0.18);
-  --input-grad-2: rgba(126, 200, 255, 0.30);
-  --input-grad-1-focus: rgba(186, 164, 255, 0.26);
-  --input-grad-2-focus: rgba(126, 200, 255, 0.38);
+  --input-grad-1: rgba(186, 164, 255, 0.30);
+  --input-grad-2: rgba(126, 200, 255, 0.44);
+  --input-grad-1-focus: rgba(186, 164, 255, 0.42);
+  --input-grad-2-focus: rgba(126, 200, 255, 0.56);
 }
 .theme-light {
-  --input-grad-1: rgba(186, 164, 255, 0.22);
-  --input-grad-2: rgba(126, 200, 255, 0.34);
-  --input-grad-1-focus: rgba(186, 164, 255, 0.30);
-  --input-grad-2-focus: rgba(126, 200, 255, 0.42);
+  --input-grad-1: rgba(186, 164, 255, 0.34);
+  --input-grad-2: rgba(126, 200, 255, 0.48);
+  --input-grad-1-focus: rgba(186, 164, 255, 0.46);
+  --input-grad-2-focus: rgba(126, 200, 255, 0.60);
 }
 
 /* 預設（未 focus）已顯示漸變：左 → 右
