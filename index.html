@@ -4000,6 +4000,21 @@ body { font-size: 19px; }
 input.input-control, select.input-control, textarea.input-control {
   background-color: transparent !important;
 }
+
+/* Placeholder（例如：30000）對比度提升 */
+.input-control::placeholder,
+.theme-light .input-control::placeholder,
+.theme-dark .input-control::placeholder {
+  color: rgba(210,210,210,0.82) !important; /* 淺灰 */
+  opacity: 1 !important; /* Firefox */
+  text-shadow: 0 1px 1px rgba(0,0,0,0.22);
+}
+/* WebKit / Edge */
+.input-control::-webkit-input-placeholder,
+.theme-light .input-control::-webkit-input-placeholder,
+.theme-dark .input-control::-webkit-input-placeholder {
+  color: rgba(210,210,210,0.82) !important; /* 淺灰 */
+}
 .button-group .btn { height: 58px !important; font-size: 21px !important; padding: 0 20px !important; min-width: 180px !important; }
 
 /* === SAVE MODAL (Big) === */
