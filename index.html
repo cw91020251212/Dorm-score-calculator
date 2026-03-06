@@ -2700,11 +2700,27 @@ const translations = {
             if (settings.fontScale) {
                 applyFontScale(settings.fontScale);
             }
-            const theme = settings.theme === 'light' ? 'theme-light' : 'theme-dark';
-            document.documentElement.classList.remove('theme-light','theme-dark');
-            document.documentElement.classList.add(theme);
-            document.body.style.background = `linear-gradient(135deg, var(--primary), var(--primary-dark))`;
-            document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-light') || '#fff';
+
+            // Theme migration/compat:
+            // - keep ONLY paper-texture light mode
+            let t = settings.theme || 'dark';
+            if (t === 'light' || t === 'light-simple') t = 'light-vintage';
+
+            const root = document.documentElement;
+            root.classList.remove('theme-dark','theme-light','theme-light-simple','theme-light-vintage');
+
+            if (t === 'light-vintage') {
+                root.classList.add('theme-light-vintage');
+            } else {
+                root.classList.add('theme-dark');
+            }
+
+            // Use CSS variable for background so vintage texture can work
+            const bg = getComputedStyle(root).getPropertyValue('--body-bg').trim();
+            document.body.style.background = bg || `linear-gradient(135deg, var(--primary), var(--primary-dark))`;
+
+            const fg = getComputedStyle(root).getPropertyValue('--text-light').trim();
+            document.body.style.color = fg || '#fff';
         }
         
         function getUiSettings() {
@@ -2733,7 +2749,12 @@ const translations = {
                 settings.fontScale = Math.max(settings.fontScale - 0.1, 0.8);
                 setUiSettings(settings);
             });
-            if (themeBtn) themeBtn.addEventListener('click', () => { settings.theme = settings.theme === 'light' ? 'dark' : 'light'; setUiSettings(settings); });
+            if (themeBtn) themeBtn.addEventListener('click', () => {
+                // Cycle: dark <-> light-vintage (paper texture only)
+                const t = (settings.theme === 'light' || settings.theme === 'light-simple') ? 'light-vintage' : (settings.theme || 'dark');
+                settings.theme = (t === 'dark') ? 'light-vintage' : 'dark';
+                setUiSettings(settings);
+            });
             
         }
         
@@ -3826,6 +3847,213 @@ document.addEventListener('DOMContentLoaded', function() {
   #languageToggle.language-toggle { background-color: var(--language-bg) !important; color: #000 !important; border: 1px solid #7fd67f !important; }
   #qrButton.qr-toggle { background-color: #555 !important; color: #fff !important; border: 1px solid #333 !important; }
 
+  /* === 2026-03-07: 光明復古主題（紙紋）=== */
+  .theme-light-vintage {
+    --text-light: #3a2e22;
+    --text-dark:  #3a2e22;
+    --primary: #f1e9d6;       /* 背景米黃 */
+    --primary-dark: #e7d9b8;  /* 深一級卡其 */
+    --accent: #c7a97a;        /* 卡其啡 */
+    --accent-dark: #a88455;
+    --warning: #e7b21a;       /* 金黃點綴 */
+    --success: #6faf8a;
+    --danger: #c86c6c;
+    --card-bg: rgba(251, 246, 234, 0.92);
+    --section-bg: rgba(251, 246, 234, 0.86);
+    --body-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+    /* 必填星號/提示：原本橙紅(#ff6b6b)喺米黃底會唔夠清，改深啡紅 */
+    --required: #7a2f2f;
+  }
+
+  /* 紙紋版：在漸變上加輕微直條紋（舊舊地） */
+  .theme-light-vintage {
+    --body-bg:
+      linear-gradient(135deg, #f3ecd9, #e6d5b1),
+      repeating-linear-gradient(
+        90deg,
+        rgba(58, 46, 34, 0.030) 0px,
+        rgba(58, 46, 34, 0.030) 2px,
+        rgba(255, 255, 255, 0.0) 2px,
+        rgba(255, 255, 255, 0.0) 7px
+      );
+  }
+
+  /* 共同元件風格（兩個光明版共用） */
+  .theme-light-vintage header {
+    background: linear-gradient(135deg, #5e7fbc, #4b6ba6) !important; /* 灰藍標題條（參考圖） */
+    border: 3px solid var(--warning) !important;                      /* 金邊 */
+    box-shadow: 0 10px 18px rgba(58,46,34,0.25) !important;
+  }
+  .theme-light-vintage h1 { color: #ffffff !important; text-shadow: none !important; }
+
+  .theme-light-vintage .form-section,
+  .theme-light-vintage .result-section,
+  .theme-light-vintage .data-section {
+    background: var(--section-bg) !important;
+    border: 2px solid rgba(167, 132, 85, 0.55) !important;
+    box-shadow: 0 10px 16px rgba(58,46,34,0.18) !important;
+    color: var(--text-dark) !important;
+  }
+
+  /* 紙紋版：卡片加輕微紋理 */
+  .theme-light-vintage .form-section,
+  .theme-light-vintage .result-section,
+  .theme-light-vintage .data-section {
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(58, 46, 34, 0.025) 0px,
+        rgba(58, 46, 34, 0.025) 2px,
+        rgba(255, 255, 255, 0.0) 2px,
+        rgba(255, 255, 255, 0.0) 8px
+      ),
+      var(--section-bg) !important;
+  }
+
+  .theme-light-vintage label,
+  .theme-light-vintage .section-title,
+  .theme-light-vintage .result-label,
+  .theme-light-vintage .result-value {
+    color: var(--text-dark) !important;
+    text-shadow: none !important;
+  }
+
+  /* 紅圈位置（總分）對比加強：改深色字＋淺底 */
+  .theme-light-vintage .highlight-score {
+    color: #2b1a12 !important;                 /* 深啡近黑 */
+    background: rgba(255, 243, 176, 0.92) !important; /* 淺黃色底（更醒目） */
+    border-color: rgba(43,26,18,0.75) !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65) !important; /* 輕微提字 */
+  }
+
+  .theme-light-vintage .input-control {
+    background: rgba(255,255,255,0.65) !important;
+    color: var(--text-dark) !important;
+    border: 2px solid rgba(167, 132, 85, 0.55) !important;
+    box-shadow: inset 0 2px 6px rgba(58,46,34,0.12) !important;
+  }
+  .theme-light-vintage .input-control::placeholder { color: rgba(58,46,34,0.45) !important; }
+
+  .theme-light-vintage .btn {
+    background: rgba(251, 246, 234, 0.92) !important;
+    color: var(--text-dark) !important;
+    border: 2px solid rgba(167, 132, 85, 0.70) !important;
+    box-shadow: 0 6px 12px rgba(58,46,34,0.20) !important;
+  }
+  .theme-light-vintage .btn:hover { filter: brightness(0.98); transform: translateY(-1px); }
+
+  /* D. 主要功能按鈕：用復古啡色系做分別（唔再清一色） */
+  .theme-light-vintage .btn-primary {
+    background: linear-gradient(180deg, #d2b48c, #c19a6b) !important; /* 卡其 */
+    border-color: rgba(122, 79, 36, 0.55) !important;
+    color: #2f241a !important;
+  }
+  .theme-light-vintage .btn-success {
+    background: linear-gradient(180deg, #b9d3a6, #8fb58a) !important; /* 草木綠 */
+    border-color: rgba(58, 88, 52, 0.40) !important;
+    color: #1f2b1d !important;
+  }
+  .theme-light-vintage .btn-warning {
+    background: linear-gradient(180deg, #f3d37a, #e3b956) !important; /* 復古金 */
+    border-color: rgba(128, 88, 18, 0.40) !important;
+    color: #3a2a10 !important;
+  }
+  .theme-light-vintage .btn-danger {
+    background: linear-gradient(180deg, #d8a1a1, #c47474) !important; /* 乾玫瑰紅 */
+    border-color: rgba(92, 38, 38, 0.45) !important;
+    color: #2b1515 !important;
+  }
+
+  /* 特別：計算/重置按鈕（就算class唔同都盡量覆蓋） */
+  .theme-light-vintage #calcBtn { background: linear-gradient(180deg, #b9d3a6, #8fb58a) !important; color: #1f2b1d !important; }
+  .theme-light-vintage #resetBtn { background: linear-gradient(180deg, #d8a1a1, #c47474) !important; color: #2b1515 !important; }
+
+  /* 4個圓形功能鍵：保持圓形，但用復古灰米色 */
+  .theme-light-vintage #fontInc,
+  .theme-light-vintage #fontDec,
+  .theme-light-vintage #themeToggle,
+  .theme-light-vintage #infoBtn {
+    background: rgba(255,255,255,0.55) !important;
+    border: 1px solid rgba(167, 132, 85, 0.55) !important;
+    color: rgba(58,46,34,0.85) !important;
+  }
+
+  /* A. 細字/提示：提升對比（避免與米黃底太接近） */
+  .theme-light-vintage .input-hint,
+  .theme-light-vintage .input-hint span,
+  .theme-light-vintage #divisorHint {
+    color: #5a3f2b !important;
+    background: rgba(255,255,255,0.55) !important;
+    border: 1px solid rgba(167,132,85,0.35) !important;
+  }
+  .theme-light-vintage .disclaimer,
+  .theme-light-vintage #disclaimerResult,
+  .theme-light-vintage #disclaimerFooter {
+    color: #5a3f2b !important;
+    opacity: 0.95 !important;
+  }
+  .theme-light-vintage .welcome-disclaimer {
+    color: rgba(58,46,34,0.72) !important;
+    border-top-color: rgba(167,132,85,0.35) !important;
+  }
+
+  /* B. 狀態列：移除強制黃字，改深色文字 + 復古底 */
+  .theme-light-vintage .status-bar {
+    background: rgba(251,246,234,0.92) !important;
+    border-top: 2px solid rgba(167,132,85,0.55) !important;
+    box-shadow: 0 -10px 16px rgba(58,46,34,0.18) !important;
+  }
+  .theme-light-vintage .status-message,
+  .theme-light-vintage .status-message span,
+  .theme-light-vintage #statusText {
+    color: #3a2e22 !important;
+    text-shadow: none !important;
+  }
+  .theme-light-vintage .status-toggle .status-btn {
+    background: rgba(255,255,255,0.55) !important;
+    color: #3a2e22 !important;
+    border: 1px solid rgba(167,132,85,0.55) !important;
+  }
+  .theme-light-vintage .status-btn span { text-shadow: none !important; }
+
+  /* C. Footer：由灰字改深啡，對比更清楚 */
+  .theme-light-vintage footer { color: rgba(58,46,34,0.65) !important; }
+
+  /* E. 粉紅提示字（你圈起嗰啲）再加深 + 取消淡化 */
+  .theme-light-vintage { --hint-pink: #7a2f2f; } /* 深啡紅，米黃底清楚 */
+  .theme-light-vintage [style*="var(--hint-pink)"] { opacity: 1 !important; }
+  .theme-light-vintage .input-hint, 
+  .theme-light-vintage .input-hint span#divisorHint { color: #5a3f2b !important; }
+
+  /* F. 結果區佔位提示文字（填寫左側表單後點擊...）加深 */
+  .theme-light-vintage .result-container {
+    background: rgba(255,255,255,0.35) !important;
+    border: 2px solid rgba(167,132,85,0.40) !important;
+  }
+  .theme-light-vintage .result-placeholder { 
+    color: rgba(58,46,34,0.75) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6) !important;
+  }
+  .theme-light-vintage .result-placeholder i { color: rgba(167,132,85,0.95) !important; }
+
+  /* G. Modal（使用須知/儲存確認 等）在紙紋光明：避免內文用 #aaa / 淺色 */
+  .theme-light-vintage #infoModal .modal-body,
+  .theme-light-vintage #infoModal .modal-body * { color: #3a2e22 !important; }
+  .theme-light-vintage #infoModal .label { font-weight: 800 !important; }
+
+  .theme-light-vintage #saveNoticeModal .modal {
+    background: rgba(251,246,234,0.96) !important;
+    color: #3a2e22 !important;
+    border: 2px solid rgba(167,132,85,0.55) !important;
+    box-shadow: 0 10px 30px rgba(58,46,34,0.25) !important;
+  }
+  .theme-light-vintage #saveNoticeModal .modal-body,
+  .theme-light-vintage #saveNoticeModal .modal-body * {
+    color: #3a2e22 !important;
+  }
+
             
             /* --- 2026-02-09 V16: STABILITY + NO-FLASH ONLY --- */
 
@@ -3864,6 +4092,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 justify-content: center !important;
                 display: flex !important;
                 gap: 15px !important;
+            }
+
+            /* B-1. HEADER: 垂直置中標題 + 功能鍵（依使用者要求） */
+            .container > header {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important; /* 上下置中 */
+                align-items: center !important;      /* 左右置中 */
+                min-height: 150px !important;        /* 讓置中效果更明顯 */
+                padding: 22px 16px !important;       /* 上下左右對稱 */
+            }
+            .container > header .display-controls {
+                margin-top: 14px !important;         /* 把4鍵往下移 */
+                margin-bottom: 0 !important;
             }
 
             /* B. HEADER: FIT CONTENT (Stability) */
@@ -4158,11 +4400,20 @@ input.input-control, select.input-control, textarea.input-control {
   function makeOverlay(){
     const ov = document.createElement('div');
     ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+
+    const isVintage = document.documentElement.classList.contains('theme-light-vintage');
     const box = document.createElement('div');
-    box.style.cssText = 'max-width:90vw;width:620px;background:#1f2937;color:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px;';
+
+    // Light vintage theme: use paper card, otherwise keep dark dialog
+    if (isVintage) {
+      box.style.cssText = 'max-width:90vw;width:620px;background:rgba(251,246,234,0.96);color:#3a2e22;border-radius:16px;box-shadow:0 10px 30px rgba(58,46,34,.25);padding:18px;border:2px solid rgba(167,132,85,0.55);';
+    } else {
+      box.style.cssText = 'max-width:90vw;width:620px;background:#1f2937;color:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px;';
+    }
+
     ov.appendChild(box);
     ov.addEventListener('click', function(e){ if(e.target===ov) document.body.removeChild(ov); });
-    return {ov: ov, box: box};
+    return {ov: ov, box: box, isVintage: isVintage};
   }
   function mkBtn(text, type){
     var b = document.createElement('button');
@@ -4175,8 +4426,8 @@ input.input-control, select.input-control, textarea.input-control {
   }
 
   function customLoadModal(keys){
-    var ovBox = makeOverlay(); var ov = ovBox.ov; var box = ovBox.box;
-    var h3 = document.createElement('h3'); var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh'); h3.textContent = isZh ? '選擇要載入的檔名' : 'Select a record to load'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; box.appendChild(h3);
+    var ovBox = makeOverlay(); var ov = ovBox.ov; var box = ovBox.box; var isVintage = !!ovBox.isVintage;
+    var h3 = document.createElement('h3'); var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh'); h3.textContent = isZh ? '選擇要載入的檔名' : 'Select a record to load'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; h3.style.setProperty('color', isVintage ? '#3a2e22' : '#fff', 'important'); box.appendChild(h3);
     var list = document.createElement('div'); box.appendChild(list);
     var chosen = null;
     keys.forEach(function(k, idx){
@@ -4198,6 +4449,7 @@ input.input-control, select.input-control, textarea.input-control {
       lab.style.cursor = 'pointer';
       lab.style.fontSize = '1.35rem';
       lab.style.lineHeight='1.6';
+      lab.style.setProperty('color', isVintage ? '#3a2e22' : '#fff', 'important');
 
       // 讓點整列任意位置也能選取（避免重複觸發）
       row.addEventListener('click', function(e){
@@ -4219,13 +4471,13 @@ input.input-control, select.input-control, textarea.input-control {
 
   function customDeleteModal(keys){
     var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh');
-    var ovBox = makeOverlay(); var ov = ovBox.ov; var box = ovBox.box;
-    var h3 = document.createElement('h3'); h3.textContent = isZh ? '選擇要刪除的檔名（可多選）' : 'Select records to delete (multi-select)'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; box.appendChild(h3);
+    var ovBox = makeOverlay(); var ov = ovBox.ov; var box = ovBox.box; var isVintage = !!ovBox.isVintage;
+    var h3 = document.createElement('h3'); h3.textContent = isZh ? '選擇要刪除的檔名（可多選）' : 'Select records to delete (multi-select)'; h3.style.margin = '10px 0 20px'; h3.style.fontSize = '1.8rem'; h3.style.fontWeight='bold'; h3.style.setProperty('color', isVintage ? '#3a2e22' : '#fff', 'important'); box.appendChild(h3);
     var list = document.createElement('div'); box.appendChild(list);
     var chosen = {};
     var row0 = document.createElement('div'); row0.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;cursor:pointer;';
     var c0 = document.createElement('input'); c0.type='checkbox'; c0.value='__DELETE_ALL__'; c0.id='delete_all';
-    var lab0 = document.createElement('label'); lab0.textContent= isZh ? '刪除全部（危險）' : 'Delete ALL (Danger)'; lab0.htmlFor=c0.id; lab0.style.cursor='pointer';
+    var lab0 = document.createElement('label'); lab0.textContent= isZh ? '刪除全部（危險）' : 'Delete ALL (Danger)'; lab0.htmlFor=c0.id; lab0.style.cursor='pointer'; lab0.style.setProperty('color', isVintage ? '#3a2e22' : '#fff', 'important');
     c0.addEventListener('change', function(){ if(c0.checked){ chosen = {'__DELETE_ALL__': true}; } else { delete chosen['__DELETE_ALL__']; } });
     row0.addEventListener('click', function(e){
       if (e.target===c0) return;
@@ -4237,7 +4489,7 @@ input.input-control, select.input-control, textarea.input-control {
     keys.forEach(function(k, idx){
       var row = document.createElement('div'); row.style.cssText='display:flex;align-items:center;margin:12px 0;gap:10px;cursor:pointer;';
       var c = document.createElement('input'); c.type='checkbox'; c.style.transform='scale(1.5)'; c.style.marginRight='12px'; c.value=k; c.id='delete_one_' + idx;
-      var lab = document.createElement('label'); lab.textContent = k; lab.htmlFor=c.id; lab.style.cursor='pointer';
+      var lab = document.createElement('label'); lab.textContent = k; lab.htmlFor=c.id; lab.style.cursor='pointer'; lab.style.setProperty('color', isVintage ? '#3a2e22' : '#fff', 'important');
       c.addEventListener('change', function(){ if(c.checked){ if(!chosen['__DELETE_ALL__']) chosen[k] = true; } else { delete chosen[k]; } });
       row.addEventListener('click', function(e){
         if (e.target===c) return;
