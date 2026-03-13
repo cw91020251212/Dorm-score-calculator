@@ -197,8 +197,62 @@
             justify-content: center;
             gap: 8px;
             position: relative;
+            overflow: hidden; /* 反光層 */
             white-space: nowrap; /* 防止文字換行導致高度變大 */
             line-height: 44px; /* 垂直置中配合固定高度 */
+        }
+
+        /* 全站按鈕：反光 + 立體感（包括 status-btn / mini-btn / action-btn）
+           注意：用 !important 強制蓋過後面零散的按鈕樣式，確保肉眼可見 */
+        :is(button, .btn, .status-btn, .mini-btn, .action-btn) {
+            position: relative !important;
+            overflow: hidden !important;
+            transform: translateZ(0);
+            z-index: 0;
+            border-top-color: rgba(255,255,255,0.45) !important;
+            border-bottom-color: rgba(0,0,0,0.25) !important;
+            box-shadow:
+                0 12px 22px rgba(0,0,0,0.30),
+                inset 0 2px 0 rgba(255,255,255,0.55),
+                inset 0 -2px 0 rgba(0,0,0,0.18) !important;
+        }
+
+        /* 反光層：放喺按鈕內容上面，但唔遮文字（文字會用 z-index:2） */
+        :is(button, .btn, .status-btn, .mini-btn, .action-btn)::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            z-index: 1;
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.78) 0%,
+                rgba(255,255,255,0.28) 26%,
+                rgba(255,255,255,0.00) 60%);
+            opacity: 0.85;
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        /* 內容層：確保永遠喺反光層之上 */
+        :is(button, .btn, .status-btn, .mini-btn, .action-btn) > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        :is(button, .btn, .status-btn, .mini-btn, .action-btn):hover {
+            filter: brightness(1.06) saturate(1.04) !important;
+            box-shadow:
+                0 16px 28px rgba(0,0,0,0.34),
+                inset 0 2px 0 rgba(255,255,255,0.62),
+                inset 0 -2px 0 rgba(0,0,0,0.16) !important;
+        }
+
+        :is(button, .btn, .status-btn, .mini-btn, .action-btn):active {
+            transform: translateY(2px) !important;
+            filter: brightness(0.98) saturate(1.02) !important;
+            box-shadow:
+                0 8px 16px rgba(0,0,0,0.26),
+                inset 0 1px 0 rgba(255,255,255,0.45),
+                inset 0 -2px 0 rgba(0,0,0,0.22) !important;
         }
         
         /* 按鈕文字黑色邊框效果 */
@@ -531,16 +585,17 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.35);
-            transition: transform .3s ease;
-        }
-        .status-bar.collapsed { transform: translateY(100%); }
             padding: 8px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: transform .3s ease;
+            z-index: 5000; /* 必須蓋過所有按鈕（包括載入資料） */
         }
+        .status-bar.collapsed { transform: translateY(100%); }
         
         .status-message {
             display: flex;
