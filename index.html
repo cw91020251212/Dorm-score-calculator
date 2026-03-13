@@ -179,6 +179,7 @@
             gap: 15px;
             margin-top: 25px;
             flex-wrap: wrap;
+            justify-content: center; /* 保持左右對稱/置中 */
         }
         
         .btn {
@@ -797,7 +798,7 @@
                 .button-group { flex-direction: row !important; }
             }
             /* 強制兩個主要按鈕水平排列 */
-            .button-group { flex-direction: row !important; justify-content: flex-start; align-items: center; gap: 12px; }
+            .button-group { flex-direction: row !important; justify-content: center; align-items: center; gap: 12px; }
             /* 統一按鈕高度，避免不同語言造成尺寸變化 */
             .button-group .btn { height: 44px; padding: 0 16px; }
             .button-group .btn { flex: 0 0 auto; min-width: 160px; }
@@ -942,6 +943,19 @@
                 --text-light: #fff;
             }
             .theme-dark .input-control { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--text-light); }
+
+            /* 修正：Dark Mode 標題卡片四角一致圓角（避免左下角變直角） */
+            .theme-dark header {
+                border-radius: 15px !important;
+                overflow: hidden !important; /* 確保內層透明/裝飾層被圓角裁切 */
+            }
+            .theme-dark header .header-decoration {
+                border-radius: inherit !important;
+                overflow: hidden !important;
+            }
+            .theme-dark header .display-controls {
+                border-radius: 10px !important; /* 工具列本身亦保持四角圓 */
+            }
             
             .theme-light {
                 /* 光明版：以深色主題為基礎整體提亮、透明度降低 */
@@ -964,8 +978,8 @@
             .theme-light .result-label { color: #fff !important; }
             /* 光明版全面提亮（整體更亮），並保持白色文字清晰可讀 */
             .theme-light {
-                --primary: #8e9caf;          /* 亮：極淡粉白 */
-                --primary-dark: #8794a4;     /* 亮：極淡暖白 */
+                --primary: #b7b7b7;          /* 背景：中性灰（桌面更柔和） */
+                --primary-dark: #9b9b9b;     /* 背景：深一階灰 */
                 --accent: #7ec8ff;           /* 亮：柔藍重點色 */
                 --accent-dark: #4f9de8;      /* 原藍作深重點 */
                 --success: #8bd6b1;          /* 亮：柔綠 */
@@ -982,13 +996,14 @@
             }
             .theme-light .form-section, .theme-light .result-section, .theme-light .data-section { 
                 background: var(--section-bg) !important; 
+                border: 1px solid #7a5a44 !important; /* 視窗框線：深啡色 */
                 box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important; 
             }
             /* 亮版下：輸入欄與按鈕跟隨整體風格，加深邊界提升可讀性 */
             .theme-light .input-control { 
                 background: rgba(255,255,255,0.12) !important; 
                 color: #fff !important; 
-                border-color: rgba(255,255,255,0.30) !important; 
+                border-color: #7a5a44 !important; /* 輸入欄框線：深啡色 */ 
             }
             .theme-light .btn { 
                 background: rgba(255,255,255,0.14) !important; 
@@ -1043,7 +1058,7 @@
 
             /* 3) 光明版：輸入框邊界加深一點，確保白字易讀 */
             .theme-light .input-control { 
-                border-color: rgba(255,255,255,0.30) !important; 
+                border-color: #7a5a44 !important; /* 輸入欄框線：深啡色 */ 
                 background: rgba(255,255,255,0.12) !important; 
             }
     /* 歡迎視窗樣式與動畫 */
@@ -2733,14 +2748,32 @@ const translations = {
         }
         
         function initUiControls() {
-            const settings = getUiSettings();
-            if (!settings.fontScale) settings.fontScale = 1.0; // 比例 0.8–1.6
-            if (!settings.theme) settings.theme = 'dark'; // 第一次載入預設黑暗，之後記憶使用者選擇
+            // 需求：
+            // 1) 第一次開啟（無 uiSettings）一定用黑暗版 + 預設字體大小
+            // 2) 之後開啟：記住用家上次選擇嘅主題（暗/光明復古）同字體大小
+            const raw = localStorage.getItem('uiSettings');
+            let settings = {};
+            if (!raw) {
+                // 全新安裝/第一次開：固定預設
+                settings = { theme: 'dark', fontScale: 1.0 };
+                localStorage.setItem('uiSettings', JSON.stringify(settings));
+            } else {
+                settings = getUiSettings();
+                // 容錯：缺欄位就補返預設，但唔覆蓋用家選擇
+                if (!settings || typeof settings !== 'object') settings = {};
+                if (!settings.theme) settings.theme = 'dark';
+                if (!settings.fontScale) settings.fontScale = 1.0;
+                // 舊版本兼容：light/light-simple 一律當 light-vintage
+                if (settings.theme === 'light' || settings.theme === 'light-simple') settings.theme = 'light-vintage';
+                localStorage.setItem('uiSettings', JSON.stringify(settings));
+            }
+
             applyUiSettings(settings);
+
             const inc = document.getElementById('fontInc');
             const dec = document.getElementById('fontDec');
             const themeBtn = document.getElementById('themeToggle');
-            
+
             if (inc) inc.addEventListener('click', () => {
                 settings.fontScale = Math.min(settings.fontScale + 0.1, 1.6);
                 setUiSettings(settings);
@@ -2755,7 +2788,7 @@ const translations = {
                 settings.theme = (t === 'dark') ? 'light-vintage' : 'dark';
                 setUiSettings(settings);
             });
-            
+
         }
         
         // 事件監聽
@@ -3851,8 +3884,8 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage {
     --text-light: #3a2e22;
     --text-dark:  #3a2e22;
-    --primary: #f1e9d6;       /* 背景米黃 */
-    --primary-dark: #e7d9b8;  /* 深一級卡其 */
+    --primary: #b7b7b7;       /* 背景改灰 */
+    --primary-dark: #9b9b9b;  /* 深一階灰 */
     --accent: #c7a97a;        /* 卡其啡 */
     --accent-dark: #a88455;
     --warning: #e7b21a;       /* 金黃點綴 */
@@ -3862,14 +3895,14 @@ document.addEventListener('DOMContentLoaded', function() {
     --section-bg: rgba(251, 246, 234, 0.86);
     --body-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
 
-    /* 必填星號/提示：原本橙紅(#ff6b6b)喺米黃底會唔夠清，改深啡紅 */
-    --required: #7a2f2f;
+    /* 必填星號（你圈住嗰啲）：改橙紅色，更醒目 */
+    --required: #ff4d2e;
   }
 
   /* 紙紋版：在漸變上加輕微直條紋（舊舊地） */
   .theme-light-vintage {
     --body-bg:
-      linear-gradient(135deg, #f3ecd9, #e6d5b1),
+      linear-gradient(135deg, #b7b7b7, #9b9b9b),
       repeating-linear-gradient(
         90deg,
         rgba(58, 46, 34, 0.030) 0px,
@@ -3882,16 +3915,27 @@ document.addEventListener('DOMContentLoaded', function() {
   /* 共同元件風格（兩個光明版共用） */
   .theme-light-vintage header {
     background: linear-gradient(135deg, #5e7fbc, #4b6ba6) !important; /* 灰藍標題條（參考圖） */
-    border: 3px solid var(--warning) !important;                      /* 金邊 */
-    box-shadow: 0 10px 18px rgba(58,46,34,0.25) !important;
+    border: 3px solid var(--warning) !important;                      /* 金邊（黃色線保留粗度） */
+    /* 黃色線外圍啡色輪廓線：改幼身 */
+    box-shadow:
+      0 0 0 1px #7a5a44,          /* 深啡色輪廓線（包住黃色線，1px） */
+      0 10px 18px rgba(58,46,34,0.25) !important;
   }
-  .theme-light-vintage h1 { color: #ffffff !important; text-shadow: none !important; }
+  .theme-light-vintage h1 {
+    color: #ffffff !important;
+    text-shadow: none !important;
+    /* 取消大標題字外圍啡色框（唔再框住中文字） */
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
 
   .theme-light-vintage .form-section,
   .theme-light-vintage .result-section,
   .theme-light-vintage .data-section {
     background: var(--section-bg) !important;
-    border: 2px solid rgba(167, 132, 85, 0.55) !important;
+    border: 1px solid #7a5a44 !important; /* 視窗框線：深啡色（統一1px） */
     box-shadow: 0 10px 16px rgba(58,46,34,0.18) !important;
     color: var(--text-dark) !important;
   }
@@ -3923,22 +3967,22 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage .highlight-score {
     color: #2b1a12 !important;                 /* 深啡近黑 */
     background: rgba(255, 243, 176, 0.92) !important; /* 淺黃色底（更醒目） */
-    border-color: rgba(43,26,18,0.75) !important;
+    border-color: rgba(122,90,68,0.75) !important;
     text-shadow: 0 1px 0 rgba(255,255,255,0.65) !important; /* 輕微提字 */
   }
 
   .theme-light-vintage .input-control {
     background: rgba(255,255,255,0.65) !important;
     color: var(--text-dark) !important;
-    border: 2px solid rgba(167, 132, 85, 0.55) !important;
-    box-shadow: inset 0 2px 6px rgba(58,46,34,0.12) !important;
+    border: 1px solid #7a5a44 !important; /* 輸入欄框線：深啡（統一1px） */
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), inset 0 2px 6px rgba(58,46,34,0.18) !important; /* 內框線都深啲 */
   }
   .theme-light-vintage .input-control::placeholder { color: rgba(58,46,34,0.45) !important; }
 
   .theme-light-vintage .btn {
     background: rgba(251, 246, 234, 0.92) !important;
     color: var(--text-dark) !important;
-    border: 2px solid rgba(167, 132, 85, 0.70) !important;
+    border: 1px solid rgba(167, 132, 85, 0.70) !important;
     box-shadow: 0 6px 12px rgba(58,46,34,0.20) !important;
   }
   .theme-light-vintage .btn:hover { filter: brightness(0.98); transform: translateY(-1px); }
@@ -3979,19 +4023,29 @@ document.addEventListener('DOMContentLoaded', function() {
     color: rgba(58,46,34,0.85) !important;
   }
 
-  /* A. 細字/提示：提升對比（避免與米黃底太接近） */
+  /* A. 細字/提示（除數預設值提示）：
+     - 光明版應顯示粉紅/橙紅字
+     - 不應有任何方形框線或底色（露出下邊紙紋底色） */
   .theme-light-vintage .input-hint,
   .theme-light-vintage .input-hint span,
   .theme-light-vintage #divisorHint {
-    color: #5a3f2b !important;
-    background: rgba(255,255,255,0.55) !important;
-    border: 1px solid rgba(167,132,85,0.35) !important;
+    color: var(--required) !important;          /* 橙紅色 */
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
   }
-  .theme-light-vintage .disclaimer,
-  .theme-light-vintage #disclaimerResult,
+  /* 免責聲明：只改頁面最底嗰段（你圈住嗰段） */
   .theme-light-vintage #disclaimerFooter {
+    color: #ffffff !important;
+    opacity: 0.95 !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.45) !important; /* 白字下陰影更明顯 */
+  }
+
+  /* 結果區內嗰段免責聲明：保留深色，避免淺底睇唔到 */
+  .theme-light-vintage #disclaimerResult {
     color: #5a3f2b !important;
     opacity: 0.95 !important;
+    text-shadow: none !important;
   }
   .theme-light-vintage .welcome-disclaimer {
     color: rgba(58,46,34,0.72) !important;
@@ -4001,7 +4055,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* B. 狀態列：移除強制黃字，改深色文字 + 復古底 */
   .theme-light-vintage .status-bar {
     background: rgba(251,246,234,0.92) !important;
-    border-top: 2px solid rgba(167,132,85,0.55) !important;
+    border-top: 1px solid rgba(167,132,85,0.55) !important;
     box-shadow: 0 -10px 16px rgba(58,46,34,0.18) !important;
   }
   .theme-light-vintage .status-message,
@@ -4020,16 +4074,21 @@ document.addEventListener('DOMContentLoaded', function() {
   /* C. Footer：由灰字改深啡，對比更清楚 */
   .theme-light-vintage footer { color: rgba(58,46,34,0.65) !important; }
 
-  /* E. 粉紅提示字（你圈起嗰啲）再加深 + 取消淡化 */
+  /* E. 粉紅提示字（例如：*代表必填資料）再加深 + 取消淡化 */
   .theme-light-vintage { --hint-pink: #7a2f2f; } /* 深啡紅，米黃底清楚 */
   .theme-light-vintage [style*="var(--hint-pink)"] { opacity: 1 !important; }
-  .theme-light-vintage .input-hint, 
-  .theme-light-vintage .input-hint span#divisorHint { color: #5a3f2b !important; }
+  /* 但除數提示（input-hint / #divisorHint）要跟隨 A. 使用橙紅色，且無框無底 */
 
   /* F. 結果區佔位提示文字（填寫左側表單後點擊...）加深 */
   .theme-light-vintage .result-container {
     background: rgba(255,255,255,0.35) !important;
-    border: 2px solid rgba(167,132,85,0.40) !important;
+    /* 成績/積分表（計算分數框）外框加深 */
+    border: 1px solid #7a5a44 !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 8px 14px rgba(58,46,34,0.18) !important;
+  }
+  /* 成績/積分表分項卡片框線加深 */
+  .theme-light-vintage .result-section .result-item {
+    border: 1px solid rgba(122,90,68,0.45) !important;
   }
   .theme-light-vintage .result-placeholder { 
     color: rgba(58,46,34,0.75) !important;
@@ -4046,8 +4105,16 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage #saveNoticeModal .modal {
     background: rgba(251,246,234,0.96) !important;
     color: #3a2e22 !important;
-    border: 2px solid rgba(167,132,85,0.55) !important;
+    /* 儲存/載入視窗框線加深 */
+    border: 1px solid #7a5a44 !important;
     box-shadow: 0 10px 30px rgba(58,46,34,0.25) !important;
+  }
+  /* 你講嗰三個按鈕（儲存目前資料／取消儲存／載入資料）深色邊 */
+  .theme-light-vintage #saveBtn,
+  .theme-light-vintage #cancelSaveBtn,
+  .theme-light-vintage #loadBtn {
+    border: 1px solid #7a5a44 !important;
+    box-shadow: 0 8px 14px rgba(58,46,34,0.22) !important;
   }
   .theme-light-vintage #saveNoticeModal .modal-body,
   .theme-light-vintage #saveNoticeModal .modal-body * {
@@ -4196,7 +4263,7 @@ document.addEventListener('DOMContentLoaded', function() {
     style.innerHTML = `
 
 /* === UI ENLARGEMENT === */
-body { font-size: 19px; } 
+body { font-size: 19px; overflow-x: hidden; } 
 .form-section, .result-section { padding: 25px; }
 .input-control { font-size: 20px; padding: 12px 14px; height: auto; }
 
@@ -4258,6 +4325,13 @@ input.input-control, select.input-control, textarea.input-control {
   color: rgba(210,210,210,0.82) !important; /* 淺灰 */
 }
 .button-group .btn { height: 58px !important; font-size: 21px !important; padding: 0 20px !important; min-width: 180px !important; }
+
+/* 手機：避免按鈕最小寬度令畫面橫向溢出（會感覺偏咗一邊） */
+@media (max-width: 480px){
+  .button-group{ justify-content: center !important; flex-wrap: wrap !important; }
+  .button-group .btn{ min-width: 0 !important; flex: 1 1 140px !important; }
+}
+
 
 /* === SAVE MODAL (Big) === */
 #saveNoticeModal .modal {
