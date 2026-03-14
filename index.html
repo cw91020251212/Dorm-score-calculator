@@ -2027,6 +2027,8 @@ const translations = {
             try { document.documentElement.setAttribute('data-lang', lang); } catch(e){}
             const h1El = document.querySelector('header h1');
             currentLang = lang;
+            // 記錄語言偏好：下次開機沿用（第一次用就預設中文）
+            try { localStorage.setItem('appLangPref', lang); } catch(e) {}
             // 英文允許標題換行；中文保持單行（先設置，稍後 fitTitle 再調字級）
             if (h1El) {
                 h1El.style.setProperty('white-space', lang === 'en' ? 'normal' : 'nowrap', 'important');
@@ -2090,6 +2092,8 @@ const translations = {
         document.getElementById('languageToggle').addEventListener('click', function() {
             const newLang = currentLang === 'zh' ? 'en' : 'zh';
             setLanguage(newLang);
+            // 同步歡迎視窗語言（如果存在）
+            try { if (typeof window.setWelcomeLanguage === 'function') window.setWelcomeLanguage(newLang); } catch(e) {}
         });
         
         // 計算規則
@@ -3127,7 +3131,11 @@ function attachLiveValidation() {
 document.addEventListener('DOMContentLoaded', function() {
             initForm();
             loadAllSavedData();
-            setLanguage('zh');
+            // 開機語言：讀取上次偏好；第一次使用就預設中文
+            const savedLang = (function(){
+              try { return localStorage.getItem('appLangPref') || 'zh'; } catch(e) { return 'zh'; }
+            })();
+            setLanguage(savedLang);
             initUiControls();
 
 // 初始化歡迎視窗（僅首次顯示）
@@ -3436,19 +3444,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // 保持排版在視窗尺寸變更時仍然合適
     window.addEventListener('resize', ensureWelcomeFits);
 
-    // 初始化語言：使用偏好或預設中文
-    const pref = localStorage.getItem('welcomeLangPref');
+    // 初始化語言：跟隨全局語言偏好（第一次使用預設中文）
+    const pref = (function(){
+      try { return localStorage.getItem('appLangPref') || localStorage.getItem('welcomeLangPref') || 'zh'; } catch(e) { return 'zh'; }
+    })();
     if (pref === 'en') { welcomeLangIndex = 1; }
     overlay.setAttribute('data-lang', welcomeLangIndex === 1 ? 'en' : 'zh');
     applyWelcomeLang(welcomeLangIndex);
+
+    // 對外提供：讓主語言掣可以同步控制歡迎視窗語言
+    window.setWelcomeLanguage = function(lang){
+      welcomeLangIndex = (lang === 'en') ? 1 : 0;
+      try {
+        localStorage.setItem('welcomeLangPref', welcomeLangIndex === 1 ? 'en' : 'zh');
+      } catch(e) {}
+      overlay.setAttribute('data-lang', welcomeLangIndex === 1 ? 'en' : 'zh');
+      applyWelcomeLang(welcomeLangIndex);
+    };
 
     // 語言切換按鈕事件
     if (elLangToggle){
       elLangToggle.addEventListener('click', () => {
         welcomeLangIndex = (welcomeLangIndex === 1) ? 0 : 1;
-        localStorage.setItem('welcomeLangPref', welcomeLangIndex === 1 ? 'en' : 'zh');
-        overlay.setAttribute('data-lang', welcomeLangIndex === 1 ? 'en' : 'zh');
+        const nextLang = welcomeLangIndex === 1 ? 'en' : 'zh';
+        try {
+          // 同步寫入全局偏好
+          localStorage.setItem('appLangPref', nextLang);
+          localStorage.setItem('welcomeLangPref', nextLang);
+        } catch(e) {}
+        overlay.setAttribute('data-lang', nextLang);
         applyWelcomeLang(welcomeLangIndex);
+        // 同步更新主介面語言
+        try { if (typeof setLanguage === 'function') setLanguage(nextLang); } catch(e) {}
       });
     }
 
