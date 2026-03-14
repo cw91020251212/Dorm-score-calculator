@@ -1033,8 +1033,8 @@
             .theme-light .result-label { color: #fff !important; }
             /* 光明版全面提亮（整體更亮），並保持白色文字清晰可讀 */
             .theme-light {
-                --primary: #b7b7b7;          /* 背景：中性灰（桌面更柔和） */
-                --primary-dark: #9b9b9b;     /* 背景：深一階灰 */
+                --primary: #9f9f9f;          /* 背景：中性灰（桌面更柔和） */
+                --primary-dark: #7f7f7f;     /* 背景：深一階灰 */
                 --accent: #7ec8ff;           /* 亮：柔藍重點色 */
                 --accent-dark: #4f9de8;      /* 原藍作深重點 */
                 --success: #8bd6b1;          /* 亮：柔綠 */
@@ -1634,8 +1634,9 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         }
         /* Light theme adjustment */
         .theme-light .welcome-disclaimer {
-             color: rgba(43, 108, 176, 0.7);
-             border-top-color: rgba(43, 108, 176, 0.15);
+             /* 光明模式：用白色，避免同底色太接近睇唔到 */
+	             color: rgba(255, 255, 255, 0.88);
+             border-top-color: rgba(255, 255, 255, 0.22);
         }
 
         /* Animation classes */
@@ -3939,15 +3940,15 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage {
     --text-light: #3a2e22;
     --text-dark:  #3a2e22;
-    --primary: #b7b7b7;       /* 背景改灰 */
-    --primary-dark: #9b9b9b;  /* 深一階灰 */
+    --primary: #9f9f9f;       /* 背景改灰 */
+    --primary-dark: #7f7f7f;  /* 深一階灰 */
     --accent: #c7a97a;        /* 卡其啡 */
     --accent-dark: #a88455;
     --warning: #e7b21a;       /* 金黃點綴 */
     --success: #6faf8a;
     --danger: #c86c6c;
-    --card-bg: rgba(251, 246, 234, 0.92);
-    --section-bg: rgba(251, 246, 234, 0.86);
+    --card-bg: rgba(249, 242, 220, 0.94);
+    --section-bg: rgba(249, 242, 220, 0.90);
     --body-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
 
     /* 必填星號（你圈住嗰啲）：改橙紅色，更醒目 */
@@ -3957,11 +3958,11 @@ document.addEventListener('DOMContentLoaded', function() {
   /* 紙紋版：在漸變上加輕微直條紋（舊舊地） */
   .theme-light-vintage {
     --body-bg:
-      linear-gradient(135deg, #b7b7b7, #9b9b9b),
+      linear-gradient(135deg, #9f9f9f, #7f7f7f),
       repeating-linear-gradient(
         90deg,
-        rgba(58, 46, 34, 0.050) 0px,
-        rgba(58, 46, 34, 0.050) 2px,
+        rgba(167, 132, 85, 0.11) 0px,
+        rgba(167, 132, 85, 0.11) 2px,
         rgba(255, 255, 255, 0.0) 2px,
         rgba(255, 255, 255, 0.0) 7px
       );
@@ -4002,8 +4003,8 @@ document.addEventListener('DOMContentLoaded', function() {
     background:
       repeating-linear-gradient(
         90deg,
-        rgba(58, 46, 34, 0.045) 0px,
-        rgba(58, 46, 34, 0.045) 2px,
+        rgba(167, 132, 85, 0.10) 0px,
+        rgba(167, 132, 85, 0.10) 2px,
         rgba(255, 255, 255, 0.0) 2px,
         rgba(255, 255, 255, 0.0) 8px
       ),
@@ -4125,8 +4126,10 @@ document.addEventListener('DOMContentLoaded', function() {
     text-shadow: none !important;
   }
   .theme-light-vintage .welcome-disclaimer {
-    color: rgba(58,46,34,0.72) !important;
-    border-top-color: rgba(167,132,85,0.35) !important;
+    /* 光明模式（復古皮膚）開機提示：改白色更清楚 */
+    color: rgba(255,255,255,0.92) !important;
+    border-top-color: rgba(255,255,255,0.22) !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.45) !important;
   }
 
   /* B. 狀態列：移除強制黃字，改深色文字 + 復古底 */
