@@ -176,17 +176,18 @@
 
         /* 薪金輸入欄：右側內嵌超細按鈕（不改動原本排位/尺寸） */
         .salary-input-wrap { position: relative; width: 100%; }
-        .salary-input-wrap #salary { padding-right: 34px; }
+        .salary-input-wrap #salary { padding-right: 56px; }
         .salary-mini-btn {
             position: absolute;
-            right: 10px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            width: 18px;
-            height: 18px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: rgba(0,0,0,0.20);
+            /* 透明底：只顯示圖標；加大可點擊範圍但不改變輸入框高度 */
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
             color: var(--text-light);
             display: inline-flex;
             align-items: center;
@@ -199,6 +200,10 @@
             -webkit-tap-highlight-color: transparent;
         }
         .salary-mini-btn span { display: none !important; }
+        /* 放大按鈕內圖標，但保持按鈕(18x18)高度/排位不變 */
+        .salary-mini-btn i { font-size: 22px; line-height: 1; display: block; }
+        .salary-mini-btn:hover { opacity: 0.85; }
+        .salary-mini-btn:active { opacity: 0.7; }
         .salary-mini-btn:active { transform: translateY(-50%) scale(0.95); }
         .salary-mini-btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(79, 157, 232, 0.20); }
 
