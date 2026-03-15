@@ -1060,14 +1060,14 @@
                 color: #fff !important; 
                 border-color: #7a5a44 !important; /* 輸入欄框線：深啡色 */ 
             }
-            .theme-light .btn { 
-                background: rgba(255,255,255,0.14) !important; 
-                color: #fff !important; 
-                border: 1px solid rgba(255,255,255,0.28) !important; 
-                box-shadow: none !important; 
+            .theme-light .btn {
+                /* 亮版按鈕底色保持一致，但立體陰影交由全站按鈕樣式處理 */
+                background: rgba(255,255,255,0.12) !important;
+                color: #fff !important;
+                border: 1px solid rgba(255,255,255,0.25) !important;
             }
-            .theme-light .btn:hover { 
-                background: rgba(255,255,255,0.18) !important; 
+            .theme-light .btn:hover {
+                background: rgba(255,255,255,0.16) !important;
             }
             .theme-light .section-title { 
                 color: var(--accent) !important; 
@@ -1088,28 +1088,37 @@
                 transition: background-color 5000s ease-in-out 0s !important;
             }
 
-            /* 2) 光明版：按鈕用粉色與淺色系，保留原有類型但轉為柔和色階 */
-            .theme-light .btn { 
-                background: rgba(255,255,255,0.14) !important; 
-                color: #fff !important; 
-                border: 1px solid rgba(255,255,255,0.28) !important; 
-                box-shadow: none !important; 
+            /* 2) 光明版：按鈕顏色／風格跟黑暗版一致 */
+            /*
+              目標：光明版仍保持整體背景較亮，但「所有按鈕」(btn / btn-* / 工具列) 的
+              顏色與立體反光效果沿用黑暗版（:root / theme-dark）的那套。
+            */
+            /* 還原按鈕立體陰影（避免被亮版的 box-shadow: none 覆蓋） */
+            .theme-light :is(button, .btn, .status-btn, .mini-btn, .action-btn) {
+                box-shadow:
+                    0 12px 22px rgba(0,0,0,0.30),
+                    inset 0 2px 0 rgba(255,255,255,0.55),
+                    inset 0 -2px 0 rgba(0,0,0,0.18) !important;
             }
-            .theme-light .btn:hover { background: rgba(255,255,255,0.18) !important; }
-            /* 類型色階（柔和粉系） */
-            .theme-light .btn-primary { 
-                background: #0d6efd !important; 
-            }
-            .theme-light .btn-success { background: #8bd6b1 !important; }
-            .theme-light .btn-warning { background: #ffd07a !important; color: #333 !important; }
-            .theme-light .btn-danger  { background: #f59aa7 !important; }
-            /* 工具列按鈕也採用同一套柔和色階 */
+
+            /* 亮版按鈕類型顏色：改回深色主題（:root）同一套 */
+            .theme-light .btn-primary { background: #0d6efd !important; color: #fff !important; }
+            .theme-light .btn-success { background: #28a745 !important; color: #fff !important; }
+            .theme-light .btn-success:hover { background: #218838 !important; transform: translateY(-2px); }
+            .theme-light .btn-warning { background: #ffc107 !important; color: #333 !important; }
+            .theme-light .btn-warning:hover { background: #e0a800 !important; transform: translateY(-2px); }
+            .theme-light .btn-danger  { background: #e84f4f !important; color: #fff !important; }
+            .theme-light .btn-danger:hover { background: #d33a3a !important; transform: translateY(-2px); }
+
+            /* 工具列按鈕亦跟黑暗版一致（保持低存在感，但不再套用粉色系） */
             .theme-light .display-controls .btn,
-            .theme-light .display-controls .btn-small { 
-                background: rgba(255,255,255,0.14) !important; 
-                color: #fff !important; 
-                border: 1px solid rgba(255,255,255,0.28) !important; 
+            .theme-light .display-controls .btn-small {
+                background: rgba(255,255,255,0.12) !important;
+                color: var(--text-light) !important;
+                border: 1px solid rgba(255,255,255,0.25) !important;
+                box-shadow: none !important;
             }
+            .theme-light .display-controls .btn-small:hover { background: rgba(255,255,255,0.16) !important; }
 
             /* 3) 光明版：輸入框邊界加深一點，確保白字易讀 */
             .theme-light .input-control { 
@@ -1546,10 +1555,12 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 }
 
 /* 光明版配色微調（保持反光效果） */
+/* 光明版唔再改計算掣顏色：保持與黑暗版（#calcBtn）完全一致 */
 .theme-light #calcBtn {
-  color: #222 !important;
-  background: linear-gradient(180deg, #ffd88c 0%, #ffcd70 40%, #f7b24c 70%, #e59a32 100%) !important;
-  border-color: rgba(130, 80, 0, 0.32) !important;
+  color: #331 !important;
+  background: linear-gradient(180deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%) !important;
+  border: 1px solid rgba(255,255,255,0.55) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
 }
 .theme-light #calcBtn::before { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.45) 60%, rgba(255,255,255,0.0) 100%) !important; }
 
@@ -1559,26 +1570,25 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 /* 保持其他警告按鈕正常 */
 .button-group #resetBtn.btn-danger { /* 只示意，不改色 */ }
 
+        /* 亮版按鈕文字沿用黑暗版：白字 + 文字陰影（提升對比） */
         .theme-light #calcBtn, .theme-light #resetBtn {
-            color: #000 !important;
+            color: #fff !important;
         }
         .theme-light #calcBtn span, .theme-light #resetBtn span {
-            color: #000 !important;
-            text-shadow: none !important;
+            color: #fff !important;
         }
         .theme-light .disclaimer {
-            color: #000 !important;
+            color: #fff !important;
         }
         .theme-light #saveDataBtn,
         .theme-light button[onclick*="clearAllData"],
         .theme-light .btn-danger {
-            color: #000 !important;
+            color: #fff !important;
         }
         .theme-light #saveDataBtn span,
         .theme-light button[onclick*="clearAllData"] span,
         .theme-light .btn-danger span {
-            color: #000 !important;
-            text-shadow: none !important;
+            color: #fff !important;
         }
 
     
@@ -1805,7 +1815,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
                 <div class="result-container">
                     <div class="result-placeholder" id="resultPlaceholder">
                         <i class="fas fa-file-alt"></i>
-                        <p><span id="resultPlaceholderText">填寫左側表單後點擊「計算分數」</span></p>
+                        <p><span id="resultPlaceholderText">填寫表單後點擊「計算分數」</span></p>
                     </div>
                 </div>
                 
@@ -2022,6 +2032,25 @@ const translations = {
         };
         
         // 切換語言函數
+        function isSingleColumnLayout(){
+    // 對齊 CSS：@media (max-width: 900px) 會變成單欄（表格在上方）
+    return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+}
+
+function getResultPlaceholderText(){
+    const isTop = isSingleColumnLayout();
+    if (currentLang === 'zh') {
+        return isTop ? '填寫上方表單後點擊「計算分數」' : '填寫左側表單後點擊「計算分數」';
+    }
+    return isTop ? 'Fill in the form above, then click "Calculate Score"' : 'Fill in the form on the left, then click "Calculate Score"';
+}
+
+function updateResultPlaceholderText(){
+    const el = document.getElementById('resultPlaceholderText');
+    if (!el) return;
+    el.textContent = getResultPlaceholderText();
+}
+
         function setLanguage(lang) {
             // 替整根節點語言屬性，供 CSS 精準控制
             try { document.documentElement.setAttribute('data-lang', lang); } catch(e){}
@@ -2066,6 +2095,9 @@ const translations = {
             
             // 更新數據狀態文本
             updateDataCount();
+
+            // 依版面（電腦左右／手機上下）更新「左側/上方」提示
+            updateResultPlaceholderText();
             
             // 另外強制更新下拉選單的 Yes/No 顯示，避免部分瀏覽器不渲染 option 內部 span
             const yesNoMap = [
@@ -2142,7 +2174,7 @@ const translations = {
             document.querySelector('.result-container').innerHTML = `
                 <div class="result-placeholder" id="resultPlaceholder">
                     <i class="fas fa-file-alt"></i>
-                    <p><span id="resultPlaceholderText">${translations[currentLang]['resultPlaceholderText']}</span></p>
+                    <p><span id="resultPlaceholderText">${getResultPlaceholderText()}</span></p>
                 </div>
             `;
             
@@ -2150,6 +2182,9 @@ const translations = {
             currentScore = 0;
             
             updateStatus(translations[currentLang]['statusText']);
+
+            // 依版面更新結果區提示（左側/上方）
+            updateResultPlaceholderText();
             
             // 重置錯誤狀態
             document.querySelectorAll('.input-control').forEach(input => {
@@ -3136,6 +3171,9 @@ document.addEventListener('DOMContentLoaded', function() {
               try { return localStorage.getItem('appLangPref') || 'zh'; } catch(e) { return 'zh'; }
             })();
             setLanguage(savedLang);
+            // 監聽旋轉／改變視窗寬度：即時修正「左側/上方」提示
+            window.addEventListener('resize', updateResultPlaceholderText);
+            window.addEventListener('orientationchange', updateResultPlaceholderText);
             initUiControls();
 
 // 初始化歡迎視窗（僅首次顯示）
@@ -4317,6 +4355,41 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             /* --- END V16 --- */
+
+            /* === FINAL OVERRIDE: Light buttons match Dark === */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) :is(button, .btn, .status-btn, .mini-btn, .action-btn) {
+                /* 跟黑暗版同一套立體反光 */
+                border-top-color: rgba(255,255,255,0.45) !important;
+                border-bottom-color: rgba(0,0,0,0.25) !important;
+                box-shadow:
+                    0 12px 22px rgba(0,0,0,0.30),
+                    inset 0 2px 0 rgba(255,255,255,0.55),
+                    inset 0 -2px 0 rgba(0,0,0,0.18) !important;
+            }
+
+            /* 類型按鈕顏色：直接沿用黑暗版/深色主題色（避免 light-vintage 自己套色） */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-primary { background: #0d6efd !important; color: #fff !important; }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-success { background: #28a745 !important; color: #fff !important; }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-success:hover { background: #218838 !important; transform: translateY(-2px); }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-warning { background: #ffc107 !important; color: #333 !important; }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-warning:hover { background: #e0a800 !important; transform: translateY(-2px); }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-danger  { background: #e84f4f !important; color: #fff !important; }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-danger:hover { background: #d33a3a !important; transform: translateY(-2px); }
+
+            /* 計算分數：黑暗版係金黃色玻璃漸變（#calcBtn 本身嘅定義），光明版都強制跟返同一套 */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn {
+                color: #331 !important;
+                background: linear-gradient(180deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%) !important;
+                border: 1px solid rgba(255,255,255,0.55) !important;
+                box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
+                border-radius: 12px !important;
+            }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn::before {
+                background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.0) 100%) !important;
+            }
+
+            /* 重置：沿用黑暗版 danger（紅色） */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #resetBtn { background: #e84f4f !important; color: #fff !important; }
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
