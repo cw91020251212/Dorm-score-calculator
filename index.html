@@ -173,7 +173,35 @@
             border-radius: 4px;
             background: rgba(0, 0, 0, 0.1);
         }
-        
+
+        /* 薪金輸入欄：右側內嵌超細按鈕（不改動原本排位/尺寸） */
+        .salary-input-wrap { position: relative; width: 100%; }
+        .salary-input-wrap #salary { padding-right: 34px; }
+        .salary-mini-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(0,0,0,0.20);
+            color: var(--text-light);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            padding: 0;
+            font-size: 10px;
+            line-height: 1;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .salary-mini-btn span { display: none !important; }
+        .salary-mini-btn:active { transform: translateY(-50%) scale(0.95); }
+        .salary-mini-btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(79, 157, 232, 0.20); }
+
         .button-group {
             display: flex;
             gap: 15px;
@@ -1727,7 +1755,12 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
                 
                 <div class="form-group">
                     <label for="salary" class="required"><span id="salaryLabel">薪金（港幣）</span></label>
-                    <input type="text" inputmode="decimal" id="salary" class="input-control" placeholder="例如：30000" min="0" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)">
+                    <div class="salary-input-wrap">
+                        <input type="text" inputmode="decimal" id="salary" class="input-control" placeholder="例如：30000" min="0" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)">
+                        <a id="salaryTableBtn" class="salary-mini-btn" href="https://www.csb.gov.hk/english/admin/pay/54.html" target="_blank" rel="noopener noreferrer" title="打開薪金表格（政府網站）" aria-label="打開薪金表格（政府網站）">
+                            <i class="fas fa-dollar-sign" aria-hidden="true"></i><span id="salaryTableBtnText">薪金表格</span>
+                        </a>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -1914,6 +1947,7 @@ const translations = {
                 'inputSectionTitle': '輸入資料',
                 'salaryLabel': '薪金（港幣）',
                 'salaryPlaceholder': '例如：30000',
+                'salaryTableBtnText': '薪金表格',
                 'requiredLegend': '代表必填資料',
                 'divisorLabel': '除數',
                 'divisorHint': '目前預設值538，請參考最新宿舍手冊',
@@ -1974,6 +2008,7 @@ const translations = {
                 'inputSectionTitle': 'Input Data',
                 'salaryLabel': 'Salary (HKD)',
                 'salaryPlaceholder': 'e.g. 30000',
+                'salaryTableBtnText': 'Pay Table',
                 'requiredLegend': 'indicates required fields',
                 'divisorLabel': 'Divisor',
                 'divisorHint': 'Default value is 538, please refer to the latest dormitory manual',
@@ -2049,6 +2084,149 @@ function updateResultPlaceholderText(){
     const el = document.getElementById('resultPlaceholderText');
     if (!el) return;
     el.textContent = getResultPlaceholderText();
+}
+
+// -------- 表單自動暫存（短暫離開再返嚟保留；冷啟動/重開就清空輸入數字） --------
+// 規則：
+// - 保留「設定」：語言/主題/字體/已儲存資料 仍然用 localStorage
+// - 「表單輸入數字」只用 sessionStorage：
+//   (a) 同一個瀏覽器分頁/工作階段內，去其他網頁再返嚟仍然保留
+//   (b) 關閉分頁/關閉程式/冷啟動後，sessionStorage 會自動清空，表單保持 initForm() 的清空狀態
+const DRAFT_KEY = 'draftForm_v1';
+const DRAFT_STORE = (function(){ try { return sessionStorage; } catch(e) { return null; } })();
+// 清理舊版本留喺 localStorage 嘅草稿（避免你講嘅「關咗再開仲有數字」）
+try { localStorage.removeItem(DRAFT_KEY); } catch(e) {}
+
+function getFormSnapshot(){
+    const ids = ['salary','divisor','hireDate','endDate','spouse','children','overseas','newborn','otherChildren','instruction','defect'];
+    const data = {};
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        data[id] = (typeof el.value === 'string') ? el.value : '';
+    });
+    data.__ts = Date.now();
+    return data;
+}
+function applyFormSnapshot(data){
+    if (!data || typeof data !== 'object') return;
+    const ids = ['salary','divisor','hireDate','endDate','spouse','children','overseas','newborn','otherChildren','instruction','defect'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el || data[id] == null) return;
+        el.value = String(data[id]);
+    });
+}
+function saveDraftForm(){
+    try { if (DRAFT_STORE) DRAFT_STORE.setItem(DRAFT_KEY, JSON.stringify(getFormSnapshot())); } catch(e) {}
+}
+function loadDraftForm(){
+    try {
+        const raw = DRAFT_STORE ? DRAFT_STORE.getItem(DRAFT_KEY) : null;
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        applyFormSnapshot(data);
+        // 套用後立即做一次輕量驗證狀態清理
+        document.querySelectorAll('.input-control').forEach(input => input.classList.remove('error','glow-red','glow-yellow'));
+        return true;
+    } catch(e) { return false; }
+}
+function clearDraftForm(){
+    try { if (DRAFT_STORE) DRAFT_STORE.removeItem(DRAFT_KEY); } catch(e) {}
+}
+function attachDraftAutosave(){
+    let t = null;
+    const schedule = () => {
+        if (t) clearTimeout(t);
+        t = setTimeout(saveDraftForm, 250);
+    };
+    const els = document.querySelectorAll('#salary,#divisor,#hireDate,#endDate,#spouse,#children,#overseas,#newborn,#otherChildren,#instruction,#defect');
+    els.forEach(el => {
+        ['input','change','blur'].forEach(evt => el.addEventListener(evt, schedule));
+    });
+    // 防止「意外離開」：盡力保存（手機瀏覽器常常忽略 beforeunload）
+    window.addEventListener('beforeunload', () => { try { saveDraftForm(); } catch(e) {} });
+    window.addEventListener('pagehide', () => { try { saveDraftForm(); } catch(e) {} });
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') { try { saveDraftForm(); } catch(e) {} }
+    });
+}
+
+// -------- 複製回填：離開去政府網頁 copy 後，返嚟自動填入「新金額」欄 --------
+// 說明：跨網站無法直接監聽 copy 事件，所以做法係：
+// - 你按「薪金表」按鈕嗰一刻就打個旗標
+// - 返到本頁後，你點一下「新金額」(或薪金) 輸入欄，程式會嘗試讀剪貼簿並自動填入
+const CLIP_FLAG_KEY = 'awaitClipboardNewAmount';
+
+function _extractFirstNumber(text){
+    if (!text) return '';
+    const m = String(text).match(/(\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?/);
+    return m ? m[0] : '';
+}
+
+function _getNewAmountEl(){
+    // 兼容：如果你之後真係有「新金額」欄位，放到呢度會自動生效
+    return document.getElementById('newAmount')
+        || document.getElementById('newSalary')
+        || document.getElementById('amount')
+        || document.getElementById('salary');
+}
+
+function initSalaryTableClipboardFill(){
+    const link = document.getElementById('salaryTableBtn');
+    const amountEl = _getNewAmountEl();
+    if (!link || !amountEl) return;
+
+    // 點擊薪金表：先保存一次，再設定旗標
+    link.addEventListener('click', () => {
+        try { saveDraftForm(); } catch(e) {}
+        try { sessionStorage.setItem(CLIP_FLAG_KEY, '1'); } catch(e) {}
+    });
+
+    async function tryFillFromClipboard(){
+        let need = false;
+        try { need = sessionStorage.getItem(CLIP_FLAG_KEY) === '1'; } catch(e) { need = false; }
+        if (!need) return;
+        try { sessionStorage.removeItem(CLIP_FLAG_KEY); } catch(e) {}
+
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+            if (typeof updateStatus === 'function') {
+                updateStatus(currentLang === 'zh'
+                    ? '提示：瀏覽器不支援自動讀取剪貼簿，請長按「新金額」欄手動貼上'
+                    : 'Tip: Clipboard read is not supported—please paste into the amount field manually');
+            }
+            return;
+        }
+
+        try {
+            const text = await navigator.clipboard.readText();
+            const v = _extractFirstNumber(text);
+            if (v) {
+                amountEl.value = v;
+                amountEl.dispatchEvent(new Event('input', {bubbles:true}));
+                amountEl.dispatchEvent(new Event('change', {bubbles:true}));
+                if (typeof updateStatus === 'function') {
+                    updateStatus(currentLang === 'zh' ? '已由剪貼簿自動填入新金額' : 'Amount filled from clipboard');
+                }
+            } else {
+                if (typeof updateStatus === 'function') {
+                    updateStatus(currentLang === 'zh'
+                        ? '剪貼簿內未找到數字（例如 50070 / 50,070）'
+                        : 'No number found in clipboard (e.g. 50070 / 50,070)');
+                }
+            }
+        } catch(e) {
+            if (typeof updateStatus === 'function') {
+                updateStatus(currentLang === 'zh'
+                    ? '讀取剪貼簿被拒絕：請手動貼上到新金額欄（部分瀏覽器會限制）'
+                    : 'Clipboard permission denied—please paste manually');
+            }
+        }
+    }
+
+    // 必須靠用家手勢（click/focus）先可以 readText
+    amountEl.addEventListener('focus', tryFillFromClipboard);
+    amountEl.addEventListener('click', tryFillFromClipboard);
 }
 
         function setLanguage(lang) {
@@ -2284,14 +2462,15 @@ function updateResultPlaceholderText(){
             
             // 獲取表單值
             const salaryRaw = (document.getElementById('salary').value || '').trim();
-            if (!/^\d+(?:\.\d+)?$/.test(salaryRaw)) {
-                const msg = currentLang === 'zh' ? '錯誤：薪金只允許數字及單一小數點' : 'Error: Salary allows only digits and a single decimal point';
+            const salaryPattern = /^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/;
+            if (!salaryPattern.test(salaryRaw)) {
+                const msg = currentLang === 'zh' ? '錯誤：薪金格式不正確（可用 50070 或 50,070）' : 'Error: Invalid salary format (allowed: 50070 or 50,070)';
                 updateStatus(msg);
                 const el = document.getElementById('salary');
                 if (el) { el.classList.add('error','glow-red'); shakeInput(el); try { el.focus(); } catch(e){} }
                 return;
             }
-            const salary = parseFloat(salaryRaw);
+            const salary = parseFloat(salaryRaw.replace(/,/g, ''));
             const divisorRaw = (document.getElementById('divisor').value || '').trim();
             if (!/^\d+(?:\.\d+)?$/.test(divisorRaw)) {
                 const msg = currentLang === 'zh' ? '錯誤：除數只允許數字及單一小數點' : 'Error: Divisor allows only digits and a single decimal point';
@@ -2927,7 +3106,7 @@ function updateResultPlaceholderText(){
   mini.addEventListener('click', (ev)=>{
     const t = ev.target;
     if (t.classList.contains('cancel')){ mini.style.display='none'; }
-    if (t.classList.contains('ok')){ mini.style.display='none'; initForm(); }
+    if (t.classList.contains('ok')){ mini.style.display='none'; clearDraftForm(); initForm(); }
   });
   resetBtn.addEventListener('click', (e)=>{ e.preventDefault(); showMini(); });
 })();
@@ -3175,6 +3354,10 @@ document.addEventListener('DOMContentLoaded', function() {
             window.addEventListener('resize', updateResultPlaceholderText);
             window.addEventListener('orientationchange', updateResultPlaceholderText);
             initUiControls();
+            // 讀取上次未完成輸入（例如中途去其他網站搵資料再返嚟）
+            loadDraftForm();
+            attachDraftAutosave();
+            initSalaryTableClipboardFill();
 
 // 初始化歡迎視窗（僅首次顯示）
 (function initWelcomeOnce(){
@@ -3719,10 +3902,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function sanitizeFloat(input) {
         const value = (input.value || '').trim();
         if (value === '') { input.classList.remove('error','glow-red'); return; }
-        const isValid = /^\d+(?:\.\d+)?$/.test(value);
+
+        // 薪金欄支援千位分隔逗號（例如 50,070）
+        const isSalary = (input && input.id === 'salary');
+        const salaryPattern = /^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/;
+        const normalPattern = /^\d+(?:\.\d+)?$/;
+        const isValid = isSalary ? salaryPattern.test(value) : normalPattern.test(value);
+
         // Reject any expression like 12+9, 45-9, 1.2.3, etc.
         if (!isValid) {
-            const msg = currentLang === 'zh' ? '錯誤：只允許數字及單一小數點' : 'Error: Only digits and a single decimal point are allowed';
+            const msg = currentLang === 'zh' ?
+                (isSalary ? '錯誤：薪金只允許數字、千位逗號（例如 50,070）及單一小數點' : '錯誤：只允許數字及單一小數點') :
+                (isSalary ? 'Error: Salary allows digits, thousand separators (e.g. 50,070), and a single decimal point' : 'Error: Only digits and a single decimal point are allowed');
             updateStatus(msg);
             input.classList.add('error','glow-red');
             shakeInput(input);
@@ -3745,8 +3936,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key.length > 1) return; // allow control keys
         const key = e.key;
         const cur = e.target.value || '';
-        // Only digits and '.' allowed
-        if (!/[0-9.]/.test(key)) {
+        const isSalary = (e.target && e.target.id === 'salary');
+
+        // Salary: allow digits, '.' and ','
+        const okRe = isSalary ? /[0-9.,]/ : /[0-9.]/;
+        if (!okRe.test(key)) {
             e.preventDefault();
             updateStatus(translations[currentLang]['inputSignError']);
             shakeInput(e.target);
@@ -3762,7 +3956,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Logic Validation
     function validateLogic() {
-        const getVal = (id) => { const el = document.getElementById(id); const v = el && typeof el.value === 'string' ? el.value.trim() : ''; return v && /^\d+(?:\.\d+)?$/.test(v) ? parseFloat(v) : NaN; };
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            let v = el && typeof el.value === 'string' ? el.value.trim() : '';
+            if (!v) return NaN;
+            // salary 支援逗號
+            if (id === 'salary') {
+                const salaryPattern = /^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/;
+                if (!salaryPattern.test(v)) return NaN;
+                v = v.replace(/,/g,'');
+            }
+            return /^\d+(?:\.\d+)?$/.test(v) ? parseFloat(v) : NaN;
+        };
         const getEl = (id) => document.getElementById(id);
 
         const sal = getVal('salary');
