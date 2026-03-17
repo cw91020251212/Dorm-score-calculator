@@ -4270,15 +4270,15 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage {
     --text-light: #3a2e22;
     --text-dark:  #3a2e22;
-    --primary: #9f9f9f;       /* 背景改灰 */
-    --primary-dark: #7f7f7f;  /* 深一階灰 */
+    --primary: #8a8a8a;       /* 背景改深灰（電腦更清晰） */
+    --primary-dark: #666666;  /* 深一階灰（加深少少） */
     --accent: #c7a97a;        /* 卡其啡 */
     --accent-dark: #a88455;
-    --warning: #e7b21a;       /* 金黃點綴 */
+    --warning: #d19a00;       /* 金黃點綴（加深少少） */
     --success: #6faf8a;
     --danger: #c86c6c;
-    --card-bg: rgba(249, 242, 220, 0.94);
-    --section-bg: rgba(249, 242, 220, 0.90);
+    --card-bg: rgba(236, 226, 194, 0.96);
+    --section-bg: rgba(236, 226, 194, 0.93);
     --body-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
 
     /* 必填星號（你圈住嗰啲）：改橙紅色，更醒目 */
@@ -4288,11 +4288,11 @@ document.addEventListener('DOMContentLoaded', function() {
   /* 紙紋版：在漸變上加輕微直條紋（舊舊地） */
   .theme-light-vintage {
     --body-bg:
-      linear-gradient(135deg, #9f9f9f, #7f7f7f),
+      linear-gradient(135deg, #8a8a8a, #666666),
       repeating-linear-gradient(
         90deg,
-        rgba(167, 132, 85, 0.16) 0px,
-        rgba(167, 132, 85, 0.16) 2px,
+        rgba(167, 132, 85, 0.24) 0px,
+        rgba(167, 132, 85, 0.24) 2px,
         rgba(255, 255, 255, 0.0) 2px,
         rgba(255, 255, 255, 0.0) 7px
       );
@@ -4333,8 +4333,8 @@ document.addEventListener('DOMContentLoaded', function() {
     background:
       repeating-linear-gradient(
         90deg,
-        rgba(167, 132, 85, 0.14) 0px,
-        rgba(167, 132, 85, 0.14) 2px,
+        rgba(167, 132, 85, 0.22) 0px,
+        rgba(167, 132, 85, 0.22) 2px,
         rgba(255, 255, 255, 0.0) 2px,
         rgba(255, 255, 255, 0.0) 8px
       ),
