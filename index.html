@@ -3565,47 +3565,11 @@ function attachLiveValidation() {
 }
 
 function lockDateTypingOnDesktop() {
-    // 針對電腦版：限制「年份」最多 4 位，避免繼續輸入變成月份/日子。
-    // 注意：type=date 本身冇 maxlength；唔好用 readOnly，否則部分瀏覽器會連日期選擇器都撳唔開。
-    const isDesktop = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
-    if (!isDesktop) return;
-
-    ['hireDate','endDate'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        // 鍵盤限制：當游標喺年份（最左 4 位）而且年份已經滿 4 位，再輸入數字就阻止。
-        el.addEventListener('keydown', (e) => {
-            if (!e) return;
-            if (e.key === 'Tab' || e.key === 'Shift' || e.key.startsWith('Arrow') || e.key === 'Backspace' || e.key === 'Delete') return;
-
-            const isDigit = /^\d$/.test(e.key);
-            if (!isDigit) return; // 其他鍵交返俾瀏覽器處理（包括 - 等）
-
-            const v = String(el.value || '');
-            const year = v.split('-')[0] || '';
-            const caret = (typeof el.selectionStart === 'number') ? el.selectionStart : null;
-
-            // 年份已 4 位：
-            // - 如果游標資訊攞到：游標喺 0-4 之內就唔俾再打
-            // - 如果攞唔到：只要年份已 4 位，就唔俾再加多位（避免跳去月/日）
-            if (year.length >= 4) {
-                // 注意：對於 input[type=date]，部分瀏覽器/版本攞唔到 selectionStart（caret 會係 null）。
-                // 如果 caret 係 null，而我哋又 preventDefault，就會令月份/日期都完全打唔到，出現「人手輸入無反應」。
-                // 所以只喺「確定游標喺年份位」先阻止。
-                if (caret !== null && caret <= 4) {
-                    e.preventDefault();
-                }
-            }
-        });
-
-        // 保底：如果有情況令 value 變得奇怪，就截斷為 YYYY-MM-DD（10 字元）
-        el.addEventListener('input', () => {
-            if (typeof el.value === 'string' && el.value.length > 10) {
-                el.value = el.value.slice(0, 10);
-            }
-        });
-    });
+    // NOTE: 已停用。
+    // 原本呢段係想「限制年份最多 4 位」去避免誤輸入。
+    // 但實測喺部分電腦版瀏覽器，對 input[type=date] 綁 keydown 會令手打日期（年/月/日）失效。
+    // 為保證兼容性同可用性，暫時完全交由瀏覽器原生 date input 行為處理。
+    return;
 }
 
 // 初始化
