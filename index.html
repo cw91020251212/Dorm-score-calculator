@@ -3564,6 +3564,35 @@ function attachLiveValidation() {
     });
 }
 
+function lockDateTypingOnDesktop() {
+    // 針對電腦版：鎖住手動輸入，避免年份輸入多過4位後自動跳到月/日。
+    // 仍可用日期選擇器（calendar picker）揀選。
+    const isDesktop = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+    if (!isDesktop) return;
+
+    ['hireDate','endDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        // type=date 內建不支援 maxlength；用 readOnly + 阻擋鍵盤輸入最穩陣。
+        el.readOnly = true;
+
+        const block = (e) => {
+            // 仍允許 Tab/Shift+Tab 轉焦點
+            if (e && e.key === 'Tab') return;
+            e.preventDefault();
+        };
+        el.addEventListener('keydown', block);
+        el.addEventListener('keypress', block);
+        el.addEventListener('paste', block);
+        el.addEventListener('drop', block);
+
+        // 點擊/聚焦時打開日期選擇器（支援嘅瀏覽器先會有 showPicker）
+        const openPicker = () => { try { el.showPicker && el.showPicker(); } catch(_){} };
+        el.addEventListener('click', openPicker);
+        el.addEventListener('focus', openPicker);
+    });
+}
+
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
             initForm();
@@ -3577,6 +3606,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.addEventListener('resize', updateResultPlaceholderText);
             window.addEventListener('orientationchange', updateResultPlaceholderText);
             initUiControls();
+            lockDateTypingOnDesktop();
             // 讀取上次未完成輸入（例如中途去其他網站搵資料再返嚟）
             loadDraftForm();
             attachDraftAutosave();
