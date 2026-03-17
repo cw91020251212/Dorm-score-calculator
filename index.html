@@ -3590,7 +3590,10 @@ function lockDateTypingOnDesktop() {
             // - 如果游標資訊攞到：游標喺 0-4 之內就唔俾再打
             // - 如果攞唔到：只要年份已 4 位，就唔俾再加多位（避免跳去月/日）
             if (year.length >= 4) {
-                if (caret === null || caret <= 4) {
+                // 注意：對於 input[type=date]，部分瀏覽器/版本攞唔到 selectionStart（caret 會係 null）。
+                // 如果 caret 係 null，而我哋又 preventDefault，就會令月份/日期都完全打唔到，出現「人手輸入無反應」。
+                // 所以只喺「確定游標喺年份位」先阻止。
+                if (caret !== null && caret <= 4) {
                     e.preventDefault();
                 }
             }
