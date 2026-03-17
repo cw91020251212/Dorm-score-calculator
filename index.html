@@ -3565,31 +3565,43 @@ function attachLiveValidation() {
 }
 
 function lockDateTypingOnDesktop() {
-    // 針對電腦版：鎖住手動輸入，避免年份輸入多過4位後自動跳到月/日。
-    // 仍可用日期選擇器（calendar picker）揀選。
+    // 針對電腦版：限制「年份」最多 4 位，避免繼續輸入變成月份/日子。
+    // 注意：type=date 本身冇 maxlength；唔好用 readOnly，否則部分瀏覽器會連日期選擇器都撳唔開。
     const isDesktop = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
     if (!isDesktop) return;
 
     ['hireDate','endDate'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        // type=date 內建不支援 maxlength；用 readOnly + 阻擋鍵盤輸入最穩陣。
-        el.readOnly = true;
 
-        const block = (e) => {
-            // 仍允許 Tab/Shift+Tab 轉焦點
-            if (e && e.key === 'Tab') return;
-            e.preventDefault();
-        };
-        el.addEventListener('keydown', block);
-        el.addEventListener('keypress', block);
-        el.addEventListener('paste', block);
-        el.addEventListener('drop', block);
+        // 鍵盤限制：當游標喺年份（最左 4 位）而且年份已經滿 4 位，再輸入數字就阻止。
+        el.addEventListener('keydown', (e) => {
+            if (!e) return;
+            if (e.key === 'Tab' || e.key === 'Shift' || e.key.startsWith('Arrow') || e.key === 'Backspace' || e.key === 'Delete') return;
 
-        // 點擊/聚焦時打開日期選擇器（支援嘅瀏覽器先會有 showPicker）
-        const openPicker = () => { try { el.showPicker && el.showPicker(); } catch(_){} };
-        el.addEventListener('click', openPicker);
-        el.addEventListener('focus', openPicker);
+            const isDigit = /^\d$/.test(e.key);
+            if (!isDigit) return; // 其他鍵交返俾瀏覽器處理（包括 - 等）
+
+            const v = String(el.value || '');
+            const year = v.split('-')[0] || '';
+            const caret = (typeof el.selectionStart === 'number') ? el.selectionStart : null;
+
+            // 年份已 4 位：
+            // - 如果游標資訊攞到：游標喺 0-4 之內就唔俾再打
+            // - 如果攞唔到：只要年份已 4 位，就唔俾再加多位（避免跳去月/日）
+            if (year.length >= 4) {
+                if (caret === null || caret <= 4) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // 保底：如果有情況令 value 變得奇怪，就截斷為 YYYY-MM-DD（10 字元）
+        el.addEventListener('input', () => {
+            if (typeof el.value === 'string' && el.value.length > 10) {
+                el.value = el.value.slice(0, 10);
+            }
+        });
     });
 }
 
