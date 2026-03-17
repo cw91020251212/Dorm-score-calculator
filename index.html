@@ -24,6 +24,7 @@
             --required: #ff6b6b;
             --hint-pink: #ffb6c1;
             --language-bg: #90EE90; /* 淺綠色背景（不透明） */
+            --display-filter: brightness(1) contrast(1) saturate(1); /* 顯示光暗/色深調校 */
         }
 
         /* 強調：本機儲存（中英文共用同一元素） */
@@ -894,6 +895,46 @@
             /* 顯示調校工具列（置於標題區右下角，不遮標題） */
             /* 工具列改為正常文流，不覆蓋內容，置中顯示於標題下方 */
             .display-controls { position: static; margin: 24px auto 28px; z-index: 1; display: flex; gap: 8px; align-items: center; justify-content: center; background: rgba(255,255,255,0.10); padding: 4px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); max-width: 76%; }
+
+            /* === 顯示光暗/色深調校：只影響 appRoot（避免彈窗被 filter） === */
+            /* 注意：filter 會令 position:fixed 變成跟住滾動。
+               所以只對「內容區」套用 filter，浮動鍵（EN/QR）唔會受影響。 */
+            #contentRoot { filter: var(--display-filter); transition: filter 180ms ease; }
+
+            /* === 顯示調校彈窗（modal） === */
+            .tune-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 18px; }
+            .tune-modal { width: min(520px, 92vw); background: rgba(25,25,25,0.92); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; }
+            .theme-light-vintage .tune-modal, .theme-light .tune-modal, .theme-light-simple .tune-modal { background: rgba(255,255,255,0.92); border-color: rgba(0,0,0,0.12); }
+            .tune-header { display:flex; align-items:center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+            .theme-light-vintage .tune-header, .theme-light .tune-header, .theme-light-simple .tune-header { border-bottom-color: rgba(0,0,0,0.10); }
+            .tune-title { font-weight: 800; font-size: 1.05rem; color: var(--text-light); }
+            .theme-light-vintage .tune-title, .theme-light .tune-title, .theme-light-simple .tune-title { color: #1b1b1b; }
+            .tune-close { width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.10); color: var(--text-light); font-size: 20px; line-height: 1; cursor: pointer; }
+            .theme-light-vintage .tune-close, .theme-light .tune-close, .theme-light-simple .tune-close { border-color: rgba(0,0,0,0.15); background: rgba(0,0,0,0.05); color: #1b1b1b; }
+            .tune-body { padding: 12px 14px 14px; }
+            .tune-row { display:grid; grid-template-columns: 96px 1fr 62px; gap: 10px; align-items:center; margin: 10px 0; }
+            .tune-row label { font-weight: 700; color: var(--text-light); }
+            .theme-light-vintage .tune-row label, .theme-light .tune-row label, .theme-light-simple .tune-row label { color: #1b1b1b; }
+            .tune-row input[type="range"] { width: 100%; }
+            .tune-val { text-align:right; font-variant-numeric: tabular-nums; color: rgba(255,255,255,0.85); }
+            .theme-light-vintage .tune-val, .theme-light .tune-val, .theme-light-simple .tune-val { color: rgba(0,0,0,0.70); }
+            .tune-hint { margin-top: 8px; font-size: 0.9rem; color: rgba(255,255,255,0.72); }
+            .theme-light-vintage .tune-hint, .theme-light .tune-hint, .theme-light-simple .tune-hint { color: rgba(0,0,0,0.62); }
+            .tune-actions { display:flex; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+            .tune-actions .btn { min-width: 92px; }
+
+            /* 顯示調校：預設按鍵（快速選深淺色）
+               - 目標：四個掣一定整齊（4格 / 小屏 2x2） */
+            .tune-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 10px 0 6px; align-items: center; }
+            .tune-presets .preset-label { grid-column: 1 / -1; font-weight: 800; font-size: 0.95rem; opacity: 0.92; margin: 0 0 2px; }
+            .tune-presets .tune-preset { width: 100%; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.12); color: var(--text-light); border-radius: 12px; padding: 8px 10px; cursor: pointer; font-weight: 800; font-size: 0.92rem; line-height: 1.05; text-align: center; }
+            .tune-presets .tune-preset:hover { filter: brightness(1.06) saturate(1.04); }
+            .tune-presets .tune-preset:active { transform: translateY(1px); }
+            .theme-light-vintage .tune-presets .tune-preset, .theme-light .tune-presets .tune-preset, .theme-light-simple .tune-presets .tune-preset { border-color: rgba(0,0,0,0.16); background: rgba(0,0,0,0.06); color: #1b1b1b; }
+            @media (max-width: 430px) {
+              .tune-presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            }
+
             /* 讓 header 內部元素遵循文流 */
             header { position: relative; overflow: visible; }
             .display-label { font-size: 0.85rem; color: var(--text-light); margin-right: 4px; opacity: 0.9; }
@@ -953,6 +994,7 @@
             .language-toggle:active { transform: translateY(0) scale(0.98); }
             @media (max-width: 600px) {
                 .language-toggle { width: 36px; height: 36px; font-size: 0.8rem; }
+                /* 右上角浮動鍵：保持原本版面（唔額外留位） */
             }
             /* QR 圓形按鈕（位於語言切換下方） */
             .qr-toggle {
@@ -1160,7 +1202,7 @@
             }
     /* 歡迎視窗樣式與動畫 */
 .welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 420ms ease; }
-.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.5) 0%, rgba(59,130,246,0.5) 40%, rgba(168,85,247,0.5) 70%, rgba(245,158,11,0.5) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(16px) scale(0.98); opacity: 0; animation: modalIn 640ms cubic-bezier(.2,.8,.2,1) forwards; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; }
+.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(59,130,246,0.86) 40%, rgba(168,85,247,0.84) 70%, rgba(245,158,11,0.82) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(0) scale(1); opacity: 1; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; z-index: 2; }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
 .welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
@@ -1171,6 +1213,13 @@
 .welcome-btn.primary { background: #fff; color: #2b6cb0; font-weight: 700; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem; }
 .welcome-btn.primary:hover { background: #f6f7fb; }
 @keyframes modalIn { 0% { transform: translateY(16px) scale(0.98); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+
+/* === FIX (2026-03-17): welcome 視窗在部分裝置動畫失效會變透明 ===
+   - 當 overlay 開啟（aria-hidden=false）時，強制 modal 可見
+   - 避免只剩「蒙查查」+ 紙碎但無法按「開始使用」 */
+.welcome-overlay[aria-hidden="false"] { display: flex; opacity: 1; }
+.welcome-overlay[aria-hidden="false"] .welcome-modal { opacity: 1 !important; transform: translateY(0) scale(1) !important; animation: none !important; }
+
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* 主題相容：在光明主題時調整對比 */
 .theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(253,230,138,0.5) 30%, rgba(252,165,165,0.5) 60%, rgba(196,181,253,0.5) 100%); color: #2b6cb0; }
@@ -1779,7 +1828,14 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 </style>
 </head>
 <body>
-<div id="fouc-shield" style="position:fixed; inset:0; background: #0f0f0f; z-index: 2147483647; transition: opacity 0.8s ease;"></div></div>
+<div id="appRoot">
+<div id="fouc-shield" style="position:fixed; inset:0; background: #0f0f0f; z-index: 2147483647; transition: opacity 0.8s ease;"></div>
+
+    <!-- 右上角浮動鍵（永遠固定喺畫面上；唔會跟住內容滾動） -->
+    <button id="languageToggle" class="language-toggle" aria-label="切換語言" style="background-color:#90EE90 !important; color:#000 !important; border:1px solid #7fd67f !important;">EN</button>
+    <button id="qrButton" class="qr-toggle" aria-label="QR Code" style="background-color:#555 !important; color:#fff !important; border:1px solid #333 !important;">QR</button>
+
+    <div id="contentRoot">
     <div class="container">
         <header>
             <div class="header-decoration">
@@ -1798,13 +1854,13 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
             <button id="fontDec" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Decrease text"><i class="fas fa-minus"></i></button>
             
             <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
+
+            <!-- 第六個功能鍵：顯示光暗/色深調校 -->
+            <button id="displayTuneBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="顯示調校"><i class="fas fa-sliders"></i></button>
             
             <button id="infoBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="使用須知"><i class="fas fa-info-circle"></i></button>
         </div>
         </header>
-        
-        <button id="languageToggle" class="language-toggle" aria-label="切換語言" style="background-color:#90EE90 !important; color:#000 !important; border:1px solid #7fd67f !important;">EN</button>
-            <button id="qrButton" class="qr-toggle" aria-label="QR Code" style="background-color:#555 !important; color:#fff !important; border:1px solid #333 !important;">QR</button>
         
         <div class="main-content">
             <div class="form-section">
@@ -3050,6 +3106,15 @@ function initSalaryTableClipboardFill(){
                 applyFontScale(settings.fontScale);
             }
 
+            // 顯示光暗/色深：用 CSS filter（只套用到 #appRoot）
+            (function applyDisplayFilter(){
+                const b = Number(settings.brightness ?? 1);
+                const c = Number(settings.contrast ?? 1);
+                const s = Number(settings.saturate ?? 1);
+                const filter = `brightness(${b}) contrast(${c}) saturate(${s})`;
+                document.documentElement.style.setProperty('--display-filter', filter);
+            })();
+
             // Theme migration/compat:
             // - keep ONLY paper-texture light mode
             let t = settings.theme || 'dark';
@@ -3089,7 +3154,7 @@ function initSalaryTableClipboardFill(){
             let settings = {};
             if (!raw) {
                 // 全新安裝/第一次開：固定預設
-                settings = { theme: 'dark', fontScale: 1.0 };
+                settings = { theme: 'dark', fontScale: 1.0, brightness: 1, contrast: 1, saturate: 1 };
                 localStorage.setItem('uiSettings', JSON.stringify(settings));
             } else {
                 settings = getUiSettings();
@@ -3097,6 +3162,9 @@ function initSalaryTableClipboardFill(){
                 if (!settings || typeof settings !== 'object') settings = {};
                 if (!settings.theme) settings.theme = 'dark';
                 if (!settings.fontScale) settings.fontScale = 1.0;
+                if (settings.brightness == null) settings.brightness = 1;
+                if (settings.contrast == null) settings.contrast = 1;
+                if (settings.saturate == null) settings.saturate = 1;
                 // 舊版本兼容：light/light-simple 一律當 light-vintage
                 if (settings.theme === 'light' || settings.theme === 'light-simple') settings.theme = 'light-vintage';
                 localStorage.setItem('uiSettings', JSON.stringify(settings));
@@ -3107,6 +3175,100 @@ function initSalaryTableClipboardFill(){
             const inc = document.getElementById('fontInc');
             const dec = document.getElementById('fontDec');
             const themeBtn = document.getElementById('themeToggle');
+            const tuneBtn = document.getElementById('displayTuneBtn');
+
+            // 顯示調校彈窗
+            const modal = document.getElementById('displayTuneModal');
+            const closeBtn = document.getElementById('tuneClose');
+            const doneBtn = document.getElementById('tuneDone');
+            const resetBtn = document.getElementById('tuneReset');
+            const elB = document.getElementById('tuneBrightness');
+            const elC = document.getElementById('tuneContrast');
+            const elS = document.getElementById('tuneSaturate');
+            const valB = document.getElementById('tuneBrightnessVal');
+            const valC = document.getElementById('tuneContrastVal');
+            const valS = document.getElementById('tuneSaturateVal');
+
+            function isZh(){ return (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh'; }
+            function syncTuneTexts(){
+                const zh = isZh();
+                const title = document.getElementById('tuneTitle');
+                if (title) title.textContent = zh ? '顯示調校' : 'Display Tuning';
+                const lb1 = document.getElementById('tuneBrightnessLabel');
+                const lb2 = document.getElementById('tuneContrastLabel');
+                const lb3 = document.getElementById('tuneSaturateLabel');
+                if (lb1) lb1.textContent = zh ? '亮度' : 'Brightness';
+                if (lb2) lb2.textContent = zh ? '對比' : 'Contrast';
+                if (lb3) lb3.textContent = zh ? '飽和度' : 'Saturation';
+                const hint = document.getElementById('tuneHint');
+                if (hint) hint.textContent = zh ? '提示：想「深色啲」通常加少少對比/飽和度，再微調亮度。' : 'Tip: For deeper colors, raise contrast/saturation a bit, then adjust brightness.';
+
+                const presetLabel = document.getElementById('tunePresetLabel');
+                if (presetLabel) presetLabel.textContent = zh ? '預設：' : 'Presets:';
+                document.querySelectorAll('.tune-presets .tune-preset').forEach(btn => {
+                    const t = zh ? (btn.getAttribute('data-zh') || btn.textContent) : (btn.getAttribute('data-en') || btn.textContent);
+                    btn.textContent = t;
+                });
+
+                if (doneBtn) doneBtn.textContent = zh ? '完成' : 'Done';
+                if (resetBtn) resetBtn.textContent = zh ? '重置' : 'Reset';
+            }
+            function setSliderValuesFromSettings(){
+                if (elB) elB.value = String(Math.round((settings.brightness ?? 1) * 100));
+                if (elC) elC.value = String(Math.round((settings.contrast ?? 1) * 100));
+                if (elS) elS.value = String(Math.round((settings.saturate ?? 1) * 100));
+                updateValLabels();
+            }
+            function updateValLabels(){
+                if (valB && elB) valB.textContent = `${elB.value}%`;
+                if (valC && elC) valC.textContent = `${elC.value}%`;
+                if (valS && elS) valS.textContent = `${elS.value}%`;
+            }
+            function openTune(){
+                if (!modal) return;
+                syncTuneTexts();
+                setSliderValuesFromSettings();
+                modal.style.display = 'flex';
+                modal.setAttribute('aria-hidden','false');
+                document.addEventListener('keydown', onEsc);
+            }
+            function closeTune(){
+                if (!modal) return;
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden','true');
+                document.removeEventListener('keydown', onEsc);
+            }
+            function onEsc(e){ if(e.key === 'Escape') closeTune(); }
+            function applyFromSliders(save){
+                if (!elB || !elC || !elS) return;
+                settings.brightness = Number(elB.value)/100;
+                settings.contrast = Number(elC.value)/100;
+                settings.saturate = Number(elS.value)/100;
+                updateValLabels();
+                if (save) setUiSettings(settings); else applyUiSettings(settings);
+            }
+            if (modal) modal.addEventListener('click', function(e){ if(e.target === modal) closeTune(); });
+            if (closeBtn) closeBtn.addEventListener('click', closeTune);
+            if (doneBtn) doneBtn.addEventListener('click', function(){ applyFromSliders(true); closeTune(); });
+            if (resetBtn) resetBtn.addEventListener('click', function(){
+                if (elB) elB.value='100';
+                if (elC) elC.value='100';
+                if (elS) elS.value='100';
+                applyFromSliders(true);
+            });
+            [elB, elC, elS].forEach(el => { if(el) el.addEventListener('input', () => applyFromSliders(false)); });
+
+            // 預設按鍵：一撳即套用（同時保留滑桿微調）
+            document.querySelectorAll('.tune-presets .tune-preset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (elB) elB.value = String(btn.getAttribute('data-b') || '100');
+                    if (elC) elC.value = String(btn.getAttribute('data-c') || '100');
+                    if (elS) elS.value = String(btn.getAttribute('data-s') || '100');
+                    applyFromSliders(true); // 立即儲存並套用
+                });
+            });
+
+            if (tuneBtn) tuneBtn.addEventListener('click', openTune);
 
             if (inc) inc.addEventListener('click', () => {
                 settings.fontScale = Math.min(settings.fontScale + 0.1, 1.6);
@@ -3540,8 +3702,19 @@ document.addEventListener('DOMContentLoaded', function() {
       overlay.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
       startConfetti();
+
+      // FIX: 某些裝置/環境 CSS animation 會失效，導致 modal 保持 opacity:0（只見蒙查查背景+紙碎）
+      const modalEl = overlay.querySelector('.welcome-modal');
+      if (modalEl) {
+        modalEl.style.opacity = '1';
+        modalEl.style.transform = 'translateY(0) scale(1)';
+      }
+
       requestAnimationFrame(() => { overlay.style.opacity = '1'; });
     };
+
+    // 點背景都可以關閉（避免卡住）
+    overlay.addEventListener('click', function(e){ if (e.target === overlay) closeWelcome(); });
     const closeWelcome = () => {
       // 平滑淡出
       overlay.style.opacity = '1';
@@ -4153,6 +4326,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </style>
 
+</div><!-- /#appRoot -->
+
   <!-- 歡迎視窗（僅首次） -->
   <div id="welcomeOverlay" class="welcome-overlay" aria-hidden="true" role="dialog">
     <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
@@ -4425,6 +4600,7 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage #fontInc,
   .theme-light-vintage #fontDec,
   .theme-light-vintage #themeToggle,
+  .theme-light-vintage #displayTuneBtn,
   .theme-light-vintage #infoBtn {
     background: rgba(255,255,255,0.55) !important;
     border: 1px solid rgba(167, 132, 85, 0.55) !important;
@@ -4545,7 +4721,7 @@ document.addEventListener('DOMContentLoaded', function() {
             /* --- 2026-02-09 V16: STABILITY + NO-FLASH ONLY --- */
 
             /* A. BUTTONS: FORCE CIRCLE (User Requirement) */
-            #fontInc, #fontDec, #themeToggle, #infoBtn {
+            #fontInc, #fontDec, #themeToggle, #displayTuneBtn, #infoBtn {
                 box-sizing: border-box !important;
                 width: 28px !important;
                 height: 28px !important;
@@ -4688,6 +4864,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
 </style>
+
+</div> <!-- /#contentRoot -->
+
+<!-- 顯示光暗/色深調校彈窗（不受 filter 影響） -->
+<div id="displayTuneModal" class="tune-backdrop" aria-hidden="true">
+  <div class="tune-modal" role="dialog" aria-modal="true" aria-label="顯示調校">
+    <div class="tune-header">
+      <div class="tune-title" id="tuneTitle">顯示調校</div>
+      <button type="button" id="tuneClose" class="tune-close" aria-label="關閉">×</button>
+    </div>
+    <div class="tune-body">
+      <div class="tune-row">
+        <label for="tuneBrightness"><span id="tuneBrightnessLabel">亮度</span></label>
+        <input id="tuneBrightness" type="range" min="70" max="130" value="100" />
+        <span id="tuneBrightnessVal" class="tune-val">100%</span>
+      </div>
+      <div class="tune-row">
+        <label for="tuneContrast"><span id="tuneContrastLabel">對比</span></label>
+        <input id="tuneContrast" type="range" min="80" max="140" value="100" />
+        <span id="tuneContrastVal" class="tune-val">100%</span>
+      </div>
+      <div class="tune-row">
+        <label for="tuneSaturate"><span id="tuneSaturateLabel">飽和度</span></label>
+        <input id="tuneSaturate" type="range" min="80" max="160" value="100" />
+        <span id="tuneSaturateVal" class="tune-val">100%</span>
+      </div>
+      <div class="tune-presets" aria-label="顯示調校預設">
+        <span class="preset-label" id="tunePresetLabel">預設：</span>
+        <button type="button" class="tune-preset" data-b="108" data-c="96" data-s="96" data-zh="淺色" data-en="Lighter">淺色</button>
+        <button type="button" class="tune-preset" data-b="100" data-c="100" data-s="100" data-zh="標準" data-en="Standard">標準</button>
+        <button type="button" class="tune-preset" data-b="96" data-c="108" data-s="106" data-zh="深色" data-en="Deeper">深色</button>
+        <button type="button" class="tune-preset" data-b="94" data-c="115" data-s="110" data-zh="超深" data-en="Extra deep">超深</button>
+      </div>
+      <div class="tune-hint" id="tuneHint">提示：想「深色啲」通常加少少對比/飽和度，再微調亮度。</div>
+      <div class="tune-actions">
+        <button type="button" id="tuneReset" class="btn btn-warning btn-3d">重置</button>
+        <button type="button" id="tuneDone" class="btn btn-success btn-3d">完成</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         (function(){
