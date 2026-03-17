@@ -899,7 +899,7 @@
             /* === 顯示光暗/色深調校：只影響 appRoot（避免彈窗被 filter） === */
             /* 注意：filter 會令 position:fixed 變成跟住滾動。
                所以只對「內容區」套用 filter，浮動鍵（EN/QR）唔會受影響。 */
-            #contentRoot { filter: var(--display-filter); transition: filter 180ms ease; }
+            #contentRoot { filter: var(--display-filter); transition: filter 180ms ease; padding-bottom: 72px; }
 
             /* === 顯示調校彈窗（modal） === */
             .tune-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 18px; }
@@ -2015,6 +2015,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
             <p id="disclaimerFooter" class="disclaimer">此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。</p>
         </footer>
     </div>
+    </div><!-- /contentRoot -->
     
     <div class="status-bar">
         <div class="status-message">
