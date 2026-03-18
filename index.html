@@ -4738,16 +4738,30 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   .theme-light-vintage .result-placeholder i { color: rgba(167,132,85,0.95) !important; }
 
-  /* G. Modal（使用須知/儲存確認 等）在紙紋光明：避免內文用 #aaa / 淺色 */
-  .theme-light-vintage #infoModal .modal-body,
-  .theme-light-vintage #infoModal .modal-body * { color: #3a2e22 !important; }
-  .theme-light-vintage #infoModal .label { font-weight: 800 !important; }
-  /* 覆蓋上面整段 * 的顏色鎖定：本機儲存提示保持橙色（與黑暗版一致） */
-  .theme-light-vintage #infoModal #storageRule {
-    color: #d33a3a !important;
-    /* 保留陰影，提升米黃底可讀性 */
-    text-shadow: 0 1px 0 rgba(255,255,255,0.65), 0 2px 6px rgba(0,0,0,0.25) !important;
-}
+  /* G. Modal（使用須知/儲存確認 等）在紙紋光明：
+     用返黑暗版同一套（深色底 + 白字），確保兩邊完全一致 */
+  .theme-light-vintage #infoModal.modal {
+    background: rgba(30, 58, 95, 0.70) !important; /* 等同 var(--section-bg) */
+    color: #ffffff !important;
+  }
+  .theme-light-vintage #infoModal.modal header,
+  .theme-light-vintage #infoModal.modal .modal-foot {
+    border-color: rgba(255,255,255,0.20) !important;
+  }
+  .theme-light-vintage #infoModal.modal .modal-body,
+  .theme-light-vintage #infoModal.modal .modal-body * {
+    color: #ffffff !important;
+    text-shadow: none !important;
+  }
+  .theme-light-vintage #infoModal.modal .label {
+    color: #a0c8ff !important;
+    font-weight: 700 !important;
+  }
+  .theme-light-vintage #infoModal.modal #storageRule,
+  .theme-light-vintage #infoModal.modal #uiSettingsRule {
+    color: #ffb300 !important;
+    text-shadow: none !important;
+  }
 
   .theme-light-vintage #saveNoticeModal .modal {
     background: rgba(251,246,234,0.96) !important;
