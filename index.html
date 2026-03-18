@@ -29,6 +29,7 @@
 
         /* 強調：本機儲存（中英文共用同一元素） */
         #storageRule { color: #ffb300; }
+        #uiSettingsRule { color: #ffb300; }
         
         * {
             box-sizing: border-box;
@@ -2118,6 +2119,7 @@ const translations = {
                     'refOnlyRule': '此計算結果僅供參考，參數或規則可能會改變；請自行核實。',
                     'dateRule': '請確保日期輸入正確（截止日期不可早於入職日期）。',
                     'storageRule': '本工具只在瀏覽器本機儲存資料（localStorage），不會上載伺服器；請自行妥善保管。',
+                    'uiSettingsRule': '本程式預設只會在本機記住介面設定（語言、主題/光暗、字體大小、顯示調校等），方便下次開啟自動套用；你填入嘅資料不會上載伺服器，亦不會用作收集個人內容。',
                     'privacyRule': '本工具僅在瀏覽器本機處理及儲存資料；資料不會傳送到任何伺服器或第三方。',
                     'liabilityRule': '任何因使用本工具而引致的後果或損失，本工具不承擔責任。',
                     'closeModalText': '我明白'
@@ -2179,6 +2181,7 @@ const translations = {
                     'refOnlyRule': 'The calculation result is for reference only; parameters or rules may change—please verify.',
                     'dateRule': 'Ensure dates are correct (end date cannot be earlier than hire date).',
                     'storageRule': 'This tool only stores data locally in your browser (localStorage); nothing is uploaded—please keep your data safe.',
+                    'uiSettingsRule': 'This app remembers basic interface settings (language, theme/brightness, font size, display tuning, etc.) on your device for next time. Anything you enter is not uploaded to any server and is not used to collect personal content.',
                     'privacyRule': 'This tool processes and stores your data locally in your browser; no data is transmitted to any server or third party.',
                     'liabilityRule': 'This tool is not responsible for any consequences or losses arising from use.',
                     'closeModalText': 'Got it'
@@ -4251,6 +4254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li id="refOnlyRule">此計算結果僅供參考，參數或規則可能會改變；請自行核實。</li>
                     <li id="dateRule">請確保日期輸入正確（截止日期不可早於入職日期）。</li>
                     <li id="storageRule">本工具只在瀏覽器本機儲存資料（localStorage），不會上載伺服器；請自行妥善保管。</li>
+                    <li id="uiSettingsRule">本程式預設只會在本機記住介面設定（語言、主題/光暗、字體大小、顯示調校等），方便下次開啟自動套用；你填入嘅資料不會上載伺服器，亦不會用作收集個人內容。</li>
                     <li id="privacyRule">本工具僅在瀏覽器本機處理及儲存資料；資料不會傳送到任何伺服器或第三方。</li>
                     <li id="liabilityRule">任何因使用本工具而引致的後果或損失，本工具不承擔責任。</li>
                 </ul>
