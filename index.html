@@ -1387,17 +1387,63 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 
 /* 移動端（Android/部分瀏覽器）option 樣式支援有限，至少確保 select 本體文字為深色並且有邊框 */
 
-/* 迷你確認浮層樣式（簡潔小巧） */
-.mini-confirm { position: fixed; display: none; padding: 10px 12px; background: rgba(0,0,0,0.78); color: #fff; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.28); font-size: 1.05rem; z-index: 2500; }
-.mini-confirm .mini-lines { display: flex; flex-direction: column; line-height: 1.2; gap: 4px; }
-.mini-confirm .mini-sub { opacity: 0.85; font-size: 0.92em; }
-.mini-confirm .mini-actions { display: flex; gap: 8px; margin-top: 6px; justify-content: flex-end; }
-.mini-confirm .mini-btn { background: rgba(255,255,255,0.18); color: #fff; border: 0; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.95rem; }
-.mini-confirm .mini-btn.ok { background: var(--warning); color: #333; }
+/* 迷你確認浮層樣式（重置確認用） */
+/* 你反映：字體/按鈕太大、太迫；彈窗本體唔要透明；背景要模糊 */
+.mini-confirm-backdrop{
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 2490;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.mini-confirm {
+  position: fixed;
+  display: none;
+  padding: 12px 14px;
+  background: #50565f; /* 灰色不透明 */
+  color: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+  font-size: 1.08rem;
+  z-index: 2500;
+  /* 加大少少（但避免太迫） */
+  --mini-scale: 1.12;
+  transform: scale(var(--mini-scale));
+  transform-origin: top left;
+  max-width: calc((100vw - 24px) / var(--mini-scale));
+}
+.mini-confirm .mini-actions { flex-wrap: nowrap; }
+.mini-confirm .mini-lines { display: flex; flex-direction: column; line-height: 1.25; gap: 6px; }
+.mini-confirm .mini-actions { display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end; }
+.mini-confirm .mini-btn {
+  background: #6b7280; /* 灰色不透明 */
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 1.02rem;
+  line-height: 1.2;
+  min-width: 108px;
+}
+.mini-confirm .mini-btn.ok { background: var(--warning); border-color: rgba(0,0,0,0.08); color: #222; }
+.mini-confirm .mini-btn:active{ transform: translateY(1px); }
 
 </style>
         <style>
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 2000; }
+        .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  /* 需求：彈窗出現時背景全模糊化 */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: none;
+  z-index: 2000;
+}
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
         .modal header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; }
         .modal header h3 { font-size: 1.3rem; color: var(--accent); margin: 0; }
@@ -3314,6 +3360,16 @@ function initSalaryTableClipboardFill(){
         (function(){
   const resetBtn = document.getElementById('resetBtn');
   if (!resetBtn) return;
+
+  // 背景模糊遮罩（避免彈窗過於迫/透明）
+  let backdrop = document.getElementById('resetConfirmBackdrop');
+  if (!backdrop){
+    backdrop = document.createElement('div');
+    backdrop.id = 'resetConfirmBackdrop';
+    backdrop.className = 'mini-confirm-backdrop';
+    document.body.appendChild(backdrop);
+  }
+
   let mini = document.getElementById('resetConfirmMini');
   if (!mini){
     mini = document.createElement('div');
@@ -3326,22 +3382,40 @@ function initSalaryTableClipboardFill(){
             mini.querySelector('.mini-btn.ok').textContent = isZh ? '確定' : 'OK';
     document.body.appendChild(mini);
   }
+
+  function hideMini(){
+    mini.style.display = 'none';
+    backdrop.style.display = 'none';
+  }
+
+  // 點遮罩亦可關閉
+  backdrop.addEventListener('click', hideMini);
+
   function showMini(){
     const r = resetBtn.getBoundingClientRect();
-    // 置於按鈕右上，避免遮住主要按鈕
+
     // 目標寬度：跟主要輸入欄一致（若找不到則用 resetBtn 所在容器寬度）
     const inputEl = document.querySelector('.form-section .input-control') || document.querySelector('.input-control');
     const containerEl = document.querySelector('.form-section') || resetBtn.closest('.form-section') || document.body;
     const inputBox = inputEl ? inputEl.getBoundingClientRect() : resetBtn.getBoundingClientRect();
     const containerBox = containerEl.getBoundingClientRect();
-    const targetWidth = Math.min(inputBox.width, window.innerWidth - 24); // 留邊距
-    mini.style.width = Math.round(targetWidth) + 'px';
-    // 置中：以容器中心計算
-    const left = containerBox.left + (containerBox.width - targetWidth)/2;
-    mini.style.left = Math.round(Math.max(12, Math.min(left, window.innerWidth - targetWidth - 12))) + 'px';
-    // 放在 reset 按鈕上方一點
-    mini.style.top = Math.round(Math.max(r.top - 12 - 64, 10)) + 'px';
+    // 套用縮放（需求：1.8倍），避免縮放後寬度出界：用 (viewport / scale) 反推未縮放寬度
+    const scale = parseFloat(getComputedStyle(mini).getPropertyValue('--mini-scale')) || 1;
+    const baseWidth = Math.min(inputBox.width, (window.innerWidth - 24) / scale); // 留邊距（縮放後仍然貼合螢幕）
+    mini.style.width = Math.round(baseWidth) + 'px';
+    backdrop.style.display = 'block';
     mini.style.display = 'block';
+
+    // 讀取「縮放後」尺寸（getBoundingClientRect 會包含 transform）
+    const scaledBox = mini.getBoundingClientRect();
+
+    // 置中：以容器中心計算（用縮放後寬度）
+    const left = containerBox.left + (containerBox.width - scaledBox.width)/2;
+    mini.style.left = Math.round(Math.max(12, Math.min(left, window.innerWidth - scaledBox.width - 12))) + 'px';
+
+    // 放在 reset 按鈕上方一點（用縮放後高度）
+    mini.style.top = Math.round(Math.max(r.top - 12 - scaledBox.height, 10)) + 'px';
+
     const zh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
     document.getElementById('miniMsg1').textContent = zh ? '確定重置？' : 'Reset?';
     mini.querySelector('.cancel').textContent = zh ? '取消' : 'Cancel';
@@ -3349,8 +3423,20 @@ function initSalaryTableClipboardFill(){
   }
   mini.addEventListener('click', (ev)=>{
     const t = ev.target;
-    if (t.classList.contains('cancel')){ mini.style.display='none'; }
-    if (t.classList.contains('ok')){ mini.style.display='none'; clearDraftForm(); initForm(); }
+    if (t.classList.contains('cancel')){ hideMini(); }
+    if (t.classList.contains('ok')){
+      hideMini();
+      clearDraftForm();
+      initForm();
+      // 重置後自動回到「開機畫面」（頁面頂部）
+      requestAnimationFrame(() => {
+        try {
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        } catch (e) {
+          window.scrollTo(0, 0);
+        }
+      });
+    }
   });
   resetBtn.addEventListener('click', (e)=>{ e.preventDefault(); showMini(); });
 })();
@@ -4192,6 +4278,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key.length > 1) return; // Allow arrows, backspace
         if (!/[0-9]/.test(e.key)) {
             e.preventDefault();
+        // 以 capture 先攔截，避免重複觸發舊的 reset handler
+        e.stopPropagation();
+        e.stopImmediatePropagation();
             updateStatus(translations[currentLang]['logicErrorInteger']);
             shakeInput(e.target);
         }
@@ -5274,22 +5363,30 @@ input.input-control, select.input-control, textarea.input-control {
         mini.querySelector('.ok').textContent = isZh ? '確定' : 'OK';
 
         const rect = btn.getBoundingClientRect();
-        const w = 220; 
-        mini.style.width = w + 'px';
-        let l = rect.left + (rect.width - w)/2;
-        l = Math.max(10, Math.min(l, window.innerWidth - w - 10));
-        mini.style.left = l + 'px';
-        let t = rect.top - 80;
-        if (t < 10) t = rect.bottom + 10;
-        mini.style.top = t + 'px';
+
+        // 需求：彈窗加大 1.8 倍；並用縮放後尺寸做定位，避免「放大後偏位」
+        const inputEl = document.querySelector('.form-section .input-control') || document.querySelector('.input-control');
+        const containerEl = document.querySelector('.form-section') || btn.closest('.form-section') || document.body;
+        const inputBox = inputEl ? inputEl.getBoundingClientRect() : rect;
+        const containerBox = containerEl.getBoundingClientRect();
+        // 需求：彈窗加大 1.8 倍，同時避免放大後左右出界
+        const scale = parseFloat(getComputedStyle(mini).getPropertyValue('--mini-scale')) || 1;
+        const baseWidth = Math.min(inputBox.width, (window.innerWidth - 24) / scale);
+
+        mini.style.width = Math.round(baseWidth) + 'px';
         mini.style.display = 'block';
-    });
+
+        const scaledBox = mini.getBoundingClientRect();
+        const left = containerBox.left + (containerBox.width - scaledBox.width)/2;
+        mini.style.left = Math.round(Math.max(12, Math.min(left, window.innerWidth - scaledBox.width - 12))) + 'px';
+        mini.style.top = Math.round(Math.max(rect.top - 12 - scaledBox.height, 10)) + 'px';
+    }, true);
 
     // 5. LOAD/DELETE MODAL (Injected & Modified)
     (function(){
   function makeOverlay(){
     const ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;';
 
     const isVintage = document.documentElement.classList.contains('theme-light-vintage');
     const box = document.createElement('div');
@@ -5401,38 +5498,29 @@ input.input-control, select.input-control, textarea.input-control {
     document.body.appendChild(ov);
   }
 
-  // Override handlers with safe logic
+  // Override handlers：一律彈出專屬視窗（背景全模糊化）
   window.showLoadSelect = function(){
     var savedData = {};
     try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
     var keys = Object.keys(savedData);
-    if (!keys.length) return;
+    if (!keys.length) {
+      if (typeof updateStatus === 'function') updateStatus((document.documentElement.getAttribute('data-lang')||'zh')==='zh' ? '沒有可載入的資料' : 'No data to load');
+      return;
+    }
     keys.sort(function(a,b){ return (savedData[b].createdAt||0) - (savedData[a].createdAt||0); });
-    var sel = document.getElementById('loadSelect');
-    if (!sel) { customLoadModal(keys); return; }
-    sel.innerHTML = '';
-    keys.forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=k; sel.appendChild(o); });
-    if (typeof sel.showPicker === 'function') {
-      sel.onchange = function(){ var v = sel.value; if(v){ try{ loadSavedData(v); }catch(e){} } };
-      try { sel.showPicker(); setTimeout(function(){ if(!sel.value) customLoadModal(keys); }, 600); } catch(e) { customLoadModal(keys); }
-    } else { customLoadModal(keys); }
+    customLoadModal(keys);
   };
 
   window.showDeleteSelect = function(){
     var savedData = {};
     try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
     var keys = Object.keys(savedData);
-    if (!keys.length) return;
+    if (!keys.length) {
+      if (typeof updateStatus === 'function') updateStatus((document.documentElement.getAttribute('data-lang')||'zh')==='zh' ? '目前沒有可刪除的資料' : 'No saved record to delete');
+      return;
+    }
     keys.sort(function(a,b){ return (savedData[b].createdAt||0) - (savedData[a].createdAt||0); });
-    var sel = document.getElementById('deleteSelect');
-    if (!sel) { customDeleteModal(keys); return; }
-    sel.innerHTML = '';
-    var delAll = document.createElement('option'); delAll.value='__DELETE_ALL__'; delAll.textContent='刪除全部'; sel.appendChild(delAll);
-    keys.forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=k; sel.appendChild(o); });
-    if (typeof sel.showPicker === 'function') {
-      sel.onchange = function(){ var v = sel.value; if (v==='__DELETE_ALL__') deleteAllSavedData(); else if (v) deleteSavedData(v); };
-      try { sel.showPicker(); setTimeout(function(){ if(!sel.value) customDeleteModal(keys); }, 600); } catch(e) { customDeleteModal(keys); }
-    } else { customDeleteModal(keys); }
+    customDeleteModal(keys);
   };
 })();
 
