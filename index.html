@@ -170,6 +170,11 @@
             .form-row {
                 align-items: flex-end;
             }
+
+            /* Desktop only：label 不換行（按你要求） */
+            .form-group label {
+                white-space: nowrap;
+            }
         }
         
         .form-row .form-group {
@@ -1231,6 +1236,8 @@
    - 避免只剩「蒙查查」+ 紙碎但無法按「開始使用」 */
 .welcome-overlay[aria-hidden="false"] { display: flex; opacity: 1; }
 .welcome-overlay[aria-hidden="false"] .welcome-modal { opacity: 1 !important; transform: translateY(0) scale(1) !important; animation: none !important; }
+/* 防止 overlay 已關閉但仍然擋住點擊（保持界面外觀不變） */
+.welcome-overlay[aria-hidden="true"] { display: none !important; opacity: 0 !important; pointer-events: none !important; }
 
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* 主題相容：在光明主題時調整對比 */
@@ -1841,7 +1848,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 </head>
 <body>
 <div id="appRoot">
-<div id="fouc-shield" style="position:fixed; inset:0; background: #0f0f0f; z-index: 2147483647; transition: opacity 0.8s ease;"></div>
+<div id="fouc-shield" style="position:fixed; inset:0; background: #0f0f0f; z-index: 2147483647; transition: opacity 0.8s ease; pointer-events: none;"></div>
 
     <!-- 右上角浮動鍵（永遠固定喺畫面上；唔會跟住內容滾動） -->
     <button id="languageToggle" class="language-toggle" aria-label="切換語言" style="background-color:#90EE90 !important; color:#000 !important; border:1px solid #7fd67f !important;">EN</button>
@@ -3962,6 +3969,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Old listener removed
 
     btnStart.addEventListener('click', closeWelcome);
+    btnLater.addEventListener('click', closeWelcome);
     // click disabled
     // escape disabled
 
