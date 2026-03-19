@@ -162,6 +162,15 @@
             display: flex;
             gap: 15px;
         }
+
+        /* Desktop only：當同一行有兩個輸入欄時，強制底部對齊。
+           目的：就算 label 因語言/字體放大而換行，兩個 input/select 的底部仍會齊。
+           注意：手機版 (<=600px) 會改為直排，這裡不影響手機版。 */
+        @media (min-width: 601px) {
+            .form-row {
+                align-items: flex-end;
+            }
+        }
         
         .form-row .form-group {
             flex: 1;
@@ -4926,6 +4935,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             :is(.theme-light, .theme-light-simple, .theme-light-vintage) #resetBtn:active {
                 box-shadow: 0 4px 10px rgba(0,0,0,0.24), inset 0 2px 6px rgba(0,0,0,0.18) !important;
+            }
+
+
+            /* === 2026-03-19: 圈住嗰幾個主按鈕白字 + 陰影（光暗版都要） === */
+            :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) { color: #fff !important; }
+            :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) :is(span, i) {
+                color: #fff !important;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.50) !important;
+            }
+
+            /* === 2026-03-19: 微弱呼吸燈（增加動態感） === */
+            @keyframes breatheLight {
+                0%, 100% { opacity: 0.10; transform: scale(1); }
+                50%      { opacity: 0.22; transform: scale(1.02); }
+            }
+            /* 只套用到主要大按鈕（避免小圓形工具鍵太花） */
+            :is(.button-group, .data-controls) .btn-3d {
+                position: relative;
+                overflow: hidden;
+            }
+            :is(.button-group, .data-controls) .btn-3d::after {
+                content: "";
+                position: absolute;
+                inset: -6px;
+                border-radius: inherit;
+                pointer-events: none;
+                z-index: 1;
+                background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.18) 28%, rgba(255,255,255,0.0) 60%);
+                mix-blend-mode: screen;
+                animation: breatheLight 2.8s ease-in-out infinite;
+            }
+            /* 尊重系統「減少動態」設定 */
+            @media (prefers-reduced-motion: reduce) {
+                :is(.button-group, .data-controls) .btn-3d::after { animation: none !important; opacity: 0.14; }
             }
 
 </style>
