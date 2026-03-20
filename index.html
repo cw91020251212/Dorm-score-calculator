@@ -4810,15 +4810,9 @@ document.addEventListener('DOMContentLoaded', function() {
   .theme-light-vintage {
     --paper-alpha: calc(0.05 + (var(--paper-strength) * 0.16));
 
-    --body-bg:
-      linear-gradient(135deg, var(--primary), var(--primary-dark)),
-      repeating-linear-gradient(
-        90deg,
-        rgba(122, 90, 68, var(--paper-alpha)) 0px,
-        rgba(122, 90, 68, var(--paper-alpha)) 2px,
-        rgba(255, 255, 255, 0.0) 2px,
-        rgba(255, 255, 255, 0.0) 6px
-      );
+    /* 還原：光明模式程式背景用灰色（避免米黃紙底） */
+    --body-bg: linear-gradient(135deg, #9f9f9f, #7f7f7f);
+
   }
 
   /* 共同元件風格（兩個光明版共用） */
