@@ -24,7 +24,7 @@
             --required: #ff6b6b;
             --hint-pink: #ffb6c1;
             --language-bg: #90EE90; /* 淺綠色背景（不透明） */
-            --display-filter: brightness(1) contrast(1) saturate(1); /* 顯示光暗/色深調校 */
+            --display-filter: brightness(1) contrast(1) saturate(0.92); /* 顯示光暗/色深調校：全局略降飽和 */
         }
 
         /* 強調：本機儲存（中英文共用同一元素） */
@@ -940,7 +940,7 @@
 
             /* 顯示調校：預設按鍵（快速選深淺色）
                - 目標：四個掣一定整齊（4格 / 小屏 2x2） */
-            .tune-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 10px 0 6px; align-items: center; }
+            .tune-presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; margin: 10px 0 6px; align-items: center; }
             .tune-presets .preset-label { grid-column: 1 / -1; font-weight: 800; font-size: 0.95rem; opacity: 0.92; margin: 0 0 2px; }
             .tune-presets .tune-preset { width: 100%; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.12); color: var(--text-light); border-radius: 12px; padding: 8px 10px; cursor: pointer; font-weight: 800; font-size: 0.92rem; line-height: 1.05; text-align: center; }
             .tune-presets .tune-preset:hover { filter: brightness(1.06) saturate(1.04); }
@@ -1241,7 +1241,7 @@
 
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* 主題相容：在光明主題時調整對比 */
-.theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(253,230,138,0.5) 30%, rgba(252,165,165,0.5) 60%, rgba(196,181,253,0.5) 100%); color: #2b6cb0; }
+.theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.62) 0%, rgba(219,234,254,0.50) 32%, rgba(252,165,165,0.42) 66%, rgba(216,180,254,0.45) 100%); color: #2b6cb0; }
 .theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0; }
 .theme-light .welcome-btn.primary { background: #2b6cb0; color: #fff; }
 
@@ -1338,25 +1338,7 @@ html[data-theme="dark"] :is(.btn, .btn-3d, .status-btn, .action-btn, .mini-btn, 
   box-shadow: 0 3px 8px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.40) !important;
 }
 
-/* Dark Mode：兩個主要按鈕（計算/重置）陰影同樣淺返啲 */
-html[data-theme="dark"] #calcBtn,
-html[data-theme="dark"] #resetBtn,
-.theme-dark #calcBtn,
-.theme-dark #resetBtn {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.50) !important;
-}
-html[data-theme="dark"] #calcBtn:hover,
-html[data-theme="dark"] #resetBtn:hover,
-.theme-dark #calcBtn:hover,
-.theme-dark #resetBtn:hover {
-  box-shadow: 0 6px 14px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.58) !important;
-}
-html[data-theme="dark"] #calcBtn:active,
-html[data-theme="dark"] #resetBtn:active,
-.theme-dark #calcBtn:active,
-.theme-dark #resetBtn:active {
-  box-shadow: 0 3px 8px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.45) !important;
-}
+/* 已移除：dark mode 對 #calcBtn/#resetBtn 的專用陰影覆寫（統一用同一套） */
 
 /* 讓提示文字僅保留文字本身，移除背景/陰影 */
 .input-hint, .input-hint span#divisorHint {
@@ -1706,7 +1688,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
   position: relative;
   overflow: hidden;
   color: #331; /* 深色字提高對比 */
-  background: linear-gradient(180deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%);
+  background: linear-gradient(135deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%);
   border: 1px solid rgba(255,255,255,0.55); /* 玻璃邊界 */
   box-shadow: 0 6px 14px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08);
   border-radius: 8px; /* 與「重置表單」統一圓角 */
@@ -1756,15 +1738,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.24), inset 0 2px 6px rgba(0,0,0,0.25);
 }
 
-/* 光明版配色微調（保持反光效果） */
-/* 光明版唔再改計算掣顏色：保持與黑暗版（#calcBtn）完全一致 */
-.theme-light #calcBtn {
-  color: #331 !important;
-  background: linear-gradient(180deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%) !important;
-  border: 1px solid rgba(255,255,255,0.55) !important;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
-}
-.theme-light #calcBtn::before { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.45) 60%, rgba(255,255,255,0.0) 100%) !important; }
+/* 已移除：theme-light 對 #calcBtn 的專用覆寫（統一用同一套） */
 
 /* 令計算分數更搶眼：群組排版微調 */
 .button-group #calcBtn { min-width: 180px; }
@@ -1772,11 +1746,11 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 /* 保持其他警告按鈕正常 */
 .button-group #resetBtn.btn-danger { /* 只示意，不改色 */ }
 
-        /* 亮版按鈕文字沿用黑暗版：白字 + 文字陰影（提升對比） */
-        .theme-light #calcBtn, .theme-light #resetBtn {
+        /* 亮版：保留「重置表單」白字；「計算分數」改跟黑暗版一致（深色字） */
+        .theme-light #resetBtn {
             color: #fff !important;
         }
-        .theme-light #calcBtn span, .theme-light #resetBtn span {
+        .theme-light #resetBtn span {
             color: #fff !important;
         }
         .theme-light .disclaimer {
@@ -1891,6 +1865,103 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         }
 
 </style>
+<style>
+/* ===== FINAL: 統一「計算分數」= 黑暗版同一套（任何主題都唔再分開改） =====
+   目的：無論 theme-light / theme-light-simple / theme-light-vintage / theme-dark / html[data-theme]，
+   #calcBtn 都完全同一套（以黑暗版為準）。
+*/
+
+/* Base 狀態 */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn,
+html[data-theme] #calcBtn,
+#calcBtn {
+  /* 手機兩主題完全一致：禁止玻璃/半透明食底色 */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+
+  color: #331 !important;
+  /* 100% 不透明金黃漸變（用 hex，避免 rgba 混色） */
+  background: linear-gradient(180deg,
+    #ffd200 0%,
+    #ffc300 40%,
+    #ffb400 70%,
+    #ffa500 100%) !important;
+  border: 1px solid #ffe7a6 !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
+  border-radius: 12px !important;
+}
+
+/* 強制文字/圖示一致 */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn :is(span, i),
+html[data-theme] #calcBtn :is(span, i),
+#calcBtn :is(span, i) {
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+/* 內部字體細節（同黑暗版） */
+#calcBtn i {
+  font-size: 1.38rem !important;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)) !important;
+}
+#calcBtn #calcBtnText {
+  font-size: 1.46rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .02em !important;
+}
+
+/* 上半部高光層 */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn::before,
+html[data-theme] #calcBtn::before,
+#calcBtn::before {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important; top: 0 !important; right: 0 !important;
+  height: 52% !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.0) 100%) !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  pointer-events: none !important;
+}
+
+/* 掃光層 */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn::after,
+html[data-theme] #calcBtn::after,
+#calcBtn::after {
+  content: '' !important;
+  position: absolute !important;
+  top: -30% !important; left: -40% !important;
+  width: 70% !important; height: 160% !important;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.0) 90%) !important;
+  transform: rotate(18deg) !important;
+  filter: blur(1px) !important;
+  animation: calcBtnSheen 3.2s ease-in-out infinite !important;
+  pointer-events: none !important;
+}
+
+/* Hover */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn:hover,
+html[data-theme] #calcBtn:hover,
+#calcBtn:hover {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+
+/* Active */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn:active,
+html[data-theme] #calcBtn:active,
+#calcBtn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 2px 6px rgba(0,0,0,0.25) !important;
+}
+</style>
+
 </head>
 <body>
 <div id="appRoot">
@@ -2014,6 +2085,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
                 
                 <div class="button-group">
                     <button id="calcBtn" class="btn btn-warning btn-3d">
+                        <span class="calcbtn-sheen" aria-hidden="true"></span>
                         <i class="fas fa-calculator"></i> <span id="calcBtnText">計算分數</span>
                     </button>
                     <button id="resetBtn" class="btn btn-danger btn-3d">
@@ -3329,6 +3401,10 @@ function initSalaryTableClipboardFill(){
             // 預設按鍵：一撳即套用（同時保留滑桿微調）
             document.querySelectorAll('.tune-presets .tune-preset').forEach(btn => {
                 btn.addEventListener('click', () => {
+                    // 可選：某些預設同時切換主題（例如「一鍵白淨」）
+                    const theme = btn.getAttribute('data-theme');
+                    if (theme) settings.theme = theme;
+
                     if (elB) elB.value = String(btn.getAttribute('data-b') || '100');
                     if (elC) elC.value = String(btn.getAttribute('data-c') || '100');
                     if (elS) elS.value = String(btn.getAttribute('data-s') || '100');
@@ -4594,7 +4670,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <style>
   /* 最終色彩保險：強制顏色顯示 */
-  :root { --language-bg: #90EE90; }
+  :root { --language-bg: #d7f4d7; }
   #languageToggle.language-toggle { background-color: var(--language-bg) !important; color: #000 !important; border: 1px solid #7fd67f !important; }
   #qrButton.qr-toggle { background-color: #555 !important; color: #fff !important; border: 1px solid #333 !important; }
 
@@ -4604,13 +4680,14 @@ document.addEventListener('DOMContentLoaded', function() {
     --text-dark:  #3a2e22;
     --primary: #8a8a8a;       /* 背景改深灰（電腦更清晰） */
     --primary-dark: #666666;  /* 深一階灰（加深少少） */
-    --accent: #c7a97a;        /* 卡其啡 */
-    --accent-dark: #a88455;
-    --warning: #d19a00;       /* 金黃點綴（加深少少） */
-    --success: #6faf8a;
-    --danger: #c86c6c;
-    --card-bg: rgba(236, 226, 194, 0.96);
-    --section-bg: rgba(236, 226, 194, 0.93);
+    --accent: #b9a68a;        /* 低飽和米啡（去黃、偏灰） */
+    --accent-dark: #9a8567;
+    --warning: #c08a00;       /* 金色點綴：再去黃少少 */
+    --success: #6aa37f;       /* 降飽和綠 */
+    --danger: #c06a6a;        /* 降飽和紅 */
+    /* 底色：光明模式可以黃少少（但仍保持偏白、唔黃得滯） */
+    --card-bg: rgba(251, 247, 238, 0.985);
+    --section-bg: rgba(249, 245, 236, 0.972);
     --body-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
 
     /* 必填星號（你圈住嗰啲）：改橙紅色，更醒目 */
@@ -4623,8 +4700,8 @@ document.addEventListener('DOMContentLoaded', function() {
       linear-gradient(135deg, #8a8a8a, #666666),
       repeating-linear-gradient(
         90deg,
-        rgba(167, 132, 85, 0.24) 0px,
-        rgba(167, 132, 85, 0.24) 2px,
+        rgba(122, 90, 68, 0.07) 0px,
+        rgba(122, 90, 68, 0.07) 2px,
         rgba(255, 255, 255, 0.0) 2px,
         rgba(255, 255, 255, 0.0) 7px
       );
@@ -4665,8 +4742,8 @@ document.addEventListener('DOMContentLoaded', function() {
     background:
       repeating-linear-gradient(
         90deg,
-        rgba(167, 132, 85, 0.22) 0px,
-        rgba(167, 132, 85, 0.22) 2px,
+        rgba(0, 0, 0, 0.05) 0px,
+        rgba(0, 0, 0, 0.05) 2px,
         rgba(255, 255, 255, 0.0) 2px,
         rgba(255, 255, 255, 0.0) 8px
       ),
@@ -4687,8 +4764,8 @@ document.addEventListener('DOMContentLoaded', function() {
     overflow: hidden;
     color: #2b1a12 !important;                 /* 深啡近黑 */
     background:
-      radial-gradient(120% 90% at 15% 10%, rgba(255,255,255,0.80) 0%, rgba(255,255,255,0.00) 55%),
-      linear-gradient(180deg, rgba(255, 251, 214, 0.98) 0%, rgba(255, 239, 156, 0.96) 55%, rgba(244, 211, 122, 0.94) 100%) !important;
+      radial-gradient(120% 90% at 15% 10%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.00) 55%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 246, 242, 0.97) 55%, rgba(236, 234, 228, 0.96) 100%) !important;
     border-color: rgba(122,90,68,0.72) !important;
     box-shadow:
       0 10px 22px rgba(58,46,34,0.22),
@@ -4729,29 +4806,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* D. 主要功能按鈕：用復古啡色系做分別（唔再清一色） */
   .theme-light-vintage .btn-primary {
-    background: linear-gradient(180deg, #d2b48c, #c19a6b) !important; /* 卡其 */
-    border-color: rgba(122, 79, 36, 0.55) !important;
-    color: #2f241a !important;
+    /* 彩色按鈕：淡啲、粉色一啲（低飽和） */
+    background: linear-gradient(180deg, #f6d6e6, #eec4da) !important; /* 淡粉紫 */
+    border-color: rgba(122, 90, 110, 0.38) !important;
+    color: #2f1f2b !important;
   }
   .theme-light-vintage .btn-success {
-    background: linear-gradient(180deg, #b9d3a6, #8fb58a) !important; /* 草木綠 */
-    border-color: rgba(58, 88, 52, 0.40) !important;
-    color: #1f2b1d !important;
+    background: linear-gradient(180deg, #f7dbe9, #efc9df) !important; /* 粉感薄荷（偏粉） */
+    border-color: rgba(112, 92, 104, 0.34) !important;
+    color: #2b1b25 !important;
   }
   .theme-light-vintage .btn-warning {
-    background: linear-gradient(180deg, #f3d37a, #e3b956) !important; /* 復古金 */
-    border-color: rgba(128, 88, 18, 0.40) !important;
-    color: #3a2a10 !important;
+    background: linear-gradient(180deg, #f9d8d8, #f1c3c9) !important; /* 粉桃（取代金黃） */
+    border-color: rgba(128, 88, 96, 0.34) !important;
+    color: #2b161b !important;
   }
   .theme-light-vintage .btn-danger {
-    background: linear-gradient(180deg, #d8a1a1, #c47474) !important; /* 乾玫瑰紅 */
-    border-color: rgba(92, 38, 38, 0.45) !important;
-    color: #2b1515 !important;
+    background: linear-gradient(180deg, #f3c7d6, #e9aec4) !important; /* 乾玫瑰（更淡） */
+    border-color: rgba(120, 70, 86, 0.38) !important;
+    color: #2b151a !important;
+  }
+
+  /* hover/active：避免太「豐富」 */
+  .theme-light-vintage :is(.btn-primary,.btn-success,.btn-warning,.btn-danger):hover{
+    filter: brightness(0.99) saturate(0.98) !important;
+  }
+  .theme-light-vintage :is(.btn-primary,.btn-success,.btn-warning,.btn-danger):active{
+    filter: brightness(0.97) saturate(0.96) !important;
   }
 
   /* 特別：計算/重置按鈕（就算class唔同都盡量覆蓋） */
-  .theme-light-vintage #calcBtn { background: linear-gradient(180deg, #b9d3a6, #8fb58a) !important; color: #1f2b1d !important; }
-  .theme-light-vintage #resetBtn { background: linear-gradient(180deg, #d8a1a1, #c47474) !important; color: #2b1515 !important; }
+  /* 已移除：theme-light-vintage 對 #calcBtn 的專用覆寫（統一用同一套） */
+  .theme-light-vintage #resetBtn { background: linear-gradient(180deg, #f3c7d6, #e9aec4) !important; color: #2b151a !important; }
 
   /* 4個圓形功能鍵：保持圓形，但用復古灰米色 */
   .theme-light-vintage #fontInc,
@@ -4983,47 +5069,128 @@ document.addEventListener('DOMContentLoaded', function() {
                     inset 0 -2px 0 rgba(0,0,0,0.18) !important;
             }
 
-            /* 類型按鈕顏色：直接沿用黑暗版/深色主題色（避免 light-vintage 自己套色） */
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-primary { background: #0d6efd !important; color: #fff !important; }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-success { background: #28a745 !important; color: #fff !important; }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-success:hover { background: #218838 !important; transform: translateY(-2px); }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-warning { background: #ffc107 !important; color: #333 !important; }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-warning:hover { background: #e0a800 !important; transform: translateY(-2px); }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-danger  { background: #e84f4f !important; color: #fff !important; }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) .btn-danger:hover { background: #d33a3a !important; transform: translateY(-2px); }
+            /* 統一按鈕：光明/黑暗/其他主題都用同一套（斜對角漸變 + 3D 由統一陰影負責） */
+            :is(.btn-primary, .btn-success, .btn-warning, .btn-danger,
+                #saveDataBtn, #cancelSaveBtn, #loadBtn) {
+                /* 保底：避免某些主題把文字色改走 */
+                color: #fff !important;
+            }
 
-            /* 計算分數：黑暗版係金黃色玻璃漸變（#calcBtn 本身嘅定義），光明版都強制跟返同一套 */
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn {
+            /* 類型按鈕（計算分數 #calcBtn 另外有自己金黃玻璃漸變，唔喺呢度處理） */
+            .btn-primary {
+                background: linear-gradient(135deg, #6aa9ff 0%, #0d6efd 45%, #084298 100%) !important;
+            }
+            .btn-success {
+                background: linear-gradient(135deg, #40e07a 0%, #28a745 45%, #1f8a38 100%) !important;
+            }
+            .btn-warning {
+                background: linear-gradient(135deg, #fff2a8 0%, #ffc107 45%, #e0a800 100%) !important;
+                color: #2b2b2b !important;
+            }
+            .btn-danger {
+                background: linear-gradient(135deg, #ff8080 0%, #e84f4f 45%, #c53030 100%) !important;
+            }
+
+            /* hover：同一套（任何主題一致） */
+            .btn-success:hover {
+                background: linear-gradient(135deg, #56f08a 0%, #2fb85a 45%, #1c7a33 100%) !important;
+            }
+            .btn-warning:hover {
+                background: linear-gradient(135deg, #fff7bf 0%, #ffcd39 45%, #d39e00 100%) !important;
+            }
+            .btn-danger:hover {
+                background: linear-gradient(135deg, #ff9a9a 0%, #f45d5d 45%, #b91c1c 100%) !important;
+            }
+
+            /* 你圈住嗰三個主按鈕：直接用同一組色（任何主題一致） */
+            #saveDataBtn {
+                background: linear-gradient(135deg, #58e68d 0%, #28a745 55%, #1f7a34 100%) !important;
+            }
+            #cancelSaveBtn {
+                background: linear-gradient(135deg, #ff8a8a 0%, #e84f4f 55%, #b91c1c 100%) !important;
+            }
+            #loadBtn {
+                background: linear-gradient(135deg, #7ab3ff 0%, #1f7cf0 55%, #1649b8 100%) !important;
+            }
+
+            /* 計算分數：參考舊檔（宿舍分數計算器_10），光暗版都用同一套 */
+            #calcBtn {
+                /* 2026-03-20：手機兩主題一致，禁止玻璃/半透明食底色 */
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                position: relative !important;
+                overflow: hidden !important;
                 color: #331 !important;
-                background: linear-gradient(180deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%) !important;
-                /* 輪廓線加深少少（避免同底色融為一體） */
-                border: 1px solid rgba(0,0,0,0.40) !important;
-                /* 額外加一層內框，令輪廓更實淨 */
-                box-shadow: 0 6px 14px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
-                /* 光明版：陰影減淡（避免「成嚿嘢」太重） */
-                /* （box-shadow 已搬到上面，連同內框一齊處理） */
-                border-radius: 8px !important; /* 與黑暗版/重置表單一致 */
+                background: linear-gradient(180deg,
+                    #ffd200 0%,
+                    #ffc300 40%,
+                    #ffb400 70%,
+                    #ffa500 100%) !important;
+                border: 1px solid #ffe7a6 !important;
+                box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
+                border-radius: 12px !important;
             }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn:hover {
-                box-shadow: 0 10px 20px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.85) !important;
-            }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn:active {
-                box-shadow: 0 4px 10px rgba(0,0,0,0.24), inset 0 2px 6px rgba(0,0,0,0.18) !important;
-            }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn::before {
+            /* 強制文字/圖示顏色一致（避免 theme-light/theme-vintage 另外改色） */
+            #calcBtn :is(span, i) { color: inherit !important; text-shadow: none !important; }
+            #calcBtn i { filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)) !important; }
+            #calcBtn #calcBtnText { font-size: 1.46rem !important; font-weight: 900 !important; letter-spacing: .02em !important; }
+
+            /* 上半部「高光」反光層 */
+            #calcBtn::before {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                content: '';
+                position: absolute; left: 0; top: 0; right: 0;
+                height: 52%;
                 background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.0) 100%) !important;
-                border-top-left-radius: 8px !important;
-                border-top-right-radius: 8px !important;
+                border-top-left-radius: 12px !important;
+                border-top-right-radius: 12px !important;
+                pointer-events: none;
             }
+
+            /* 斜向掃光（Sheen） */
+            #calcBtn::after {
+                content: '';
+                position: absolute; top: -30%; left: -40%;
+                width: 70%; height: 160%;
+                background: linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.0) 90%) !important;
+                transform: rotate(18deg);
+                filter: blur(1px);
+                animation: calcBtnSheen 3.2s ease-in-out infinite;
+                pointer-events: none;
+            }
+
+            /* Hover 狀態：稍微抬起、加強光澤 */
+            #calcBtn:hover {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                transform: translateY(-2px) !important;
+                box-shadow: 0 12px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+            }
+
+            /* Active 狀態：按下的立體感 */
+            #calcBtn:active {
+                transform: translateY(0) !important;
+                box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 2px 6px rgba(0,0,0,0.25) !important;
+            }
+
+            /* 已移除：重複的 calcBtn 額外強制覆寫（統一由 head 內 FINAL 區塊接管） */
 
             /* 重置：沿用黑暗版 danger（紅色），但光明版陰影/輪廓線調輕調清晰 */
             :is(.theme-light, .theme-light-simple, .theme-light-vintage) #resetBtn {
-                background: #e84f4f !important;
+                /* 改：同「取消儲存」一致嘅紅色漸變 */
+                background: linear-gradient(135deg, #ff8a8a 0%, #e84f4f 55%, #b91c1c 100%) !important;
                 color: #fff !important;
                 /* 輪廓線加深少少 */
                 border: 1px solid rgba(0,0,0,0.45) !important;
-                /* 額外加一層內框，令輪廓更實淨 */
-                box-shadow: 0 6px 14px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.12) !important;
+                /* 額外加一層內框，令輪廓更實淨 + 加強頂部反光幼白線 */
+                border-top-color: rgba(255,255,255,0.55) !important;
+                border-bottom-color: rgba(0,0,0,0.25) !important;
+                box-shadow:
+                    0 6px 14px rgba(0,0,0,0.28),
+                    inset 0 0 0 1px rgba(0,0,0,0.14),
+                    inset 0 2px 0 rgba(255,255,255,0.60), /* ←頂部幼白反光線 */
+                    inset 0 -1px 0 rgba(0,0,0,0.12) !important;
                 /* 光明版：陰影減淡 */
                 /* （box-shadow 已搬到上面，連同內框一齊處理） */
             }
@@ -5097,6 +5264,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       <div class="tune-presets" aria-label="顯示調校預設">
         <span class="preset-label" id="tunePresetLabel">預設：</span>
+        <button type="button" class="tune-preset" data-b="118" data-c="92" data-s="84" data-theme="light-vintage" data-zh="一鍵白淨" data-en="Ultra light">一鍵白淨</button>
         <button type="button" class="tune-preset" data-b="108" data-c="96" data-s="96" data-zh="淺色" data-en="Lighter">淺色</button>
         <button type="button" class="tune-preset" data-b="100" data-c="100" data-s="100" data-zh="標準" data-en="Standard">標準</button>
         <button type="button" class="tune-preset" data-b="96" data-c="108" data-s="106" data-zh="深色" data-en="Deeper">深色</button>
@@ -5240,19 +5408,60 @@ input.input-control, select.input-control, textarea.input-control {
 
 /* === SAVE MODAL (Big) === */
 #saveNoticeModal .modal {
-    background: #1e3a5f !important;
-    border: 2px solid rgba(126, 200, 255, 0.45) !important;
+    /* 由深藍改成柔和淺色系：偏白、少黃，配合整體主題 */
+    background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(244,247,252,0.96) 60%, rgba(236,242,250,0.96) 100%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
     border-radius: 16px !important;
     width: min(90%, 460px) !important;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.30) !important;
 }
 #saveNoticeModal header { padding: 24px 28px 10px !important; }
 #saveNoticeModal h3 { font-size: 1.7rem !important; gap: 12px; }
 #saveNoticeModal .modal-body {
     padding: 28px !important;
     font-size: 1.25rem !important;
+    color: #1f2937 !important; /* 深灰字，淺底更清楚 */
 }
+#saveNoticeModal .modal-body p { color: #1f2937 !important; }
+#saveNoticeModal .modal-body p[style*="color: #aaa"],
+#saveNoticeModal .modal-body p[style*="color:#aaa"] { color: rgba(31,41,55,0.68) !important; }
 #saveNoticeModal .btn { height: 60px !important; font-size: 22px !important; }
+
+/* 讓「儲存確認」彈窗內兩個按鈕顏色更飽和（不論有冇 id 都生效） */
+#saveNoticeModal .modal-foot .btn-success,
+#saveNoticeModal .modal-foot #confirmSaveBtn.btn-success{
+  background: linear-gradient(135deg, #37d67a 0%, #1ea34a 55%, #0f6b2d 100%) !important;
+  border: 1px solid rgba(0,0,0,0.42) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.50), inset 0 -2px 0 rgba(0,0,0,0.16) !important;
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+}
+#saveNoticeModal .modal-foot .btn-danger,
+#saveNoticeModal .modal-foot #cancelSaveModalBtn.btn-danger{
+  background: linear-gradient(135deg, #ff6b6b 0%, #e12d2d 55%, #8f0f0f 100%) !important;
+  border: 1px solid rgba(0,0,0,0.42) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.46), inset 0 -2px 0 rgba(0,0,0,0.18) !important;
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+}
+#saveNoticeModal .modal-foot .btn-success:hover,
+#saveNoticeModal .modal-foot #confirmSaveBtn.btn-success:hover{
+  filter: saturate(1.12) brightness(1.05) !important;
+  transform: translateY(-1px);
+}
+#saveNoticeModal .modal-foot .btn-danger:hover,
+#saveNoticeModal .modal-foot #cancelSaveModalBtn.btn-danger:hover{
+  filter: saturate(1.12) brightness(1.05) !important;
+  transform: translateY(-1px);
+}
+#saveNoticeModal .modal-foot .btn-success:active,
+#saveNoticeModal .modal-foot .btn-danger:active,
+#saveNoticeModal .modal-foot #confirmSaveBtn.btn-success:active,
+#saveNoticeModal .modal-foot #cancelSaveModalBtn.btn-danger:active{
+  transform: translateY(1px);
+  filter: saturate(1.05) brightness(0.98) !important;
+}
+
 .modal-overlay { background: rgba(0, 0, 0, 0.75) !important; backdrop-filter: blur(3px); }
 
 `;
@@ -5567,5 +5776,377 @@ window.addEventListener('load', function() {
     if(btnLater) btnLater.addEventListener('click', stopSnow);
 });
 </script>
+
+<!-- === FIX 2026-03-20: 統一「計算分數/重置表單」圓角 + 黃色掣立體漸變 + 恢復動畫 === -->
+<style id="btn-fix-20260320">
+
+  :root { --main-action-radius: 8px; }
+
+  /* 1) 兩個主按鈕：圓角完全一致（光/暗版都一樣） */
+  #calcBtn, #resetBtn {
+    border-radius: var(--main-action-radius) !important;
+  }
+
+  /* 2) 重置表單：保留原有紅色立體漸變，但統一漸變方向同圓角 */
+  #resetBtn {
+    /* 漸變方向：同你截圖嗰種「上淺下深」一致 */
+    background: linear-gradient(135deg, #ff8a8a 0%, #e84f4f 55%, #b91c1c 100%) !important;
+    border: 1px solid rgba(0,0,0,0.45) !important;
+    border-top-color: rgba(255,255,255,0.55) !important;
+    border-bottom-color: rgba(0,0,0,0.25) !important;
+    box-shadow:
+      0 6px 14px rgba(0,0,0,0.28),
+      inset 0 0 0 1px rgba(0,0,0,0.14),
+      inset 0 2px 0 rgba(255,255,255,0.60),
+      inset 0 -1px 0 rgba(0,0,0,0.12) !important;
+  }
+
+  /* 3) 計算分數：沿用舊版外觀（宿舍分數計算器_10） */
+  #calcBtn {
+    backdrop-filter: saturate(1.25) blur(8px); /* 玻璃質感 */
+    -webkit-backdrop-filter: saturate(1.25) blur(8px);
+
+    position: relative;
+    overflow: hidden;
+    isolation: isolate; /* 令 mix-blend-mode 可靠 */
+    color: #331; /* 深色字提高對比 */
+    background: linear-gradient(135deg, rgba(255,210,0,0.88) 0%, rgba(255,195,0,0.84) 40%, rgba(255,180,0,0.80) 70%, rgba(255,165,0,0.78) 100%);
+    border: 1px solid rgba(255,255,255,0.55); /* 玻璃邊界 */
+    box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(0,0,0,0.08);
+    border-radius: var(--main-action-radius);
+  }
+  #calcBtn i { font-size: 1.38rem; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)); }
+  #calcBtn #calcBtnText { font-size: 1.46rem; font-weight: 900; letter-spacing: .02em; }
+
+  /* 上半部「高光」反光層 */
+  #calcBtn::before {
+    backdrop-filter: saturate(1.1);
+    content: '';
+    position: absolute; left: 0; top: 0; right: 0;
+    height: 52%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.0) 100%);
+    border-top-left-radius: var(--main-action-radius);
+    border-top-right-radius: var(--main-action-radius);
+    pointer-events: none;
+  }
+
+  /* 斜向掃光（Sheen） */
+  #calcBtn::after {
+    content: '';
+    position: absolute; top: -30%; left: -45%;
+    width: 85%; height: 170%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.72) 45%, rgba(255,255,255,0.0) 90%);
+    transform: rotate(18deg);
+    filter: blur(0.8px);
+    animation: calcBtnSheen 3.2s ease-in-out infinite !important;
+    pointer-events: none;
+
+    /* 確保掃光層一定見到（新版CSS可能有 ::after 競爭） */
+    z-index: 3;
+    opacity: 0.98;
+    mix-blend-mode: screen;
+  }
+  @keyframes calcBtnSheen {
+    0%   { transform: translateX(-40%) rotate(18deg); opacity: .0; }
+    18%  { opacity: .85; }
+    42%  { transform: translateX(160%) rotate(18deg); opacity: .0; }
+    100% { transform: translateX(160%) rotate(18deg); opacity: .0; }
+  }
+
+  /* Hover 狀態：稍微抬起、加強光澤 */
+  #calcBtn:hover {
+    backdrop-filter: saturate(1.35) blur(8px);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* Active 狀態：按下的立體感 */
+  #calcBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  /* 光明版配色微調（只針對 calcBtn） */
+  :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn {
+    color: #222 !important;
+    background: linear-gradient(135deg, #ffd88c 0%, #ffcd70 40%, #f7b24c 70%, #e59a32 100%) !important;
+    border-color: rgba(130, 80, 0, 0.32) !important;
+  }
+  :is(.theme-light, .theme-light-simple, .theme-light-vintage) #calcBtn::before {
+    background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.45) 60%, rgba(255,255,255,0.0) 100%) !important;
+  }
+
+  /* 注意：唔停掃光動畫（避免出現「無動畫？」）
+     如真係想停動畫，可以再加返 prefers-reduced-motion 規則。 */
+
+  /* 就算系統開咗「減少動態」，都強制保留 calcBtn 掃光 */
+  @media (prefers-reduced-motion: reduce) {
+    #calcBtn::after { animation: calcBtnSheen 3.2s ease-in-out infinite !important; }
+  }
+
+</style>
+
+<!-- === FIX 2026-03-20 v10: 強制 calcBtn 掃光一定郁 === -->
+<style id="calcbtn-sheen-force-v10">
+  /* v13：唔再靠 #calcBtn::after（因為新版入面 ::after 太多衝突會被蓋走）。
+     改用按鈕入面一個真實元素 .calcbtn-sheen，100% 唔會俾其他 ::after 規則影響。 */
+  @keyframes calcBtnSheenElemV13 {
+    /* 節奏：先停頓，再慢慢掃過（整體更柔和） */
+    0%, 55% { transform: translateX(-140%) rotate(18deg); opacity: 0; }
+    62%     { opacity: 0.70; }
+    80%     { transform: translateX(220%) rotate(18deg); opacity: 0.55; }
+    88%     { opacity: 0; }
+    100%    { transform: translateX(220%) rotate(18deg); opacity: 0; }
+  }
+
+  #calcBtn { position: relative !important; overflow: hidden !important; }
+  #calcBtn .calcbtn-sheen {
+    position: absolute;
+    top: -35%;
+    left: 0;
+    width: 85%;
+    height: 190%;
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 9999;
+    background: linear-gradient(120deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.82) 45%,
+      rgba(255,255,255,0) 90%);
+    filter: blur(1.1px);
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+    animation: calcBtnSheenElemV13 5.6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #calcBtn .calcbtn-sheen { animation: calcBtnSheenElemV13 5.6s ease-in-out infinite !important; }
+  }
+
+  /* 舊 v10/v12 仍保留（但已無關鍵用途），避免你之前版本引用唔到 */
+  @keyframes calcBtnSheenV12 {
+    0%   { left: -60%; opacity: 0.0; }
+    10%  { opacity: 0.95; }
+    38%  { left: 140%; opacity: 0.0; }
+    100% { left: 140%; opacity: 0.0; }
+  }
+
+  /* 用獨立 keyframes 名，避免被其他規則蓋掉 */
+  #calcBtn::after {
+    content: '' !important;
+    position: absolute !important;
+    top: -35% !important;
+    left: -60% !important;
+    width: 95% !important;
+    height: 190% !important;
+    pointer-events: none !important;
+    border-radius: inherit !important;
+
+    background: linear-gradient(120deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.82) 45%,
+      rgba(255,255,255,0) 90%) !important;
+
+    transform: rotate(18deg) !important;
+    filter: blur(0.7px) !important;
+    opacity: 0.35 !important; /* 就算動畫被停，都會見到一條反光 */
+    z-index: 999 !important;
+    mix-blend-mode: screen !important;
+    will-change: left, opacity !important;
+
+    animation-name: calcBtnSheenV12 !important;
+    animation-duration: 3.2s !important;
+    animation-timing-function: ease-in-out !important;
+    animation-iteration-count: infinite !important;
+    animation-play-state: running !important;
+  }
+
+  /* 就算系統開咗「減少動態」，都唔停呢個掃光 */
+  @media (prefers-reduced-motion: reduce) {
+    #calcBtn::after {
+      animation-name: calcBtnSheenV12 !important;
+      animation-duration: 3.2s !important;
+      animation-iteration-count: infinite !important;
+      animation-play-state: running !important;
+    }
+  }
+</style>
+
+<!-- === FIX 2026-03-20 v23: 只加深圈住嗰兩組按鈕 + 白字加陰影（唔改米白背景） === -->
+<style id="modal-action-buttons-v24">
+  /* v24：
+     1) #calcBtn 四隻圓角 = #resetBtn（兩個主題一致）
+     2) 你圈住嗰兩個畫面：標題 + 兩個按鈕色要更「豐富/明亮」，白字要有陰影
+     3) 顯示調校（displayTuneModal）同一套樣式俾黑暗版用（唔再太黑） */
+
+  /* === A) 主頁：計算分數/重置 圓角一致 === */
+  #calcBtn, #resetBtn {
+    border-radius: 8px !important; /* 跟 .btn 預設 8px */
+  }
+  #calcBtn::before { border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
+  #calcBtn .calcbtn-sheen { border-radius: 8px !important; }
+
+  /* === B) 儲存確認（saveNoticeModal）：標題唔好太暗 + 白字陰影 === */
+  #saveNoticeModal .modal header {
+    background: linear-gradient(135deg, #6f93dd 0%, #4f74c8 55%, #3f63b3 100%) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.18) !important;
+  }
+  #saveNoticeModal .modal header h3,
+  #saveNoticeModal .modal header h3 * {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.70) !important;
+  }
+
+  /* === C) 顯示調校（displayTuneModal）：兩主題都用同一套（米白底）=== */
+  #displayTuneModal .tune-modal {
+    background: rgba(248, 246, 241, 0.96) !important; /* 米白（唔黃） */
+    border: 1px solid rgba(0,0,0,0.14) !important;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.28) !important;
+  }
+  #displayTuneModal .tune-title,
+  #displayTuneModal .tune-row label,
+  #displayTuneModal .tune-presets .preset-label,
+  #displayTuneModal .tune-val,
+  #displayTuneModal .tune-hint {
+    color: #1f1a14 !important;
+    text-shadow: none !important;
+  }
+
+  /* === D) 你圈住嗰兩組按鈕：顏色更明亮 + 白字陰影（兩主題都適用） === */
+  #displayTuneModal #tuneReset.btn-warning {
+    background: linear-gradient(135deg, #ffe08a 0%, #f6c64a 55%, #e3a910 100%) !important;
+    border: 1px solid rgba(0,0,0,0.34) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.24), inset 0 2px 0 rgba(255,255,255,0.62), inset 0 -2px 0 rgba(0,0,0,0.14) !important;
+  }
+  #displayTuneModal #tuneDone.btn-success {
+    background: linear-gradient(135deg, #bff0cf 0%, #7bd39a 55%, #43b874 100%) !important;
+    border: 1px solid rgba(0,0,0,0.34) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.24), inset 0 2px 0 rgba(255,255,255,0.58), inset 0 -2px 0 rgba(0,0,0,0.14) !important;
+  }
+
+  #saveNoticeModal #confirmSaveBtn.btn-success {
+    background: linear-gradient(135deg, #bff0cf 0%, #7bd39a 55%, #43b874 100%) !important;
+    border: 1px solid rgba(0,0,0,0.34) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.24), inset 0 2px 0 rgba(255,255,255,0.58), inset 0 -2px 0 rgba(0,0,0,0.14) !important;
+  }
+  #saveNoticeModal #cancelSaveModalBtn.btn-danger {
+    background: linear-gradient(135deg, #ffc2c2 0%, #f48a8a 55%, #e45757 100%) !important;
+    border: 1px solid rgba(0,0,0,0.34) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.24), inset 0 2px 0 rgba(255,255,255,0.56), inset 0 -2px 0 rgba(0,0,0,0.16) !important;
+  }
+
+  /* 白字陰影（包括 span/i 或純文字） */
+  #displayTuneModal :is(#tuneReset, #tuneDone),
+  #saveNoticeModal :is(#confirmSaveBtn, #cancelSaveModalBtn) {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.70) !important;
+  }
+  #displayTuneModal :is(#tuneReset, #tuneDone) :is(span, i),
+  #saveNoticeModal :is(#confirmSaveBtn, #cancelSaveModalBtn) :is(span, i) {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.70) !important;
+  }
+
+  /* 仍保留 v23 規則（下方原內容） */
+  /* A) 顯示調校：底部「重置 / 完成」兩個掣（只改按鈕，不改整個彈窗底色） */
+  #displayTuneModal #tuneReset.btn-warning {
+    background: linear-gradient(135deg, #ffd36a 0%, #f3b521 55%, #d18a00 100%) !important;
+    border: 1px solid rgba(0,0,0,0.42) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.55), inset 0 -2px 0 rgba(0,0,0,0.16) !important;
+  }
+  #displayTuneModal #tuneDone.btn-success {
+    background: linear-gradient(135deg, #58e68d 0%, #28a745 55%, #1f7a34 100%) !important;
+    border: 1px solid rgba(0,0,0,0.42) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.50), inset 0 -2px 0 rgba(0,0,0,0.16) !important;
+  }
+
+  /* B) 儲存確認：底部「確認 / 取消」兩個掣（只改按鈕，不改整個彈窗底色） */
+  #saveNoticeModal #confirmSaveBtn.btn-success {
+    background: linear-gradient(135deg, #58e68d 0%, #28a745 55%, #1f7a34 100%) !important;
+    border: 1px solid rgba(0,0,0,0.42) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.50), inset 0 -2px 0 rgba(0,0,0,0.16) !important;
+  }
+  #saveNoticeModal #cancelSaveModalBtn.btn-danger {
+    background: linear-gradient(135deg, #ff8a8a 0%, #e84f4f 55%, #b91c1c 100%) !important;
+    border: 1px solid rgba(0,0,0,0.42) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.46), inset 0 -2px 0 rgba(0,0,0,0.18) !important;
+  }
+
+  /* C) 白字一定要有黑底陰影（你講嘅「白色字冇暗」） */
+  #displayTuneModal :is(#tuneReset, #tuneDone),
+  #saveNoticeModal :is(#confirmSaveBtn, #cancelSaveModalBtn) {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+  }
+  #displayTuneModal :is(#tuneReset, #tuneDone) :is(span, i),
+  #saveNoticeModal :is(#confirmSaveBtn, #cancelSaveModalBtn) :is(span, i) {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+  }
+</style>
+
+
+<!-- === FIX 2026-03-20 v25: 圓角 + 兩個彈窗色彩/字色統一 === -->
+<style id="ui-fixes-v25">
+  /* 1) 主頁：計算分數圓角 = 重置圓角（兩主題一致） */
+  #calcBtn, #resetBtn { border-radius: 8px !important; }
+  #calcBtn::before { border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
+  #calcBtn .calcbtn-sheen { border-radius: 8px !important; }
+
+  /* 2) 儲存確認（saveNoticeModal）：標題更鮮色 + 兩個按鈕更鮮色 + 白字陰影 */
+  #saveNoticeModal .modal header {
+    background: linear-gradient(135deg, #7aa3ff 0%, #3f7cf2 55%, #2458c9 100%) !important;
+  }
+  #saveNoticeModal .modal header h3,
+  #saveNoticeModal .modal header h3 * {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+  }
+  #saveNoticeModal #confirmSaveBtn {
+    background: linear-gradient(135deg, #40e07a 0%, #28a745 55%, #1f7a34 100%) !important;
+    border: 1px solid rgba(0,0,0,0.34) !important;
+  }
+  #saveNoticeModal #cancelSaveModalBtn {
+    background: linear-gradient(135deg, #ff8080 0%, #e84f4f 55%, #b91c1c 100%) !important;
+    border: 1px solid rgba(0,0,0,0.34) !important;
+  }
+  #saveNoticeModal :is(#confirmSaveBtn, #cancelSaveModalBtn) {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+  }
+  #saveNoticeModal :is(#confirmSaveBtn, #cancelSaveModalBtn) :is(span, i) {
+    color: #fff !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+  }
+
+  /* 3) 顯示調校（displayTuneModal）：光明/黑暗都用同一個「光明版」版面
+        - 所有文字應該係黑色
+        - 右上角 X 亦係黑色
+  */
+  #displayTuneModal .tune-modal {
+    background: rgba(248,246,241,0.96) !important; /* 米白 */
+    border: 1px solid rgba(0,0,0,0.14) !important;
+  }
+  #displayTuneModal .tune-title,
+  #displayTuneModal .tune-row label,
+  #displayTuneModal .tune-presets .preset-label,
+  #displayTuneModal .tune-val,
+  #displayTuneModal .tune-hint {
+    color: #1f1a14 !important;
+    text-shadow: none !important;
+  }
+  #displayTuneModal .tune-close {
+    color: #1f1a14 !important;   /* X 黑色 */
+    background: rgba(0,0,0,0.05) !important;
+    border-color: rgba(0,0,0,0.18) !important;
+  }
+  #displayTuneModal .tune-presets .tune-preset {
+    background: rgba(0,0,0,0.06) !important;
+    border-color: rgba(0,0,0,0.18) !important;
+    color: #1f1a14 !important;   /* 四個預設掣文字黑色 */
+    text-shadow: none !important;
+  }
+</style>
+
 </body>
 </html>
