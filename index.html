@@ -9,7 +9,7 @@
     <!-- Score display fonts (artistic but readable) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Liu+Jian+Mao+Cao&family=LXGW+WenKai+TC:wght@400;700&family=Klee+One:wght@400;600&family=Yuji+Mai&family=Abril+Fatface&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Abril+Fatface&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #1e3a5f;
@@ -79,8 +79,7 @@
             color: #fff;
             /* 大標題美術字：保持清晰、帶少少設計感 */
             /* 先用 Google 美術字；如果撈唔到，退到楷書系（都會明顯唔同） */
-            /* 換成更明顯嘅美術字：KuaiLe 會比 QingKe 更「有感」 */
-            font-family: "ZCOOL KuaiLe", "ZCOOL QingKe HuangYou", "DFKai-SB", "KaiTi", "STKaiti", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif !important;
+            font-family: "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "DFKai-SB", "KaiTi", "STKaiti", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif !important;
             /* 降低光暈，避免視覺膨脹感 */
             text-shadow: 0 0 6px rgba(79, 157, 232, 0.5),
                          0 0 12px rgba(79, 157, 232, 0.35);
@@ -91,11 +90,6 @@
             white-space: nowrap; /* 強制單行顯示 */
         }
         
-        /* 保險：只針對標題文字（唔影響icon） */
-        header h1 #appTitle {
-            font-family: "LXGW WenKai TC", "Ma Shan Zheng", "ZCOOL QingKe HuangYou", "DFKai-SB", "KaiTi", "STKaiti", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif !important;
-        }
-
         h1 i {
             color: #ffc107;
             text-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
@@ -449,8 +443,7 @@
             letter-spacing: 0.02em;
         }
         .highlight-score .score-value {
-            /* 用正常字體顯示數字（避免美術字體） */
-            font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
+            font-family: "Abril Fatface", "Montserrat", "Segoe UI", "Microsoft JhengHei", sans-serif;
             font-size: 3.2rem;
             font-weight: 800;
             line-height: 1;
