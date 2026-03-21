@@ -1349,16 +1349,6 @@
   border: 2px solid rgba(122, 90, 68, 0.70) !important;
 }
 
-/* Dark Mode：取消指定 5 個主要按鈕陰影（避免深色底好肉酸） */
-html[data-theme="dark"] :is(#calcBtn, #resetBtn, #saveDataBtn, #cancelSaveBtn, #loadBtn),
-.theme-dark :is(#calcBtn, #resetBtn, #saveDataBtn, #cancelSaveBtn, #loadBtn) {
-  box-shadow: none !important;
-}
-/* 連文字陰影一齊取消（深色底會顯得髒） */
-html[data-theme="dark"] :is(#calcBtn, #resetBtn, #saveDataBtn, #cancelSaveBtn, #loadBtn) :is(span, i),
-.theme-dark :is(#calcBtn, #resetBtn, #saveDataBtn, #cancelSaveBtn, #loadBtn) :is(span, i) {
-  text-shadow: none !important;
-}
 
 /* 已移除：dark mode 對 #calcBtn/#resetBtn 的專用陰影覆寫（統一用同一套） */
 
@@ -1714,7 +1704,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
   border: 1px solid rgba(255,255,255,0.55); /* 玻璃邊界 */
   border-radius: 8px; /* 與「重置表單」統一圓角 */
 }
-#calcBtn i { font-size: 1.38rem; filter: none; /* removed drop-shadow */ }
+#calcBtn i { font-size: 1.38rem; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)); }
 #calcBtn #calcBtnText { font-size: 1.46rem; font-weight: 900; letter-spacing: .02em; }
 
 /* 上半部「高光」反光層 */
@@ -1922,7 +1912,7 @@ html[data-theme] #calcBtn :is(span, i),
 /* 內部字體細節（同黑暗版） */
 #calcBtn i {
   font-size: 1.38rem !important;
-  filter: none !important; /* removed drop-shadow */
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)) !important;
 }
 #calcBtn #calcBtnText {
   font-size: 1.46rem !important;
@@ -5229,7 +5219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             /* 強制文字/圖示顏色一致（避免 theme-light/theme-vintage 另外改色） */
             #calcBtn :is(span, i) { color: inherit !important; text-shadow: none !important; }
-            #calcBtn i { filter: none !important; /* removed drop-shadow */ }
+            #calcBtn i { filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)) !important; }
             #calcBtn #calcBtnText { font-size: 1.46rem !important; font-weight: 900 !important; letter-spacing: .02em !important; }
 
             /* 上半部「高光」反光層 */
@@ -5290,11 +5280,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
 
-            /* === 2026-03-19: 圈住嗰幾個主按鈕白字 + 陰影（光暗版都要） === */
-            :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) { color: #fff !important; }
-            :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) :is(span, i) {
+            /* === 2026-03-19: 圈住嗰幾個主按鈕白字 + 陰影（只限光明版；黑暗版唔要陰影） === */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) { color: #fff !important; }
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) :is(span, i) {
                 color: #fff !important;
-                text-shadow: none !important; /* removed: ugly on dark mode */
+                text-shadow: 0 2px 4px rgba(0,0,0,0.50) !important;
             }
 
             /* === 2026-03-19: 微弱呼吸燈（增加動態感） === */
@@ -5920,7 +5910,7 @@ window.addEventListener('load', function() {
     border: 1px solid rgba(255,255,255,0.55); /* 玻璃邊界 */
     border-radius: var(--main-action-radius);
   }
-  #calcBtn i { font-size: 1.38rem; filter: none; /* removed drop-shadow */ }
+  #calcBtn i { font-size: 1.38rem; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)); }
   #calcBtn #calcBtnText { font-size: 1.46rem; font-weight: 900; letter-spacing: .02em; }
 
   /* 上半部「高光」反光層 */
@@ -6424,8 +6414,10 @@ window.addEventListener('load', function() {
 
   <!-- 2026-03-21：全站按鈕投影式陰影（方向一致、位移少少；不影響右上 EN/QR） -->
   <style id="global-button-drop-shadow">
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close):not(#calcBtn):not(#resetBtn):not(#saveDataBtn):not(#cancelSaveBtn):not(#loadBtn) {
+    /* 光明版先保留立體陰影；黑暗版唔喺度加（避免暗底肉酸） */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) 
+      :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+          input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close) {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.55),
         inset 1px -2px 3px rgba(0,0,0,0.10),
@@ -6433,8 +6425,9 @@ window.addEventListener('load', function() {
         -3px 4px 10px 2px rgba(0,0,0,0.14) !important;
     }
 
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close):not(#calcBtn):not(#resetBtn):not(#saveDataBtn):not(#cancelSaveBtn):not(#loadBtn):hover {
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) 
+      :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+          input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close):hover {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.62),
         inset 1px -2px 3px rgba(0,0,0,0.12),
@@ -6442,8 +6435,9 @@ window.addEventListener('load', function() {
         -3px 4px 12px 2px rgba(0,0,0,0.16) !important;
     }
 
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close):not(#calcBtn):not(#resetBtn):not(#saveDataBtn):not(#cancelSaveBtn):not(#loadBtn):active {
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) 
+      :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+          input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close):active {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.50),
         inset 1px -2px 3px rgba(0,0,0,0.14),
