@@ -6420,21 +6420,32 @@ window.addEventListener('load', function() {
 
     /* 紅圈：總分大卡 + 各段落卡片（輸入/結果/數據） */
     .theme-light-vintage :is(.highlight-score, .form-section, .result-section, .data-section) {
-      /* 取消舊有卡片陰影，改用同一套「按鈕投影」 */
+      /* 取消舊有卡片陰影，改用同一套「按鈕投影」（但外投影做得更柔、更化開） */
       box-shadow:
+        /* 保留少少內部立體感 */
         inset -1px 1px 2px rgba(255,255,255,0.55),
         inset 1px -2px 3px rgba(0,0,0,0.10),
-        -3px 4px 0 1px rgba(0,0,0,0.18),
-        -3px 4px 10px 2px rgba(0,0,0,0.14) !important;
+        /* 外投影：去掉「實邊」(0 blur)，改成雙層柔邊 */
+        -2px 3px 8px rgba(0,0,0,0.12),
+        -2px 3px 18px rgba(0,0,0,0.10) !important;
     }
 
-    /* 紅圈：頂部大標題（header 整塊）都要同款陰影 */
+    /* 紅圈：頂部大標題（header 整塊）都要同款陰影（同樣柔邊） */
     .theme-light-vintage .container > header {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.55),
         inset 1px -2px 3px rgba(0,0,0,0.10),
-        -3px 4px 0 1px rgba(0,0,0,0.18),
-        -3px 4px 10px 2px rgba(0,0,0,0.14) !important;
+        -2px 3px 8px rgba(0,0,0,0.12),
+        -2px 3px 18px rgba(0,0,0,0.10) !important;
+    }
+
+    /* 紅圈：Welcome 視窗兩個按鈕（Later / Get Started）改用更柔和投影 */
+    .welcome-overlay :is(.welcome-btn, .welcome-btn.primary) {
+      box-shadow:
+        inset -1px 1px 2px rgba(255,255,255,0.45),
+        inset 1px -2px 3px rgba(0,0,0,0.08),
+        -2px 3px 10px rgba(0,0,0,0.12),
+        -2px 3px 24px rgba(0,0,0,0.10) !important;
     }
   </style>
 </body>
