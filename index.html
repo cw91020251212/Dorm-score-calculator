@@ -5510,55 +5510,90 @@ input.input-control, select.input-control, textarea.input-control {
 `;
     document.head.appendChild(style);
 
-    // 2. SAVE MODAL HTML
-    var div = document.createElement('div');
-    div.innerHTML = `<div id="saveNoticeModal" class="modal-overlay" style="display: none; z-index: 3000;">    <div class="modal" style="display: block;">        <header>            <h3><i class="fas fa-save"></i> <span id="saveModalTitle">儲存確認</span></h3>        </header>        <div class="modal-body">            <p id="saveModalMsg" style="margin-bottom: 12px;">資料將儲存於您的設備。</p>            <p id="saveModalSubMsg" style="font-size: 0.8em; color: #aaa;">(不會上傳伺服器，請自行備份)</p>        </div>        <div class="modal-foot">            <button id="confirmSaveBtn" class="btn btn-success">✓ 確認</button>            <button id="cancelSaveModalBtn" class="btn btn-danger">✕ 取消</button>        </div>    </div></div>`;
-    document.body.appendChild(div);
-
-    // 3. SAVE LOGIC
-    var saveModal = document.getElementById('saveNoticeModal');
-    if(saveModal) {
-        saveModal.addEventListener('click', function(e){ if(e.target === saveModal) saveModal.style.display = 'none'; });
-        document.getElementById('cancelSaveModalBtn').onclick = function(){ saveModal.style.display = 'none'; };
-        document.getElementById('confirmSaveBtn').onclick = function(){ proceedSave(); };
+    // 2. SAVE MODAL（避免重複 ID 導致按鈕無反應）
+    // 本頁面原本已經有 #saveNoticeModal（HTML 內），所以唔好再注入第二個同名彈窗。
+    // 如真係缺失（例如被其他版本刪走），先用以下注入作為後備。
+    if (!document.getElementById('saveNoticeModal')) {
+        var div = document.createElement('div');
+        div.innerHTML = `<div id="saveNoticeModal" class="modal-overlay" style="display: none; z-index: 3000;">    <div class="modal" style="display: block;">        <header>            <h3><i class="fas fa-save"></i> <span id="saveModalTitle">儲存確認</span></h3>        </header>        <div class="modal-body">            <p id="saveModalMsg" style="margin-bottom: 12px;">資料將儲存於您的設備。</p>            <p id="saveModalSubMsg" style="font-size: 0.8em; color: #aaa;">(不會上傳伺服器，請自行備份)</p>        </div>        <div class="modal-foot">            <button id="confirmSaveBtn" class="btn btn-success">✓ 確認</button>            <button id="cancelSaveModalBtn" class="btn btn-danger">✕ 取消</button>        </div>    </div></div>`;
+        document.body.appendChild(div);
     }
 
-    
-    function proceedSave() {
-        document.getElementById('saveNoticeModal').style.display = 'none';
-        const salary = document.getElementById('salary').value;
-        const divisor = document.getElementById('divisor').value;
-        const hireDate = document.getElementById('hireDate').value;
-        const endDate = document.getElementById('endDate').value;
+    // 3. SAVE LOGIC：必須掛到 window，令 HTML inline onclick="proceedSave()" 可用
+    window.proceedSave = function proceedSave() {
+        const modal = document.getElementById('saveNoticeModal');
+        if (modal) modal.style.display = 'none';
+
+        const salary = document.getElementById('salary')?.value;
+        const divisor = document.getElementById('divisor')?.value;
+        const hireDate = document.getElementById('hireDate')?.value;
+        const endDate = document.getElementById('endDate')?.value;
+
+        const lang = document.documentElement.getAttribute('data-lang') || 'zh';
+        const isZh = (lang === 'zh');
+
+        if (!salary || !divisor || !hireDate || !endDate || (typeof currentScore !== 'undefined' && Number(currentScore) === 0)) {
+            if (typeof updateStatus === 'function') {
+                updateStatus(isZh ? '錯誤：請先填寫必填欄位並計算分數' : 'Error: Please fill in required fields and calculate score');
+            }
+            return;
+        }
+
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
         const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
         const timeStr = `${pad(now.getHours())}${pad(now.getMinutes())}`;
         const defaultName = `${dateStr}_${timeStr}`;
-        const isZh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
         const recordName = prompt(isZh ? '請輸入記錄名稱(選填)：' : 'Enter record name (optional):', defaultName);
         if (recordName === null) return;
 
         const data = {
             name: recordName || defaultName,
-            salary: salary, divisor: divisor, hireDate: hireDate, endDate: endDate,
-            spouse: document.getElementById('spouse').value,
-            children: document.getElementById('children').value,
-            overseas: document.getElementById('overseas').value,
-            newborn: document.getElementById('newborn').value,
-            otherChildren: document.getElementById('otherChildren').value,
-            instruction: document.getElementById('instruction').value,
-            defect: document.getElementById('defect').value,
+            createdAt: now.getTime(),
+            salary: salary,
+            divisor: divisor,
+            hireDate: hireDate,
+            endDate: endDate,
+            spouse: document.getElementById('spouse')?.value,
+            children: document.getElementById('children')?.value,
+            overseas: document.getElementById('overseas')?.value,
+            newborn: document.getElementById('newborn')?.value,
+            otherChildren: document.getElementById('otherChildren')?.value,
+            instruction: document.getElementById('instruction')?.value,
+            defect: document.getElementById('defect')?.value,
             score: typeof currentScore !== 'undefined' ? currentScore : 0,
             timestamp: now.toLocaleString(isZh ? 'zh-HK' : 'en-US')
         };
-        let savedData = JSON.parse(localStorage.getItem('dormData') || '{}');
-        savedData[data.name] = data;
-        localStorage.setItem('dormData', JSON.stringify(savedData));
-        const msg = isZh ? '✅ 資料已儲存到您的設備' : '✅ Data saved to your device';
-        if(typeof updateStatus === 'function') updateStatus(msg);
-        if (typeof loadAllSavedData === 'function') loadAllSavedData();
-    }
+
+        try {
+            let savedData = {};
+            try { savedData = JSON.parse(localStorage.getItem('dormData') || '{}') || {}; } catch(e) { savedData = {}; }
+            savedData[data.name] = data;
+            localStorage.setItem('dormData', JSON.stringify(savedData));
+
+            const msg = isZh ? '✅ 資料已儲存到您的設備' : '✅ Data saved to your device';
+            if (typeof updateStatus === 'function') updateStatus(msg);
+            if (typeof loadAllSavedData === 'function') loadAllSavedData();
+            if (typeof updateDataCount === 'function') updateDataCount();
+        } catch (e) {
+            console.error(e);
+            if (typeof updateStatus === 'function') {
+                updateStatus(isZh ? '錯誤：儲存失敗（瀏覽器拒絕 localStorage 或空間不足）' : 'Error: Save failed (localStorage blocked or quota exceeded)');
+            }
+        }
+    };
+
+    // 若使用後備注入版本（有 confirm/cancel ID），補上 click handler
+    (function(){
+        var saveModal = document.getElementById('saveNoticeModal');
+        var ok = document.getElementById('confirmSaveBtn');
+        var cancel = document.getElementById('cancelSaveModalBtn');
+        if(saveModal && ok && cancel) {
+            saveModal.addEventListener('click', function(e){ if(e.target === saveModal) saveModal.style.display = 'none'; });
+            cancel.onclick = function(){ saveModal.style.display = 'none'; };
+            ok.onclick = function(){ window.proceedSave(); };
+        }
+    })();
 
     window.updateSaveModalText = function() {
         const lang = document.documentElement.getAttribute('data-lang') || 'zh';
@@ -5579,10 +5614,25 @@ input.input-control, select.input-control, textarea.input-control {
 
 
     window.saveCurrentData = function() {
-        const salary = document.getElementById('salary').value;
-        if (!salary) { alert("請先計算分數 / Please calculate first"); return; }
-        if(typeof updateSaveModalText === 'function') updateSaveModalText();
-        document.getElementById('saveNoticeModal').style.display = 'flex';
+        const salary = document.getElementById('salary')?.value;
+        const divisor = document.getElementById('divisor')?.value;
+        const hireDate = document.getElementById('hireDate')?.value;
+        const endDate = document.getElementById('endDate')?.value;
+        const lang = document.documentElement.getAttribute('data-lang') || 'zh';
+        const isZh = (lang === 'zh');
+
+        if (!salary || !divisor || !hireDate || !endDate || (typeof currentScore !== 'undefined' && Number(currentScore) === 0)) {
+            if (typeof updateStatus === 'function') {
+                updateStatus(isZh ? '錯誤：請先填寫必填欄位並計算分數' : 'Error: Please fill in required fields and calculate score');
+            } else {
+                alert(isZh ? '請先填寫必填欄位並計算分數' : 'Please fill in required fields and calculate score');
+            }
+            return;
+        }
+
+        if (typeof updateSaveModalText === 'function') updateSaveModalText();
+        const modal = document.getElementById('saveNoticeModal');
+        if (modal) modal.style.display = 'flex';
     };
 
     // 4. RESET FIX
