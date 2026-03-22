@@ -256,7 +256,7 @@
             height: 41px !important;
             min-height: 41px !important;
             padding: 0 14px !important;
-            font-size: 19px !important;
+            font-size: 21px !important;
             font-weight: 800 !important;
             line-height: 41px !important;
             background: var(--success) !important;
@@ -1374,17 +1374,55 @@
                 background: rgba(255,255,255,0.12) !important; 
             }
     /* 歡迎視窗樣式與動畫 */
-.welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 420ms ease; }
-.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(59,130,246,0.86) 40%, rgba(168,85,247,0.84) 70%, rgba(245,158,11,0.82) 100%); color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,0.35); transform: translateY(0) scale(1); opacity: 1; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; z-index: 2; }
+.welcome-overlay { position: fixed; inset: 0;
+  /* 還原：有浮層/歡迎畫面時，背景應該霧化 */
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 420ms ease; }
+.welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(59,130,246,0.86) 40%, rgba(168,85,247,0.84) 70%, rgba(245,158,11,0.82) 100%); color: #fff;
+  /* 暗黑模式：跟光明模式一樣用「實體化」投影（唔要模糊化） */
+  box-shadow: 0 14px 0 rgba(0,0,0,0.30);
+  transform: translateY(0) scale(1); opacity: 1; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; z-index: 2; }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
 .welcome-title .emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); animation: bounce 1.4s ease-in-out infinite; }
 .welcome-body { margin-top: 10px; font-size: 1.15rem; line-height: 1.75; opacity: 0.95; }
 .welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; align-items: center; } .welcome-actions .welcome-btn > * { line-height: 1; }
-.welcome-btn { border: 0; border-radius: 12px; padding: 12px 18px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem; }
+.welcome-btn { border: 0; border-radius: 12px; padding: 12px 18px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem;
+  /* 暗黑模式：改用實投影（唔要霧化模糊） */
+  box-shadow: 0 6px 0 rgba(0,0,0,0.28) !important;
+}
 .welcome-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.22); }
 .welcome-btn.primary { background: #fff; color: #2b6cb0; font-weight: 700; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem; }
 .welcome-btn.primary:hover { background: #f6f7fb; }
+
+/* 「開始使用」(#welcomeStart) 按鈕：光明/黑暗模式都保持灰色左右漸變 */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"],
+    .theme-dark, html[data-theme="dark"]) #welcomeStart.welcome-btn.primary {
+  background: linear-gradient(90deg,
+    rgba(245,245,245,0.98) 0%,
+    rgba(232,232,232,0.97) 55%,
+    rgba(214,214,214,0.96) 100%) !important;
+  color: #2b2b2b !important;
+  border: 1px solid rgba(0,0,0,0.12) !important;
+}
+
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"],
+    .theme-dark, html[data-theme="dark"]) #welcomeStart.welcome-btn.primary:hover {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,1) 0%,
+    rgba(240,240,240,0.99) 55%,
+    rgba(224,224,224,0.98) 100%) !important;
+}
+
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"],
+    .theme-dark, html[data-theme="dark"]) #welcomeStart.welcome-btn.primary:active {
+  background: linear-gradient(90deg,
+    rgba(232,232,232,0.99) 0%,
+    rgba(220,220,220,0.98) 55%,
+    rgba(206,206,206,0.97) 100%) !important;
+}
 @keyframes modalIn { 0% { transform: translateY(16px) scale(0.98); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
 
 /* === FIX (2026-03-17): welcome 視窗在部分裝置動畫失效會變透明 ===
@@ -1397,8 +1435,14 @@
 
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* 主題相容：在光明主題時調整對比 */
-.theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.62) 0%, rgba(219,234,254,0.50) 32%, rgba(252,165,165,0.42) 66%, rgba(216,180,254,0.45) 100%); color: #2b6cb0; }
-.theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0; }
+.theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.62) 0%, rgba(219,234,254,0.50) 32%, rgba(252,165,165,0.42) 66%, rgba(216,180,254,0.45) 100%); color: #2b6cb0;
+  /* 光明模式：同樣保持「實體化」投影，但輕啲 */
+  box-shadow: 0 14px 0 rgba(0,0,0,0.18) !important;
+}
+.theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0;
+  /* 光明模式同樣用實投影（更輕） */
+  box-shadow: 0 6px 0 rgba(0,0,0,0.18) !important;
+}
 .theme-light .welcome-btn.primary { background: #2b6cb0; color: #fff; }
 
 /* 霧化彩帶/雪花畫布（只在歡迎視窗顯示） */
@@ -1568,44 +1612,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         .modal .label { color: #a0c8ff; font-weight: bold; }
         @media (max-width: 600px) { .modal header h3 { font-size: 1.1rem; } .modal .modal-body { font-size: 0.95rem; } }
         
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
@@ -1618,131 +1624,17 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
     100% { transform: translateX(0); }
 }
 
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
 .glow-yellow { box-shadow: 0 0 0 3px rgba(255,193,7,0.45), 0 0 12px rgba(255,193,7,0.55) !important; }
 .glow-red { box-shadow: 0 0 0 3px rgba(232,79,79,0.45), 0 0 12px rgba(232,79,79,0.55) !important; }
 
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
 .disclaimer { color: #ffd07a; font-size: 0.95rem; margin-top: 8px; opacity: 0.9; }
 
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
@@ -1754,44 +1646,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
   text-shadow: none !important;           /* 移除光暈，字更銳利 */
 }
 
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
@@ -1896,44 +1750,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         }
 
     
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
@@ -1953,44 +1769,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
              border-top-color: rgba(255, 255, 255, 0.22);
         }
 
-        /* Animation classes */
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes shake-gentle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-        @keyframes doze-off { 
-            0% { transform: rotate(0deg); } 
-            25% { transform: rotate(15deg); } 
-            30% { transform: rotate(15deg); } 
-            40% { transform: rotate(0deg); } 
-            100% { transform: rotate(0deg); } 
-        }
-
-        .anim-float { display: inline-block; animation: float-gentle 2s ease-in-out infinite; }
-        .anim-shake { display: inline-block; animation: shake-gentle 3s ease-in-out infinite; }
-        .anim-doze { display: inline-block; animation: doze-off 4s ease-in-out infinite; transform-origin: bottom center; }
-
-        .welcome-title {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap !important;
-            gap: 10px;
-            width: 100%;
-        }
-        .welcome-title .welcome-text {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-        .welcome-title .emoji {
-            flex-shrink: 1;
-            min-width: 0;
-            font-size: 3rem;
-            transition: font-size 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .welcome-title .emoji { font-size: 1.8rem !important; }
-            .welcome-title { gap: 5px; }
-        }
 
 </style>
 <style>
@@ -4522,64 +4300,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (overlay) overlay.addEventListener('click', closeInfo);
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInfo(); });
         });
-    
 
-        function proceedSave() {
-            document.getElementById('saveNoticeModal').style.display = 'none';
-
-            const salary = document.getElementById('salary').value;
-            const divisor = document.getElementById('divisor').value;
-            const hireDate = document.getElementById('hireDate').value;
-            const endDate = document.getElementById('endDate').value;
-
-            const now = new Date();
-            const dateStr = now.getFullYear() + '-' + 
-                String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                String(now.getDate()).padStart(2, '0');
-            const timeStr = String(now.getHours()).padStart(2, '0') + 
-                String(now.getMinutes()).padStart(2, '0');
-            const defaultName = dateStr + '_' + timeStr;
-
-            const recordName = prompt(
-                currentLang === 'zh' ? '請輸入記錄名稱(選填)：' : 'Enter record name (optional):',
-                defaultName
-            );
-
-            if (recordName === null) return;
-
-            const data = {
-                name: recordName || defaultName,
-                salary: salary,
-                divisor: divisor,
-                hireDate: hireDate,
-                endDate: endDate,
-                spouse: document.getElementById('spouse').value,
-                children: document.getElementById('children').value,
-                overseas: document.getElementById('overseas').value,
-                newborn: document.getElementById('newborn').value,
-                otherChildren: document.getElementById('otherChildren').value,
-                instruction: document.getElementById('instruction').value,
-                defect: document.getElementById('defect').value,
-                score: currentScore,
-                timestamp: now.toLocaleString(currentLang === 'zh' ? 'zh-HK' : 'en-US')
-            };
-
-            let savedData = JSON.parse(localStorage.getItem('dormData') || '{}');
-            savedData[data.name] = data;
-            localStorage.setItem('dormData', JSON.stringify(savedData));
-
-            const msg = currentLang === 'zh' ? 
-                '✅ 資料已儲存到您的設備' : 
-                '✅ Data saved to your device';
-            updateStatus(msg);
-
-            if (typeof loadAllSavedData === 'function') {
-                loadAllSavedData();
-            }
-        }
-
-    
-        // Real-time Number Validation
+// Real-time Number Validation
         function validateNumberInput(input) {
             const value = (input.value || '').trim();
             if (value === '') { input.classList.remove('error','glow-red'); return; }
@@ -4817,6 +4539,9 @@ document.addEventListener('DOMContentLoaded', function() {
       font-size: 0.72rem; font-weight: 700; line-height: 1; user-select: none; white-space: nowrap;
       overflow: hidden; text-overflow: clip;
       transition: background .2s ease, transform .12s ease;
+
+      /* 實體化陰影（硬邊 0 blur） */
+      box-shadow: 0 6px 0 rgba(0,0,0,0.28) !important;
     }
     .lang-toggle:hover { background: rgba(255,255,255,0.26); transform: translateY(-1px); }
 
@@ -4905,9 +4630,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 inset -2px 2px 4px rgba(255,255,255,0.75), /* 右上高光 */
                 inset 3px -4px 7px rgba(0,0,0,0.10),      /* 左下暗位 */
                 inset 0 0 0 1px rgba(255,255,255,0.35),  /* 內圈微高光邊 */
-                /* 投影：位移減少少少 + 邊緣少少柔化 */
-                -8px 11px 1px 1px rgba(0,0,0,0.18),       /* 實邊（輕微模糊） */
-                -8px 11px 16px 2px rgba(0,0,0,0.14) !important; /* 柔邊（少少就夠） */
+                /* 實體化投影：0 blur 硬邊（跟「光綠色」按鈕實邊效果一致） */
+                -8px 11px 0 1px rgba(0,0,0,0.22) !important;
             text-shadow: none !important;
             z-index: 1000 !important;
             transition: none !important; /* 取消任何變色過渡 */
@@ -6694,18 +6418,22 @@ window.addEventListener('load', function() {
         -2px 3px 18px rgba(0,0,0,0.10) !important;
     }
 
-    /* 紅圈：Welcome 視窗兩個按鈕（Later / Get Started）
-       注意：global-button-drop-shadow 的 selector 內含 :not(#languageToggle)（帶 ID 權重），
-       所以 Welcome 按鈕都必須用 ID 去覆蓋先會穩定生效。 */
-    #welcomeLater, #welcomeStart,
-    #welcomeLater:hover, #welcomeStart:hover,
-    #welcomeLater:active, #welcomeStart:active {
+    /* Welcome 視窗兩個按鈕（Later / Get Started）
+       你要求：黑暗模式下陰影唔要「霧化」，要實體化（跟光綠色按鈕嗰種「實邊」陰影）。
+       做法：只保留 0 blur 嘅外投影層，移除 10px/24px 呢啲柔邊 blur。 */
+    :is(.theme-dark, html[data-theme="dark"]) #welcomeLater,
+    :is(.theme-dark, html[data-theme="dark"]) #welcomeStart,
+    :is(.theme-dark, html[data-theme="dark"]) #welcomeLater:hover,
+    :is(.theme-dark, html[data-theme="dark"]) #welcomeStart:hover,
+    :is(.theme-dark, html[data-theme="dark"]) #welcomeLater:active,
+    :is(.theme-dark, html[data-theme="dark"]) #welcomeStart:active {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.45),
-        inset 1px -2px 3px rgba(0,0,0,0.08),
-        -2px 3px 10px rgba(0,0,0,0.12),
-        -2px 3px 24px rgba(0,0,0,0.10) !important;
+        inset 1px -2px 3px rgba(0,0,0,0.10),
+        -3px 4px 0 1px rgba(0,0,0,0.22) !important;
     }
+
+    /* 光明模式：維持原本較柔和效果 */
 
     /* 紅圈：頂部 header 內一排圓形小按鈕（＋／－／主題／調校／資訊）
        同樣用 ID（連 hover/active）確保贏過 global-button-drop-shadow。 */
