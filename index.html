@@ -1901,7 +1901,7 @@ html[data-theme] #calcBtn,
   border-radius: 12px !important;
 }
 
-/* 強制文字/圖示一致 */
+/* 強制文字/圖示一致（計算分數：唔要文字陰影） */
 :is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn :is(span, i),
 html[data-theme] #calcBtn :is(span, i),
 #calcBtn :is(span, i) {
@@ -5218,7 +5218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 border-radius: 12px !important;
             }
             /* 強制文字/圖示顏色一致（避免 theme-light/theme-vintage 另外改色） */
-            #calcBtn :is(span, i) { color: inherit !important; text-shadow: none !important; }
+            #calcBtn :is(span, i) { color: inherit !important; text-shadow: 0 1px 2px rgba(0,0,0,0.45) !important; }
             #calcBtn i { filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)) !important; }
             #calcBtn #calcBtnText { font-size: 1.46rem !important; font-weight: 900 !important; letter-spacing: .02em !important; }
 
@@ -5280,11 +5280,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
 
-            /* === 2026-03-19: 圈住嗰幾個主按鈕白字 + 陰影（只限光明版；黑暗版唔要陰影） === */
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) { color: #fff !important; }
-            :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) :is(span, i) {
+            /* === 2026-03-19: 圈住嗰幾個主按鈕白字 + 微陰影（光明/黑暗都要；陰影只係少少） === */
+            :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) { color: #fff !important; }
+            :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) :is(span, i) {
                 color: #fff !important;
-                text-shadow: 0 2px 4px rgba(0,0,0,0.50) !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.45) !important;
             }
 
             /* === 2026-03-19: 微弱呼吸燈（增加動態感） === */
@@ -6448,6 +6448,11 @@ window.addEventListener('load', function() {
 
   <!-- 2026-03-21：把紅圈位置（分數卡片/段落卡片）陰影改為跟按鈕一致 -->
   <style id="apply-button-shadow-to-highlight-and-sections">
+    /* 2026-03-22：黑暗版—4 個主要按鈕白字保留少少陰影（計算分數除外） */
+    :is(.theme-dark, html[data-theme="dark"]) :is(#resetBtn, #saveDataBtn, #cancelSaveBtn, #loadBtn) :is(span, i) {
+      text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important;
+    }
+
     /* 只針對紙紋光明版（theme-light-vintage），避免影響其他主題 */
 
     /* 紅圈：總分大卡 + 各段落卡片（輸入/結果/數據） */
@@ -6503,5 +6508,99 @@ window.addEventListener('load', function() {
         -2px 6px 28px rgba(0,0,0,0.10) !important;
     }
   </style>
+
+  <!-- EXP 2026-03-22：所有白色文字自動加少少陰影（實驗用） -->
+  <style id="exp-white-text-shadow">
+    .white-text-shadow {
+      text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important;
+    }
+    /* 補充：有啲手機瀏覽器對 input/select 文字陰影較挑剔，直接加多一層 */
+    :is(.theme-dark, html[data-theme="dark"]) :is(input, select, textarea) {
+      text-shadow: 0 1px 2px rgba(0,0,0,0.55);
+    }
+  </style>
+
+  <script id="exp-auto-white-text-shadow">
+    // EXP 2026-03-22: Auto add shadow to anything rendered as white-ish text
+    // Fix: avoid MutationObserver infinite loops / heavy re-scan that can freeze the page
+    (function(){
+      const CLASS = 'white-text-shadow';
+      const THRESH = 245; // near-white
+
+      let running = false;
+      let scheduled = false;
+
+      function isWhiteish(rgb){
+        // rgb(a) like: "rgb(255, 255, 255)" or "rgba(255, 255, 255, 1)"
+        const m = rgb && rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
+        if (!m) return false;
+        const r = +m[1], g = +m[2], b = +m[3];
+        const a = (m[4] == null) ? 1 : +m[4];
+        return a > 0.6 && r >= THRESH && g >= THRESH && b >= THRESH;
+      }
+
+      function apply(){
+        if (running) return;
+        running = true;
+        try {
+          const root = document.body;
+          if (!root) return;
+          const all = root.querySelectorAll('*');
+          all.forEach(el => {
+            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+
+            // Text detection:
+            // - normal elements: textContent
+            // - form controls: value / selected option text
+            let txt = (el.textContent || '').trim();
+            const tag = (el.tagName || '').toUpperCase();
+            if (!txt) {
+              if (tag === 'INPUT' || tag === 'TEXTAREA') txt = String(el.value || '').trim();
+              else if (tag === 'SELECT') {
+                const opt = el.selectedOptions && el.selectedOptions[0];
+                txt = String((opt && opt.textContent) || el.value || '').trim();
+              }
+            }
+            if (!txt) { el.classList.remove(CLASS); return; }
+
+            const cs = getComputedStyle(el);
+            if (!cs) return;
+            if (cs.visibility === 'hidden' || cs.display === 'none') { el.classList.remove(CLASS); return; }
+
+            if (isWhiteish(cs.color)) el.classList.add(CLASS);
+            else el.classList.remove(CLASS);
+          });
+        } finally {
+          running = false;
+        }
+      }
+
+      function scheduleApply(){
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(() => {
+          scheduled = false;
+          apply();
+        });
+      }
+
+      // Initial
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', scheduleApply, { once: true });
+      } else {
+        scheduleApply();
+      }
+
+      // Re-apply only when theme-related attrs change or new nodes inserted
+      const moTheme = new MutationObserver(scheduleApply);
+      moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['class','data-theme','style','data-lang'] });
+
+      const moDom = new MutationObserver(scheduleApply);
+      moDom.observe(document.body || document.documentElement, { childList: true, subtree: true });
+
+      window.__applyWhiteTextShadow = scheduleApply;
+    })();
+  </script>
+
 </body>
 </html>
