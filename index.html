@@ -989,6 +989,91 @@
             .tune-presets .tune-preset:hover { filter: brightness(1.06) saturate(1.04); }
             .tune-presets .tune-preset:active { transform: translateY(1px); }
             .theme-light-vintage .tune-presets .tune-preset, .theme-light .tune-presets .tune-preset, .theme-light-simple .tune-presets .tune-preset { border-color: rgba(0,0,0,0.16); background: rgba(0,0,0,0.06); color: #1b1b1b; }
+
+            /* === 顯示調校：預設按鍵顏色提示（深 → 淺 + 暖色） === */
+            .tune-presets .tune-preset{
+              box-shadow: 0 10px 22px rgba(0,0,0,0.22), inset 0 2px 0 rgba(255,255,255,0.22);
+              text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+              border-color: rgba(0,0,0,0.28);
+            }
+            .tune-presets .tune-preset.preset-ultra-black{
+              background: linear-gradient(180deg, #1a1a1e 0%, #0f0f12 100%) !important;
+              color: #ffffff !important;
+            }
+            .tune-presets .tune-preset.preset-extra-deep{
+              background: linear-gradient(180deg, #3a3a42 0%, #24242b 100%) !important;
+              color: #ffffff !important;
+            }
+            .tune-presets .tune-preset.preset-deeper{
+              background: linear-gradient(180deg, #61616d 0%, #3e3e48 100%) !important;
+              color: #ffffff !important;
+            }
+            .tune-presets .tune-preset.preset-standard{
+              background: linear-gradient(180deg, #bdbdc8 0%, #9d9dac 100%) !important;
+              color: #1b1b1b !important;
+              text-shadow: none;
+            }
+            .tune-presets .tune-preset.preset-lighter{
+              background: linear-gradient(180deg, #f0f0f4 0%, #d7d7df 100%) !important;
+              color: #1b1b1b !important;
+              text-shadow: none;
+            }
+            .tune-presets .tune-preset.preset-ultra-light{
+              background: linear-gradient(180deg, #ffffff 0%, #f1f1f5 100%) !important;
+              color: #1b1b1b !important;
+              text-shadow: none;
+              border-color: rgba(0,0,0,0.18);
+            }
+            .tune-presets .tune-preset.preset-warmer{
+              /* 真·暖色（琥珀 → 橙） */
+              background: linear-gradient(135deg, #ffd26a 0%, #ffb04a 45%, #ff7a2f 100%) !important;
+              color: #1b1b1b !important;
+              text-shadow: 0 1px 2px rgba(255,255,255,0.22);
+              border-color: rgba(0,0,0,0.22);
+            }
+
+            /* === 顯示調校：range 推桿（漸變 track）=== */
+            .tune-row input[type="range"]{
+              -webkit-appearance: none;
+              appearance: none;
+              height: 28px;
+              background: transparent;
+              margin: 0;
+            }
+            .tune-row input[type="range"]:focus{ outline: none; }
+            .tune-row input[type="range"]::-webkit-slider-runnable-track{
+              height: 10px;
+              border-radius: 999px;
+              background: linear-gradient(90deg, #111827 0%, #e5e7eb 100%);
+              border: 1px solid rgba(0,0,0,0.28);
+              box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+            }
+            .tune-row input[type="range"]::-webkit-slider-thumb{
+              -webkit-appearance: none;
+              appearance: none;
+              width: 18px;
+              height: 18px;
+              border-radius: 999px;
+              margin-top: -4px; /* (18-10)/2 */
+              background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e5e7eb 55%, #cbd5e1 100%);
+              border: 1px solid rgba(0,0,0,0.30);
+              box-shadow: 0 4px 10px rgba(0,0,0,0.28);
+            }
+            .tune-row input[type="range"]::-moz-range-track{
+              height: 10px;
+              border-radius: 999px;
+              background: linear-gradient(90deg, #111827 0%, #e5e7eb 100%);
+              border: 1px solid rgba(0,0,0,0.28);
+            }
+            .tune-row input[type="range"]::-moz-range-thumb{
+              width: 18px;
+              height: 18px;
+              border-radius: 999px;
+              background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e5e7eb 55%, #cbd5e1 100%);
+              border: 1px solid rgba(0,0,0,0.30);
+              box-shadow: 0 4px 10px rgba(0,0,0,0.22);
+            }
+
             @media (max-width: 430px) {
               .tune-presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             }
@@ -5328,13 +5413,15 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- 預設：平時最常用，放最頂（唔使捲到最底） -->
       <div class="tune-presets" aria-label="顯示調校預設">
         <span class="preset-label" id="tunePresetLabel">預設：</span>
-        <button type="button" class="tune-preset" data-b="118" data-c="92" data-s="84" data-w="6" data-pt="65" data-py="65" data-theme="light-vintage" data-zh="一鍵白淨" data-en="Ultra light">一鍵白淨</button>
-        <button type="button" class="tune-preset" data-b="108" data-c="96" data-s="96" data-w="4" data-zh="淺色" data-en="Lighter">淺色</button>
-        <button type="button" class="tune-preset" data-b="100" data-c="100" data-s="100" data-w="0" data-zh="標準" data-en="Standard">標準</button>
-        <button type="button" class="tune-preset" data-b="96" data-c="108" data-s="106" data-w="0" data-zh="深色" data-en="Deeper">深色</button>
-        <button type="button" class="tune-preset" data-b="94" data-c="115" data-s="110" data-w="0" data-zh="超深" data-en="Extra deep">超深</button>
-        <button type="button" class="tune-preset" data-b="86" data-c="138" data-s="112" data-w="0" data-zh="超級深黑" data-en="Ultra black">超級深黑</button>
-        <button type="button" class="tune-preset" data-b="100" data-c="104" data-s="102" data-w="20" data-zh="暖啲" data-en="Warmer">暖啲</button>
+        <!-- 由深 → 淺（更易分辨），暖色獨立放最後 -->
+        <button type="button" class="tune-preset preset-ultra-black" data-b="86" data-c="138" data-s="112" data-w="0" data-zh="超級深黑" data-en="Ultra black">超級深黑</button>
+        <button type="button" class="tune-preset preset-extra-deep" data-b="94" data-c="115" data-s="110" data-w="0" data-zh="超深" data-en="Extra deep">超深</button>
+        <button type="button" class="tune-preset preset-deeper" data-b="96" data-c="108" data-s="106" data-w="0" data-zh="深色" data-en="Deeper">深色</button>
+        <button type="button" class="tune-preset preset-standard" data-b="100" data-c="100" data-s="100" data-w="0" data-zh="標準" data-en="Standard">標準</button>
+        <button type="button" class="tune-preset preset-lighter" data-b="108" data-c="96" data-s="96" data-w="4" data-zh="淺色" data-en="Lighter">淺色</button>
+        <button type="button" class="tune-preset preset-ultra-light" data-b="118" data-c="92" data-s="84" data-w="6" data-pt="65" data-py="65" data-theme="light-vintage" data-zh="一鍵白淨" data-en="Ultra light">一鍵白淨</button>
+        <button type="button" class="tune-preset preset-warmer" data-b="100" data-c="104" data-s="102" data-w="20" data-zh="暖啲" data-en="Warmer">暖啲</button>
+        <button type="button" class="tune-preset preset-eye" data-b="90" data-c="98" data-s="92" data-w="28" data-py="82" data-pt="70" data-zh="護眼模式" data-en="Eye comfort">護眼模式</button>
       </div>
 
       <!-- 進階滑桿：平時收起，需用先展開 -->
@@ -6518,6 +6605,11 @@ window.addEventListener('load', function() {
     :is(.theme-dark, html[data-theme="dark"]) :is(input, select, textarea) {
       text-shadow: 0 1px 2px rgba(0,0,0,0.55);
     }
+
+    /* 例外：QR 彈窗（截圖嗰個畫面）唔要任何文字陰影 */
+    #qrModal, #qrModal * {
+      text-shadow: none !important;
+    }
   </style>
 
   <script id="exp-auto-white-text-shadow">
@@ -6548,6 +6640,12 @@ window.addEventListener('load', function() {
           const all = root.querySelectorAll('*');
           all.forEach(el => {
             if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+
+            // 例外：QR modal 內全部唔加陰影（由 CSS 全禁）
+            if (el.closest && el.closest('#qrModal')) {
+              el.classList.remove(CLASS);
+              return;
+            }
 
             // Text detection:
             // - normal elements: textContent
@@ -6602,5 +6700,21 @@ window.addEventListener('load', function() {
     })();
   </script>
 
+  <!-- 顯示調校：顏色提示最終覆蓋（放文件尾，確保一定生效） -->
+  <style id="tuneColorOverrides">
+    /* 預設掣：深→淺 + 暖色（覆蓋後段 #displayTuneModal 統一灰底規則） */
+    #displayTuneModal .tune-presets .tune-preset.preset-ultra-black{ background: linear-gradient(180deg, #1a1a1e 0%, #0f0f12 100%) !important; color:#fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-extra-deep{  background: linear-gradient(180deg, #3a3a42 0%, #24242b 100%) !important; color:#fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-deeper{      background: linear-gradient(180deg, #61616d 0%, #3e3e48 100%) !important; color:#fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-standard{    background: linear-gradient(180deg, #bdbdc8 0%, #9d9dac 100%) !important; color:#1b1b1b !important; text-shadow: none !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-lighter{     background: linear-gradient(180deg, #f0f0f4 0%, #d7d7df 100%) !important; color:#1b1b1b !important; text-shadow: none !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-ultra-light{ background: linear-gradient(180deg, #ffffff 0%, #f1f1f5 100%) !important; color:#1b1b1b !important; text-shadow: none !important; border-color: rgba(0,0,0,0.18) !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-warmer{      background: linear-gradient(135deg, #ffd26a 0%, #ffb04a 45%, #ff7a2f 100%) !important; color:#1b1b1b !important; text-shadow: 0 1px 2px rgba(255,255,255,0.22) !important; }
+    #displayTuneModal .tune-presets .tune-preset.preset-eye{         /* 柔和護眼暖米色 */
+      background: linear-gradient(135deg, #ffe9b8 0%, #ffd59b 40%, #f7b777 100%) !important;
+      color:#1b1b1b !important;
+      text-shadow: none !important;
+    }
+  </style>
 </body>
 </html>
