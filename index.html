@@ -238,6 +238,40 @@
             flex-wrap: wrap;
             justify-content: center; /* 保持左右對稱/置中 */
         }
+
+        /* 結果區「複製/分享」：用獨立 class，避免被 button-group 其他規則影響排版 */
+        .result-action-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 結果區分享掣：再加高（用 min-height + padding，避免被其他 line-height 影響）
+           備註：如果你用緊舊檔案，記得 hard refresh / 清 cache。 */
+        #shareTextBtn.btn-success {
+            /* 70% 尺寸保持：主要按鈕高度=58px → 70%≈41px
+               但字體參考主要按鈕(21px)等比例放大：21 * 0.7 ≈ 15px
+               為咗「用盡高度」同可讀性，稍為加大到 17px。 */
+            height: 41px !important;
+            min-height: 41px !important;
+            padding: 0 14px !important;
+            font-size: 19px !important;
+            font-weight: 800 !important;
+            line-height: 41px !important;
+            background: var(--success) !important;
+            color: #fff !important;
+        }
+        /* 圖標跟住放大少少，但唔可以撐高 */
+        #shareTextBtn i { font-size: 1em !important; line-height: 1 !important; }
+        #shareTextBtn.btn-success:hover {
+            background: var(--success-dark) !important;
+        }
+
+        @media (max-width: 600px) {
+            .result-action-group { flex-direction: column; }
+            .result-action-group .btn { width: 100%; }
+        }
         
         .btn {
             flex: 1;
@@ -2929,6 +2963,7 @@ function initSalaryTableClipboardFill(){
         }
         
         // 顯示結果
+        let lastResultPayload = null;
         function displayResult(totalScore, details) {
             const resultContainer = document.querySelector('.result-container');
             
@@ -2938,6 +2973,12 @@ function initSalaryTableClipboardFill(){
                     <div class="highlight-score">
                         <div class="score-title">總分：</div>
                         <div class="score-value">${totalScore.toFixed(4)}</div>
+                    </div>
+
+                    <div class="result-action-group" style="margin-top: 15px;">
+                        <button type="button" id="shareTextBtn" class="btn btn-success btn-3d">
+                            <i class="fas fa-share-nodes"></i> <span>分享</span>
+                        </button>
                     </div>
                     
                     <div class="result-details">
@@ -2987,6 +3028,12 @@ function initSalaryTableClipboardFill(){
                         <div class="score-title">Total Score:</div>
                         <div class="score-value">${totalScore.toFixed(4)}</div>
                     </div>
+
+                    <div class="result-action-group" style="margin-top: 15px;">
+                        <button type="button" id="shareTextBtn" class="btn btn-success btn-3d">
+                            <i class="fas fa-share-nodes"></i> <span>Share</span>
+                        </button>
+                    </div>
                     
                     <div class="result-details">
                         <div class="result-item">
@@ -3030,6 +3077,90 @@ function initSalaryTableClipboardFill(){
                     </div>
                 `;
             }
+
+            // 綁定「複製/分享」按鈕
+            lastResultPayload = { totalScore, details, lang: currentLang, generatedAt: new Date() };
+            bindResultActionButtons();
+        }
+
+        // 產生可分享的文字成績（含圖標）
+        function buildResultText(payload = lastResultPayload) {
+            if (!payload) return '';
+
+            const { totalScore, details, lang, generatedAt } = payload;
+            const ts = generatedAt instanceof Date ? generatedAt : new Date();
+            const timeStr = (lang === 'zh')
+                ? ts.toLocaleString('zh-HK', { hour12: false })
+                : ts.toLocaleString('en-HK', { hour12: false });
+
+            const familySum = (details.spouseScore + details.childrenScore + details.overseasScore + details.newbornScore + details.otherChildrenScore);
+            const specialSum = (details.instructionScore + details.defectScore);
+            const toolLine = (typeof appUrl !== 'undefined' && appUrl) ? (lang === 'zh' ? `🔗 工具：${appUrl}` : `🔗 Tool: ${appUrl}`) : null;
+
+            if (lang === 'zh') {
+                return [
+                    '宿舍計分結果',
+                    `時間：${timeStr}`,
+                    toolLine,
+                    `總分：${Number(totalScore).toFixed(4)}`,
+                    '',
+                    '分數明細：',
+                    `薪金：${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}`,
+                    `年資：${details.days} 天 (${details.years.toFixed(2)} 年) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}`,
+                    `家庭：${familySum.toFixed(4)}（配偶 ${details.spouseScore}；子女 ${details.childrenScore}；海外 ${details.overseasScore}；新生 ${details.newbornScore}；其他 ${details.otherChildrenScore}）`,
+                    `特殊：${specialSum.toFixed(4)}（指示離開 ${details.instructionScore}；宿舍缺陷 ${details.defectScore}）`,
+                    ''
+                ].filter(Boolean).join('\n');
+            }
+
+            return [
+                'Dorm Score Result',
+                `Time: ${timeStr}`,
+                toolLine,
+                `Total: ${Number(totalScore).toFixed(4)}`,
+                '',
+                'Breakdown:',
+                `Salary: ${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}`,
+                `Service: ${details.days} days (${details.years.toFixed(2)} years) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}`,
+                `Family: ${familySum.toFixed(4)} (spouse ${details.spouseScore}; children ${details.childrenScore}; overseas ${details.overseasScore}; newborn ${details.newbornScore}; other ${details.otherChildrenScore})`,
+                `Special: ${specialSum.toFixed(4)} (instruction ${details.instructionScore}; defect ${details.defectScore})`,
+                ''
+            ].filter(Boolean).join('\n');
+        }
+
+        /* copyResultText removed (copy not supported reliably on some browsers/contexts) */
+        async function copyResultText() {
+            // 已取消複製功能
+            updateStatus(currentLang === 'zh' ? '此版本已取消複製功能。' : 'Copy is disabled in this version.');
+            return;
+        }
+
+        async function shareResultText() {
+            const md = buildResultText();
+            if (!md) {
+                updateStatus(currentLang === 'zh' ? '請先計算分數再分享。' : 'Please calculate first before sharing.');
+                return;
+            }
+
+            try {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: currentLang === 'zh' ? '宿舍計分結果' : 'Dorm Score Result',
+                        text: md
+                    });
+                    updateStatus(currentLang === 'zh' ? '已打開分享面板。' : 'Share sheet opened.');
+                } else {
+                    updateStatus(currentLang === 'zh' ? '此瀏覽器未支援分享功能。' : 'Share is not supported in this browser.');
+                }
+            } catch (e) {
+                // 使用者取消分享都會拋錯，唔需要當成失敗
+                console.warn(e);
+            }
+        }
+
+        function bindResultActionButtons() {
+            const shareBtn = document.getElementById('shareTextBtn');
+            if (shareBtn) shareBtn.onclick = shareResultText;
         }
         
         // 保存目前資料（命名：YYYYMMDD_HHMMSS_用家標籤）
