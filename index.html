@@ -1604,6 +1604,22 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(720px, 92vw); max-height: 80vh; overflow: auto; background: var(--section-bg); color: var(--text-light); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); z-index: 2001; display: none; }
         .modal header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; }
         .modal header h3 { font-size: 1.3rem; color: var(--accent); margin: 0; }
+
+        /* 使用須知：標題/按鈕字體（白字 + 陰影；避免太大） */
+        #infoModal header h3{
+          font-size: 1.45rem !important;
+          color: #fff !important;
+          text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+        }
+        #closeModal, #closeModal *{
+          color: #fff !important;
+          text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
+        }
+        #closeModal{ font-size: 1.08rem !important; padding: 9px 16px !important; }
+        @media (max-width: 600px){
+          #infoModal header h3{ font-size: 1.32rem !important; }
+          #closeModal{ font-size: 1.02rem !important; }
+        }
         .modal .modal-body { padding: 16px 20px; }
         .modal .modal-body ul { margin-left: 18px; }
         .modal .modal-foot { padding: 12px 20px 18px; border-top: 1px solid rgba(255,255,255,0.2); text-align: right; }
@@ -2045,7 +2061,7 @@ html[data-theme] #calcBtn:active,
                     <div class="no-data" id="noDataMessage">
                         <i class="fas fa-database"></i>
                         <h3><span id="noDataTitle">尚未儲存任何資料</span></h3>
-                        <p><span id="noDataHint">請使用「儲存目前資料」按鈕保存您的計算結果</span></p>
+                        <p><span id="noDataHint">請使用「儲存目前資料」按鈕儲存您的計算結果</span></p>
                     </div>
                 </div>
             </div>
@@ -2133,7 +2149,7 @@ const translations = {
                 'exportBtnText': '匯出所有資料',
                 'importBtnText': '匯入資料',
                 'noDataTitle': '尚未儲存任何資料',
-                'noDataHint': '請使用「儲存目前資料」按鈕保存您的計算結果',
+                'noDataHint': '請使用「儲存目前資料」按鈕儲存您的計算結果',
                 'statusText': '系統準備就緒，請填寫表單開始計算',
                 'backupStatus': '自動備份已啟用',
                 'dataStatus': '已儲存',
@@ -3023,14 +3039,14 @@ function initSalaryTableClipboardFill(){
             });
         }
         
-        // 加載保存的數據
+        // 載入已儲存的數據
         function loadSavedData(name) {
             const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
             const data = savedData[name];
             
             if (!data) {
                 const errorMsg = currentLang === 'zh' ? 
-                    "錯誤：找不到保存的數據" : 
+                    "錯誤：找不到儲存的數據" : 
                     "Error: Saved data not found";
                 updateStatus(errorMsg);
                 return;
@@ -3058,12 +3074,12 @@ function initSalaryTableClipboardFill(){
             }
             
             const successMsg = currentLang === 'zh' ? 
-                "已載入保存的數據: " + name : 
+                "已載入儲存的數據: " + name : 
                 "Loaded saved data: " + name;
             updateStatus(successMsg);
         }
         
-        // 刪除保存的數據
+        // 刪除已儲存的數據
         function deleteSavedData(name) {
             const confirmMsg = currentLang === 'zh' ? 
                 `確定要刪除「${name}」嗎？` : 
@@ -3083,7 +3099,7 @@ function initSalaryTableClipboardFill(){
             });
             
             const successMsg = currentLang === 'zh' ? 
-                "已刪除保存的數據: " + name : 
+                "已刪除儲存的數據: " + name : 
                 "Deleted saved data: " + name;
             updateStatus(successMsg);
             
@@ -3197,7 +3213,7 @@ function initSalaryTableClipboardFill(){
             }
         }
         
-        // 加載保存的數據
+        // 載入已儲存的數據
         function loadAllSavedData() {
             const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
             
@@ -3528,10 +3544,6 @@ function initSalaryTableClipboardFill(){
     mini.id = 'resetConfirmMini';
     mini.className = 'mini-confirm';
     mini.innerHTML = '<div class="mini-lines"><span id="miniMsg1"></span></div><div class="mini-actions"><button class="mini-btn cancel" type="button"></button><button class="mini-btn ok" type="button"></button></div>'; 
-            var lang = document.documentElement.getAttribute('data-lang') || 'zh'; var isZh = (lang === 'zh');
-            mini.querySelector('#miniMsg1').textContent = isZh ? '確定重置？' : 'Reset all fields?';
-            mini.querySelector('.mini-btn.cancel').textContent = isZh ? '取消' : 'Cancel';
-            mini.querySelector('.mini-btn.ok').textContent = isZh ? '確定' : 'OK';
     document.body.appendChild(mini);
   }
 
@@ -3569,7 +3581,7 @@ function initSalaryTableClipboardFill(){
     mini.style.top = Math.round(Math.max(r.top - 12 - scaledBox.height, 10)) + 'px';
 
     const zh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
-    document.getElementById('miniMsg1').textContent = zh ? '確定重置？' : 'Reset?';
+    document.getElementById('miniMsg1').textContent = zh ? '確定重置？' : 'Reset all fields?';
     mini.querySelector('.cancel').textContent = zh ? '取消' : 'Cancel';
     mini.querySelector('.ok').textContent = zh ? '確定' : 'OK';
   }
@@ -3660,8 +3672,8 @@ function initSalaryTableClipboardFill(){
                 updateStatus(msg);
                 return;
             }
-            // 排序：按 createdAt 降序（新到舊）；沒有 createdAt 的放最後
-            keys.sort((a,b) => (savedData[b].createdAt||0) - (savedData[a].createdAt||0));
+            // 排序：按 createdAt 升序（舊到新）→ 最新會放最底；沒有 createdAt 的放最後
+            keys.sort((a,b) => (savedData[a].createdAt||0) - (savedData[b].createdAt||0));
             const sel = document.getElementById('loadSelect');
             sel.innerHTML = '';
             // 先加一個提示選項
@@ -3689,8 +3701,8 @@ function initSalaryTableClipboardFill(){
                 updateStatus(msg);
                 return;
             }
-            // 排序（新到舊）
-            keys.sort((a,b) => (savedData[b].createdAt||0) - (savedData[a].createdAt||0));
+            // 排序（舊到新）→ 最新會放最底
+            keys.sort((a,b) => (savedData[a].createdAt||0) - (savedData[b].createdAt||0));
             const sel = document.getElementById('deleteSelect');
             sel.innerHTML = '';
             const placeholder = document.createElement('option');
@@ -5635,54 +5647,6 @@ input.input-control, select.input-control, textarea.input-control {
         if (modal) modal.style.display = 'flex';
     };
 
-    // 4. RESET FIX
-    function ensureMini() {
-        let mini = document.getElementById('resetConfirmMini');
-        if (!mini) {
-            mini = document.createElement('div');
-            mini.id = 'resetConfirmMini';
-            mini.className = 'mini-confirm';
-            mini.style.zIndex = '2147483647';
-            mini.style.position = 'fixed';
-            mini.innerHTML = '<div class="mini-lines"><span id="miniMsg1">確定重置？</span></div><div class="mini-actions"><button class="mini-btn cancel" type="button">取消</button><button class="mini-btn ok" type="button">確定</button></div>';
-            document.body.appendChild(mini);
-            mini.addEventListener('click', (ev) => {
-                const t = ev.target;
-                if (t.classList.contains('cancel')) mini.style.display = 'none';
-                if (t.classList.contains('ok')) { mini.style.display = 'none'; if(typeof initForm === 'function') initForm(); }
-            });
-        }
-        return mini;
-    }
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('#resetBtn');
-        if (!btn) return;
-        e.preventDefault();
-        const mini = ensureMini();
-        const isZh = (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh';
-        document.getElementById('miniMsg1').textContent = isZh ? '確定重置？' : 'Reset?';
-        mini.querySelector('.cancel').textContent = isZh ? '取消' : 'Cancel';
-        mini.querySelector('.ok').textContent = isZh ? '確定' : 'OK';
-
-        const rect = btn.getBoundingClientRect();
-
-        // 需求：彈窗加大 1.8 倍；並用縮放後尺寸做定位，避免「放大後偏位」
-        const inputEl = document.querySelector('.form-section .input-control') || document.querySelector('.input-control');
-        const containerEl = document.querySelector('.form-section') || btn.closest('.form-section') || document.body;
-        const inputBox = inputEl ? inputEl.getBoundingClientRect() : rect;
-        const containerBox = containerEl.getBoundingClientRect();
-        // 需求：彈窗加大 1.8 倍，同時避免放大後左右出界
-        const scale = parseFloat(getComputedStyle(mini).getPropertyValue('--mini-scale')) || 1;
-        const baseWidth = Math.min(inputBox.width, (window.innerWidth - 24) / scale);
-
-        mini.style.width = Math.round(baseWidth) + 'px';
-        mini.style.display = 'block';
-
-        const scaledBox = mini.getBoundingClientRect();
-        const left = containerBox.left + (containerBox.width - scaledBox.width)/2;
-        mini.style.left = Math.round(Math.max(12, Math.min(left, window.innerWidth - scaledBox.width - 12))) + 'px';
-        mini.style.top = Math.round(Math.max(rect.top - 12 - scaledBox.height, 10)) + 'px';
-    }, true);
 
     // 5. LOAD/DELETE MODAL (Injected & Modified)
     (function(){
@@ -5697,7 +5661,8 @@ input.input-control, select.input-control, textarea.input-control {
     if (isVintage) {
       box.style.cssText = 'max-width:90vw;width:620px;background:rgba(251,246,234,0.96);color:#3a2e22;border-radius:16px;box-shadow:0 10px 30px rgba(58,46,34,.25);padding:18px;border:2px solid rgba(167,132,85,0.55);';
     } else {
-      box.style.cssText = 'max-width:90vw;width:620px;background:#1f2937;color:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px;';
+      /* Dark mode：將原本偏黑藍底改為灰底（你紅圈圈住嗰個空位） */
+      box.style.cssText = 'max-width:90vw;width:620px;background:#4b5563;color:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px;border:1px solid rgba(255,255,255,0.12);';
     }
 
     ov.appendChild(box);
@@ -5809,7 +5774,7 @@ input.input-control, select.input-control, textarea.input-control {
       if (typeof updateStatus === 'function') updateStatus((document.documentElement.getAttribute('data-lang')||'zh')==='zh' ? '沒有可載入的資料' : 'No data to load');
       return;
     }
-    keys.sort(function(a,b){ return (savedData[b].createdAt||0) - (savedData[a].createdAt||0); });
+    keys.sort(function(a,b){ return (savedData[a].createdAt||0) - (savedData[b].createdAt||0); });
     customLoadModal(keys);
   };
 
@@ -5821,7 +5786,7 @@ input.input-control, select.input-control, textarea.input-control {
       if (typeof updateStatus === 'function') updateStatus((document.documentElement.getAttribute('data-lang')||'zh')==='zh' ? '目前沒有可刪除的資料' : 'No saved record to delete');
       return;
     }
-    keys.sort(function(a,b){ return (savedData[b].createdAt||0) - (savedData[a].createdAt||0); });
+    keys.sort(function(a,b){ return (savedData[a].createdAt||0) - (savedData[b].createdAt||0); });
     customDeleteModal(keys);
   };
 })();
@@ -6519,6 +6484,44 @@ window.addEventListener('load', function() {
     #qrModal, #qrModal * {
       text-shadow: none !important;
     }
+
+    /* 例外：儲存確認彈窗內文通常係深色字（你圈住嗰段），唔應該有陰影 */
+    /* 只限「非黑暗模式」：儲存確認彈窗內文通常係深色字，唔應該有陰影 */
+    html:not([data-theme="dark"]):not(.theme-dark) #saveNoticeModal .modal-body,
+    html:not([data-theme="dark"]):not(.theme-dark) #saveNoticeModal .modal-body * {
+      text-shadow: none !important;
+    }
+
+    /* 黑暗模式：儲存確認彈窗內文改為灰底 + 白字 */
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal .modal {
+      background: linear-gradient(180deg, rgba(107,114,128,0.96) 0%, rgba(75,85,99,0.96) 100%) !important; /* 灰 */
+      border: 1px solid rgba(255,255,255,0.14) !important;
+    }
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal .modal-body,
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal .modal-body p {
+      color: #ffffff !important;
+    }
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal #saveModalSubMsg {
+      color: rgba(255,255,255,0.72) !important;
+    }
+
+    /* 黑暗模式：你紅圈內文區塊（原本偏淺藍/淺灰）也要轉做灰底 */
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal .modal-body {
+      background: rgba(55, 65, 81, 0.32) !important; /* 灰（內層卡片） */
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      border-radius: 14px !important;
+    }
+
+    /* 黑暗模式：內文由黑字改白字，並略為加大字體 */
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal #saveModalMsg {
+      color: #ffffff !important;
+      font-size: 1.35rem !important;
+      font-weight: 700 !important;
+    }
+    :is(html[data-theme="dark"], html.theme-dark) #saveNoticeModal #saveModalSubMsg {
+      font-size: 1.05rem !important;
+      font-weight: 600 !important;
+    }
   </style>
 
   <script id="exp-auto-white-text-shadow">
@@ -6552,6 +6555,15 @@ window.addEventListener('load', function() {
 
             // 例外：QR modal 內全部唔加陰影（由 CSS 全禁）
             if (el.closest && el.closest('#qrModal')) {
+              el.classList.remove(CLASS);
+              return;
+            }
+
+            // 例外（只限非黑暗模式）：儲存確認彈窗內文係黑字，唔應該被自動加陰影
+            // 黑暗模式會將內文改成白字，所以黑暗模式唔做呢個例外
+            const isDark = (document.documentElement.getAttribute('data-theme') === 'dark') ||
+                           document.documentElement.classList.contains('theme-dark');
+            if (!isDark && el.closest && el.closest('#saveNoticeModal')) {
               el.classList.remove(CLASS);
               return;
             }
@@ -6603,7 +6615,13 @@ window.addEventListener('load', function() {
       moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['class','data-theme','style','data-lang'] });
 
       const moDom = new MutationObserver(scheduleApply);
-      moDom.observe(document.body || document.documentElement, { childList: true, subtree: true });
+      // 同時監察 style/class 變更（例如彈窗 display 切換），確保顏色變咗會即時重新判斷
+      moDom.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class','style']
+      });
 
       window.__applyWhiteTextShadow = scheduleApply;
     })();
