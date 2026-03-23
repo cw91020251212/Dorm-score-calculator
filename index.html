@@ -2893,32 +2893,48 @@ function initSalaryTableClipboardFill(){
 
             if (lang === 'zh') {
                 return [
-                    '宿舍計分結果',
-                    `時間：${timeStr}`,
-                    toolLine,
-                    `總分：${Number(totalScore).toFixed(4)}`,
+                    '🏠 宿舍計分結果',
+                    `🕒 時間：${timeStr}`,
+                    toolLine ? `🔗 ${toolLine.replace(/^🔗\s*/,'')}` : null,
                     '',
-                    '分數明細：',
-                    `薪金：${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}`,
-                    `年資：${details.days} 天 (${details.years.toFixed(2)} 年) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}`,
-                    `家庭：${familySum.toFixed(4)}（配偶 ${details.spouseScore}；子女 ${details.childrenScore}；海外 ${details.overseasScore}；新生 ${details.newbornScore}；其他 ${details.otherChildrenScore}）`,
-                    `特殊：${specialSum.toFixed(4)}（指示離開 ${details.instructionScore}；宿舍缺陷 ${details.defectScore}）`,
-                    ''
+                    `🧮 總分：${Number(totalScore).toFixed(4)}`,
+                    '────────────────',
+                    '📋 分數明細',
+                    `💰 薪金：${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}`,
+                    `⏳ 年資：${details.days} 天（${details.years.toFixed(2)} 年）× ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}`,
+                    `👨‍👩‍👧‍👦 家庭：${familySum.toFixed(4)}`,
+                    `   • 配偶：${details.spouseScore}`,
+                    `   • 子女：${details.childrenScore}`,
+                    `   • 海外：${details.overseasScore}`,
+                    `   • 新生：${details.newbornScore}`,
+                    `   • 其他：${details.otherChildrenScore}`,
+                    `⚠️ 特殊：${specialSum.toFixed(4)}`,
+                    `   • 指示離開：${details.instructionScore}`,
+                    `   • 宿舍缺陷：${details.defectScore}`,
+                    '────────────────'
                 ].filter(Boolean).join('\n');
             }
 
             return [
-                'Dorm Score Result',
-                `Time: ${timeStr}`,
-                toolLine,
-                `Total: ${Number(totalScore).toFixed(4)}`,
+                '🏠 Dorm Score Result',
+                `🕒 Time: ${timeStr}`,
+                toolLine ? `🔗 ${toolLine.replace(/^🔗\s*/,'')}` : null,
                 '',
-                'Breakdown:',
-                `Salary: ${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}`,
-                `Service: ${details.days} days (${details.years.toFixed(2)} years) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}`,
-                `Family: ${familySum.toFixed(4)} (spouse ${details.spouseScore}; children ${details.childrenScore}; overseas ${details.overseasScore}; newborn ${details.newbornScore}; other ${details.otherChildrenScore})`,
-                `Special: ${specialSum.toFixed(4)} (instruction ${details.instructionScore}; defect ${details.defectScore})`,
-                ''
+                `🧮 Total: ${Number(totalScore).toFixed(4)}`,
+                '────────────────',
+                '📋 Breakdown',
+                `💰 Salary: ${details.salary} ÷ ${details.divisor} = ${details.salaryScore.toFixed(4)}`,
+                `⏳ Service: ${details.days} days (${details.years.toFixed(2)} years) × ${scoringRules.serviceMultiplier} = ${details.serviceScore.toFixed(4)}`,
+                `👨‍👩‍👧‍👦 Family: ${familySum.toFixed(4)}`,
+                `   • spouse: ${details.spouseScore}`,
+                `   • children: ${details.childrenScore}`,
+                `   • overseas: ${details.overseasScore}`,
+                `   • newborn: ${details.newbornScore}`,
+                `   • other: ${details.otherChildrenScore}`,
+                `⚠️ Special: ${specialSum.toFixed(4)}`,
+                `   • instruction: ${details.instructionScore}`,
+                `   • defect: ${details.defectScore}`,
+                '────────────────'
             ].filter(Boolean).join('\n');
         }
 
