@@ -5105,11 +5105,11 @@ document.addEventListener('DOMContentLoaded', function() {
             /* A. BUTTONS: FORCE CIRCLE (User Requirement) */
             #fontInc, #fontDec, #themeToggle, #welcomeToggleBtn, #displayTuneBtn, #infoBtn {
                 box-sizing: border-box !important;
-                width: 28px !important;
-                height: 28px !important;
-                min-width: 28px !important;
-                max-width: 28px !important;
-                min-height: 28px !important;
+                width: 38px !important;
+                height: 38px !important;
+                min-width: 38px !important;
+                max-width: 38px !important;
+                min-height: 38px !important;
                 border-radius: 50% !important;
                 padding: 0 !important;
                 margin: 0 !important;
@@ -5118,10 +5118,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 justify-content: center !important;
                 background: rgba(255, 255, 255, 0.15) !important;
                 border: 1px solid rgba(255, 255, 255, 0.2) !important;
-                color: rgba(255, 255, 255, 0.8) !important;
+                color: rgba(255, 255, 255, 0.85) !important;
                 transform: none !important;
                 line-height: 1 !important;
-                font-size: 12px !important;
+                font-size: 15px !important;
             }
 
             /* Welcome toggle 狀態色（僅改背景色；保持圓形與尺寸） */
@@ -5153,12 +5153,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .display-controls {
                 background: transparent !important;
                 border: none !important;
-                padding: 5px 0 !important;
-                margin-top: 5px !important;
+                padding: 8px 0 !important;
+                margin-top: 10px !important;
                 width: 100% !important;
-                justify-content: center !important;
+                max-width: 560px !important; /* 令 6 個掣平均分佈又唔會太散 */
+                margin-left: auto !important;
+                margin-right: auto !important;
                 display: flex !important;
-                gap: 15px !important;
+                justify-content: space-evenly !important; /* 平均分佈 */
+                gap: 10px !important;
             }
 
             /* B-1. HEADER: 垂直置中標題 + 功能鍵（依使用者要求） */
