@@ -2457,6 +2457,40 @@ function initSalaryTableClipboardFill(){
             // 依版面（電腦左右／手機上下）更新「左側/上方」提示
             updateResultPlaceholderText();
             
+            // 更新（title / aria-label）提示文字：避免英文模式仍殘留中文
+            (function updateTooltipAndAria(){
+                const isEn = (lang === 'en');
+                const pick = (zh, en) => isEn ? en : zh;
+                const setAttr = (sel, attr, zh, en) => {
+                    const el = document.querySelector(sel);
+                    if (!el) return;
+                    const v = pick(zh, en);
+                    try { el.setAttribute(attr, v); } catch(e) {}
+                    if (attr === 'title') { try { el.title = v; } catch(e) {} }
+                };
+
+                setAttr('#languageToggle', 'aria-label', '切換語言', 'Switch language');
+                setAttr('.display-controls', 'aria-label', '顯示調校工具列', 'Display toolbar');
+
+                setAttr('#displayTuneBtn', 'title', '顯示調校', 'Display tuning');
+                setAttr('#displayTuneBtn', 'aria-label', '顯示調校', 'Display tuning');
+
+                setAttr('#infoBtn', 'title', '使用須知', 'User guide');
+                setAttr('#infoBtn', 'aria-label', '使用須知', 'User guide');
+
+                setAttr('#salaryTableBtn', 'title', '打開薪金表格（政府網站）', 'Open salary table (Gov website)');
+                setAttr('#salaryTableBtn', 'aria-label', '打開薪金表格（政府網站）', 'Open salary table (Gov website)');
+
+                setAttr('#cancelSaveBtn', 'title', '刪除已儲存的資料', 'Delete saved data');
+
+                // Welcome overlay & display tuning modal
+                setAttr('#welcomeOverlay .welcome-modal', 'aria-label', '歡迎', 'Welcome');
+                setAttr('#langToggle', 'aria-label', '語言切換', 'Language');
+                setAttr('.tune-modal', 'aria-label', '顯示調校', 'Display tuning');
+                setAttr('#tuneClose', 'aria-label', '關閉', 'Close');
+                setAttr('.tune-presets', 'aria-label', '顯示調校預設', 'Tuning presets');
+            })();
+
             // 另外強制更新下拉選單的 Yes/No 顯示，避免部分瀏覽器不渲染 option 內部 span
             const yesNoMap = [
                 { sel: '#spouse', no: 'spouseNo', yes: 'spouseYes' },
@@ -3864,6 +3898,26 @@ function lockDateTypingOnDesktop() {
     return;
 }
 
+// 重要：禁止瀏覽器記住滾動位置，確保每次開啟都回到最上方
+(function forceScrollTopOnLoad(){
+  try {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  } catch(e) {}
+  function goTop(){
+    try {
+      // rAF + setTimeout 雙保險，避免某些手機/瀏覽器延遲 layout
+      requestAnimationFrame(()=>{ window.scrollTo(0,0); });
+      setTimeout(()=>{ window.scrollTo(0,0); }, 0);
+      setTimeout(()=>{ window.scrollTo(0,0); }, 60);
+    } catch(e) {}
+  }
+  document.addEventListener('DOMContentLoaded', goTop);
+  // iOS/Safari 或返回（bfcache）會觸發 pageshow
+  window.addEventListener('pageshow', goTop);
+})();
+
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
             initForm();
@@ -3892,9 +3946,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('welcomeOverlay');
     const canvas = document.getElementById('confettiCanvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
-    const btnLater = document.getElementById('welcomeLater');
     const btnStart = document.getElementById('welcomeStart');
-    if (!overlay || !btnLater || !btnStart) return;
+    if (!overlay || !btnStart) return;
 
     // 霓彩金銀片／雪花效果
     let particles = [];
@@ -4048,7 +4101,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const elTitle = overlay.querySelector('.welcome-text');
     const elBody = overlay.querySelector('.welcome-body');
     const elDisclaimer = overlay.querySelector('.welcome-disclaimer');
-    const elBtnLater = document.getElementById('welcomeLater');
     const elBtnStart = document.getElementById('welcomeStart');
     const elLangToggle = document.getElementById('langToggle');
 
@@ -4111,14 +4163,12 @@ document.addEventListener('DOMContentLoaded', function() {
         title: '歡迎！',
         body: '祝您使用愉快。',
         disclaimer: '此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。',
-        later: '稍後再看',
         start: '開始使用'
       },
       {
         title: 'Welcome!',
         body: 'Enjoy your experience.',
         disclaimer: 'Results are for reference only; accuracy is not guaranteed; this tool is not responsible for any consequences of use.',
-        later: 'Later',
         start: 'Get Started'
       }
     ];
@@ -4127,7 +4177,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const titleXF = setupCrossFade(elTitle, [WELCOME_LANGS[0].title, WELCOME_LANGS[1].title]);
     const bodyXF = setupCrossFade(elBody, [WELCOME_LANGS[0].body, WELCOME_LANGS[1].body]);
     const disclaimerXF = setupCrossFade(elDisclaimer, [WELCOME_LANGS[0].disclaimer, WELCOME_LANGS[1].disclaimer]);
-    const laterXF = setupCrossFade(elBtnLater, [WELCOME_LANGS[0].later, WELCOME_LANGS[1].later]);
     const startXF = setupCrossFade(elBtnStart, [WELCOME_LANGS[0].start, WELCOME_LANGS[1].start]);
 
     let welcomeLangIndex = 0;
@@ -4160,7 +4209,6 @@ document.addEventListener('DOMContentLoaded', function() {
       crossFadeSwap(elTitle, titleXF, L.title);
       crossFadeSwap(elBody, bodyXF, L.body);
       crossFadeSwap(elDisclaimer, disclaimerXF, L.disclaimer);
-      crossFadeSwap(elBtnLater, laterXF, L.later);
       crossFadeSwap(elBtnStart, startXF, L.start);
       // 對齊尺寸
       ensureWelcomeFits();
@@ -4248,7 +4296,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Old listener removed
 
     btnStart.addEventListener('click', closeWelcome);
-    btnLater.addEventListener('click', closeWelcome);
     // click disabled
     // escape disabled
 
@@ -4661,7 +4708,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <div class="welcome-actions">
-        <button id="welcomeLater" class="welcome-btn" type="button" onclick="exitApp()">稍後再看</button>
         <button id="welcomeStart" class="welcome-btn primary" type="button">開始使用</button>
       </div>
     </div>
@@ -5105,11 +5151,11 @@ document.addEventListener('DOMContentLoaded', function() {
             /* A. BUTTONS: FORCE CIRCLE (User Requirement) */
             #fontInc, #fontDec, #themeToggle, #welcomeToggleBtn, #displayTuneBtn, #infoBtn {
                 box-sizing: border-box !important;
-                width: 38px !important;
-                height: 38px !important;
-                min-width: 38px !important;
-                max-width: 38px !important;
-                min-height: 38px !important;
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                max-width: 34px !important;
+                min-height: 34px !important;
                 border-radius: 50% !important;
                 padding: 0 !important;
                 margin: 0 !important;
@@ -5121,7 +5167,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 color: rgba(255, 255, 255, 0.85) !important;
                 transform: none !important;
                 line-height: 1 !important;
-                font-size: 15px !important;
+                font-size: 13px !important;
             }
 
             /* Welcome toggle 狀態色（僅改背景色；保持圓形與尺寸） */
@@ -5156,7 +5202,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 padding: 8px 0 !important;
                 margin-top: 10px !important;
                 width: 100% !important;
-                max-width: 560px !important; /* 令 6 個掣平均分佈又唔會太散 */
+                max-width: 520px !important; /* 令 6 個掣平均分佈又唔會太散 */
                 margin-left: auto !important;
                 margin-right: auto !important;
                 display: flex !important;
@@ -5935,9 +5981,7 @@ window.addEventListener('load', function() {
     };
 
     const btnStart = document.getElementById('welcomeStart');
-    const btnLater = document.getElementById('welcomeLater');
     if(btnStart) btnStart.addEventListener('click', stopSnow);
-    if(btnLater) btnLater.addEventListener('click', stopSnow);
 });
 </script>
 
@@ -6539,14 +6583,12 @@ window.addEventListener('load', function() {
         -2px 3px 18px rgba(0,0,0,0.10) !important;
     }
 
-    /* Welcome 視窗兩個按鈕（Later / Get Started）
+    /* Welcome 視窗按鈕（Get Started）
+       NOTE: welcomeLater 已移除 */
        你要求：黑暗模式下陰影唔要「霧化」，要實體化（跟光綠色按鈕嗰種「實邊」陰影）。
        做法：只保留 0 blur 嘅外投影層，移除 10px/24px 呢啲柔邊 blur。 */
-    :is(.theme-dark, html[data-theme="dark"]) #welcomeLater,
     :is(.theme-dark, html[data-theme="dark"]) #welcomeStart,
-    :is(.theme-dark, html[data-theme="dark"]) #welcomeLater:hover,
     :is(.theme-dark, html[data-theme="dark"]) #welcomeStart:hover,
-    :is(.theme-dark, html[data-theme="dark"]) #welcomeLater:active,
     :is(.theme-dark, html[data-theme="dark"]) #welcomeStart:active {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.45),
@@ -6558,9 +6600,9 @@ window.addEventListener('load', function() {
 
     /* 紅圈：頂部 header 內一排圓形小按鈕（＋／－／主題／調校／資訊）
        同樣用 ID（連 hover/active）確保贏過 global-button-drop-shadow。 */
-    #fontInc, #fontDec, #themeToggle, #displayTuneBtn, #infoBtn,
-    #fontInc:hover, #fontDec:hover, #themeToggle:hover, #displayTuneBtn:hover, #infoBtn:hover,
-    #fontInc:active, #fontDec:active, #themeToggle:active, #displayTuneBtn:active, #infoBtn:active {
+    #fontInc, #fontDec, #themeToggle, #welcomeToggleBtn, #displayTuneBtn, #infoBtn,
+    #fontInc:hover, #fontDec:hover, #themeToggle:hover, #welcomeToggleBtn:hover, #displayTuneBtn:hover, #infoBtn:hover,
+    #fontInc:active, #fontDec:active, #themeToggle:active, #welcomeToggleBtn:active, #displayTuneBtn:active, #infoBtn:active {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.55),
         inset 1px -2px 3px rgba(0,0,0,0.10),
