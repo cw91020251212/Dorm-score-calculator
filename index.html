@@ -3409,7 +3409,8 @@ function initSalaryTableClipboardFill(){
                 if (settings.warmth == null) settings.warmth = 0;
                 if (settings.paperTint == null) settings.paperTint = 0.65;
                 if (settings.paperStrength == null) settings.paperStrength = 0.65;
-                if (settings.tuneAdvanced == null) settings.tuneAdvanced = false;
+                // 顯示調校：進階滑桿狀態永遠預設收起（不記憶）
+                settings.tuneAdvanced = false;
                 // 舊版本兼容：light/light-simple 一律當 light-vintage
                 if (settings.theme === 'light' || settings.theme === 'light-simple') settings.theme = 'light-vintage';
                 localStorage.setItem('uiSettings', JSON.stringify(settings));
@@ -3513,7 +3514,8 @@ function initSalaryTableClipboardFill(){
                 if (!modal) return;
                 syncTuneTexts();
                 setSliderValuesFromSettings();
-                setAdvanced(!!settings.tuneAdvanced, false);
+                // 每次打開調校視窗，都強制收起進階滑桿（保持界面簡潔）
+                setAdvanced(false, false);
                 modal.style.display = 'flex';
                 modal.setAttribute('aria-hidden','false');
                 document.addEventListener('keydown', onEsc);
@@ -3568,7 +3570,8 @@ function initSalaryTableClipboardFill(){
             });
 
             if (advBtn) advBtn.addEventListener('click', function(){
-                setAdvanced(!settings.tuneAdvanced, true);
+                // 只係本次視窗開啟期間展開/收起；唔寫入 localStorage（下次必定收起）
+                setAdvanced(!settings.tuneAdvanced, false);
             });
 
             if (tuneBtn) tuneBtn.addEventListener('click', openTune);
