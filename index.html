@@ -1910,7 +1910,10 @@ html[data-theme] #calcBtn:active,
             
             <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
 
-            <!-- 第六個功能鍵：顯示光暗/色深調校 -->
+            <!-- 新增功能鍵：歡迎畫面開關（記憶設定） -->
+            <button id="welcomeToggleBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="歡迎畫面：已開"><i class="fas fa-door-open"></i></button>
+
+            <!-- 顯示光暗/色深調校 -->
             <button id="displayTuneBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="顯示調校"><i class="fas fa-sliders"></i></button>
             
             <button id="infoBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="使用須知"><i class="fas fa-info-circle"></i></button>
@@ -2445,6 +2448,8 @@ function initSalaryTableClipboardFill(){
                 lang === 'zh' ? 'EN' : '中';
             // 同步更新狀態列切換按鈕文字
             updateStatusToggleLabel();
+            // 同步更新「歡迎畫面開關」提示字（title/aria-label）
+            try { if (typeof window.refreshWelcomeToggle === 'function') window.refreshWelcomeToggle(); } catch(e) {}
             
             // 更新數據狀態文本
             updateDataCount();
@@ -3882,6 +3887,7 @@ document.addEventListener('DOMContentLoaded', function() {
 (function initWelcomeOnce(){
   try {
     const FLAG_KEY = 'welcomeShown';
+    const DISABLE_KEY = 'welcomeDisabled';
     const shown = localStorage.getItem(FLAG_KEY);
     const overlay = document.getElementById('welcomeOverlay');
     const canvas = document.getElementById('confettiCanvas');
@@ -3993,6 +3999,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const force = (location.hash === '#welcome');
+    const disabled = (function(){
+      try { return localStorage.getItem(DISABLE_KEY) === '1'; } catch(e) { return false; }
+    })();
     const openWelcome = () => {
       overlay.style.display = 'flex';
       overlay.style.opacity = '0';
@@ -4029,7 +4038,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 450);
     };
 
-    openWelcome();
+    // 啟動時是否顯示：
+    // - 第一次一定會見到（因為未有 disable 設定）
+    // - 用家如果喺程式入面關咗（DISABLE_KEY=1），下次開機就唔再自動彈
+    // - 但仍保留手動顯示：Shift+W 或網址加 #welcome
+    if (force || !disabled) { openWelcome(); }
 
     // 語言自動切換（每約2秒）
     const elTitle = overlay.querySelector('.welcome-text');
@@ -4262,6 +4275,57 @@ document.addEventListener('DOMContentLoaded', function() {
       appTitle.addEventListener('touchcancel', cancel, {passive:true});
     }
   } catch (e) { /* 忽略錯誤以避免阻塞主流程 */ }
+})();
+
+// 初始化「歡迎畫面開關」功能鍵（記憶設定）
+(function initWelcomeToggleButton(){
+  const KEY = 'welcomeDisabled';
+  const btn = document.getElementById('welcomeToggleBtn');
+  if (!btn) return;
+
+  function getLang(){
+    try { return window.currentLang || document.documentElement.getAttribute('data-lang') || 'zh'; }
+    catch(e){ return 'zh'; }
+  }
+  function isDisabled(){
+    try { return localStorage.getItem(KEY) === '1'; } catch(e) { return false; }
+  }
+  function setDisabled(v){
+    try { localStorage.setItem(KEY, v ? '1' : '0'); } catch(e) {}
+  }
+  function refresh(){
+    const off = isDisabled();
+    btn.classList.toggle('off', off);
+    btn.classList.toggle('on', !off);
+    btn.innerHTML = off
+      ? '<i class="fas fa-door-closed"></i>'
+      : '<i class="fas fa-door-open"></i>';
+
+    const lang = getLang();
+    const title = (lang === 'en')
+      ? (off ? 'Welcome screen: OFF (click to enable)' : 'Welcome screen: ON (click to disable)')
+      : (off ? '歡迎畫面：已關（按一下開啟）' : '歡迎畫面：已開（按一下關閉）');
+    btn.title = title;
+    btn.setAttribute('aria-label', title);
+  }
+
+  btn.addEventListener('click', function(){
+    const off = isDisabled();
+    setDisabled(!off);
+    refresh();
+    const lang = getLang();
+    try {
+      if (typeof updateStatus === 'function') {
+        updateStatus(lang === 'en'
+          ? (!off ? 'Welcome screen disabled (will not show next launch)' : 'Welcome screen enabled (will show next launch)')
+          : (!off ? '已關閉歡迎畫面（下次開機唔會再彈出）' : '已開啟歡迎畫面（下次開機會再彈出）')
+        );
+      }
+    } catch(e) {}
+  });
+
+  window.refreshWelcomeToggle = refresh;
+  refresh();
 })();
 
 // 手機浮動鍵盤遮擋自動避讓（僅數字鍵盤觸發）
@@ -5039,7 +5103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             /* --- 2026-02-09 V16: STABILITY + NO-FLASH ONLY --- */
 
             /* A. BUTTONS: FORCE CIRCLE (User Requirement) */
-            #fontInc, #fontDec, #themeToggle, #displayTuneBtn, #infoBtn {
+            #fontInc, #fontDec, #themeToggle, #welcomeToggleBtn, #displayTuneBtn, #infoBtn {
                 box-sizing: border-box !important;
                 width: 28px !important;
                 height: 28px !important;
@@ -5059,7 +5123,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 line-height: 1 !important;
                 font-size: 12px !important;
             }
-            #fontInc:hover, #fontDec:hover, #themeToggle:hover, #infoBtn:hover {
+
+            /* Welcome toggle 狀態色（僅改背景色；保持圓形與尺寸） */
+            #welcomeToggleBtn.on {
+                background: rgba(40, 167, 69, 0.35) !important;
+                border-color: rgba(40, 167, 69, 0.55) !important;
+                color: rgba(255,255,255,0.92) !important;
+            }
+            #welcomeToggleBtn.off {
+                background: rgba(232, 79, 79, 0.35) !important;
+                border-color: rgba(232, 79, 79, 0.55) !important;
+                color: rgba(255,255,255,0.92) !important;
+            }
+            /* Light theme：改深少少，避免太淡 */
+            .theme-light #welcomeToggleBtn.on {
+                background: rgba(40, 167, 69, 0.22) !important;
+                border-color: rgba(40, 167, 69, 0.38) !important;
+                color: #1b5e20 !important;
+            }
+            .theme-light #welcomeToggleBtn.off {
+                background: rgba(232, 79, 79, 0.18) !important;
+                border-color: rgba(232, 79, 79, 0.32) !important;
+                color: #7a1f1f !important;
+            }
+            #fontInc:hover, #fontDec:hover, #themeToggle:hover, #welcomeToggleBtn:hover, #infoBtn:hover {
                 background: rgba(255, 255, 255, 0.3) !important;
                 transform: scale(1.05) !important;
             }
