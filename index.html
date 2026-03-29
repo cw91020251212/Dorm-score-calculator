@@ -979,7 +979,11 @@
             #contentRoot { filter: var(--display-filter); transition: filter 180ms ease; padding-bottom: 72px; }
 
             /* === 顯示調校彈窗（modal） === */
-            .tune-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 18px; }
+            .tune-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 18px;
+  /* 背景模糊化（focus modal、背景霧化） */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
             .tune-modal { width: min(520px, 92vw); background: rgba(25,25,25,0.92); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; }
             .theme-light-vintage .tune-modal, .theme-light .tune-modal, .theme-light-simple .tune-modal { background: rgba(255,255,255,0.92); border-color: rgba(0,0,0,0.12); }
             .tune-header { display:flex; align-items:center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.12); }
@@ -6325,6 +6329,9 @@ window.addEventListener('load', function() {
   #displayTuneModal.tune-backdrop {
     align-items: flex-start !important;
     overflow: auto !important;
+    /* 背景模糊化（整體霧化） */
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     /* 手機瀏覽器地址列會令 100vh 失準：
        用更大底部 padding + 以 svh/dvh 作上限，避免底部按鈕被遮住 */
     padding: 12px 12px calc(24px + env(safe-area-inset-bottom) + 56px) !important;
