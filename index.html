@@ -476,6 +476,14 @@
             font-weight: 400;
             letter-spacing: 0.02em;
         }
+
+        /* 只改中文「總分」字形：用 6 號字體（Fredoka / 圓潤）
+           - 其他（例如英文 Total Score）維持原本 */
+        html[data-lang="zh"] .highlight-score .score-title {
+            font-family: "Fredoka", "ZCOOL KuaiLe", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
         .highlight-score .score-value {
             font-family: "Abril Fatface", "Montserrat", "Segoe UI", "Microsoft JhengHei", sans-serif;
             font-size: 3.2rem;
