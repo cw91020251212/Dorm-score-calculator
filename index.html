@@ -1144,6 +1144,7 @@
                 --card-bg: rgba(255, 255, 255, 0.95);
                 --section-bg: rgba(255, 255, 255, 0.98);
             }
+
             .theme-light body { color: var(--text-light); }
             .theme-light .input-control { background: #ffffff; color: #333; border-color: #c88fa1; }
             .theme-light .section-title { color: #2b6cb0; border-color: #2b6cb0; }
@@ -4698,6 +4699,43 @@ document.addEventListener('DOMContentLoaded', function() {
       box-shadow: 0 6px 0 rgba(0,0,0,0.28) !important;
     }
     .lang-toggle:hover { background: rgba(255,255,255,0.26); transform: translateY(-1px); }
+
+    /* 光明模式：保持原本灰色底不變，只喺最底加少少深色漸變 */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) body {
+      position: relative;
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) body::after {
+      content: "";
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 40vh;
+      pointer-events: none;
+      z-index: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.14) 100%);
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #appRoot {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 黑暗模式：同樣保持原底色，只喺最底加少少加深漸變 */
+    :is(.theme-dark, html[data-theme="dark"]) body {
+      position: relative;
+    }
+    :is(.theme-dark, html[data-theme="dark"]) body::after {
+      content: "";
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 40vh;
+      pointer-events: none;
+      z-index: 0;
+      /* 深色模式用白色極淡遮罩，避免「再黑」得太死 */
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 100%);
+    }
+    :is(.theme-dark, html[data-theme="dark"]) #appRoot {
+      position: relative;
+      z-index: 1;
+    }
 
   </style>
 
