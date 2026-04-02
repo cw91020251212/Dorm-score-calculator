@@ -94,6 +94,18 @@
             color: #ffc107;
             text-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
         }
+
+        /* 只保留左邊計算機 icon「發光 + 放大縮小」 */
+        @keyframes calcPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(255,193,7,0.55)); }
+            50%      { transform: scale(1.12); filter: drop-shadow(0 0 14px rgba(255,193,7,0.85)); }
+        }
+        header h1 i.fa-calculator {
+            display: inline-block; /* 令 transform 生效 */
+            animation: calcPulse 2.2s ease-in-out infinite;
+            transform-origin: center;
+            will-change: transform, filter;
+        }
         
         .subtitle {
             font-size: 1.2rem;
@@ -912,16 +924,10 @@
             position: relative;
         }
         
+        /* 刪除大標題「長條閃光/霧化」動畫層（避免怪怪地） */
         h1:after {
             content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: shine 5s infinite linear; /* 從3s改為5s，使動畫變慢 */
-            z-index: -1;
+            display: none;
         }
         
         /* 語言切換按鈕 - 修正位置到右上角，避免覆蓋標題 */
@@ -1395,7 +1401,7 @@
   display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 420ms ease; }
 .welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(59,130,246,0.86) 40%, rgba(168,85,247,0.84) 70%, rgba(245,158,11,0.82) 100%); color: #fff;
   /* 暗黑模式：跟光明模式一樣用「實體化」投影（唔要模糊化） */
-  box-shadow: 0 14px 0 rgba(0,0,0,0.30);
+  box-shadow: -14px 14px 0 rgba(0,0,0,0.30);
   transform: translateY(0) scale(1); opacity: 1; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; z-index: 2; }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
@@ -1404,7 +1410,7 @@
 .welcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: center; align-items: center; } .welcome-actions .welcome-btn > * { line-height: 1; }
 .welcome-btn { border: 0; border-radius: 12px; padding: 12px 18px; background: rgba(255,255,255,0.16); color: #fff; cursor: pointer; transition: transform .12s ease, background .2s ease; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem;
   /* 暗黑模式：改用實投影（唔要霧化模糊） */
-  box-shadow: 0 6px 0 rgba(0,0,0,0.28) !important;
+  box-shadow: -6px 6px 0 rgba(0,0,0,0.28) !important;
 }
 .welcome-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.22); }
 .welcome-btn.primary { background: #fff; color: #2b6cb0; font-weight: 700; display: inline-flex; align-items: center !important; justify-content: center; line-height: 1; min-height: 44px; font-size: 1.08rem; }
@@ -1450,11 +1456,11 @@
 /* 主題相容：在光明主題時調整對比 */
 .theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.62) 0%, rgba(219,234,254,0.50) 32%, rgba(252,165,165,0.42) 66%, rgba(216,180,254,0.45) 100%); color: #2b6cb0;
   /* 光明模式：同樣保持「實體化」投影，但輕啲 */
-  box-shadow: 0 14px 0 rgba(0,0,0,0.18) !important;
+  box-shadow: -14px 14px 0 rgba(0,0,0,0.18) !important;
 }
 .theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0;
   /* 光明模式同樣用實投影（更輕） */
-  box-shadow: 0 6px 0 rgba(0,0,0,0.18) !important;
+  box-shadow: -6px 6px 0 rgba(0,0,0,0.18) !important;
 }
 .theme-light .welcome-btn.primary { background: #2b6cb0; color: #fff; }
 
@@ -1816,6 +1822,7 @@ html[data-theme] #calcBtn,
   position: relative !important;
   overflow: hidden !important;
 
+  /* 文字回復黑色（唔要陰影） */
   color: #331 !important;
   /* 100% 不透明金黃漸變（用 hex，避免 rgba 混色） */
   background: linear-gradient(180deg,
@@ -1827,10 +1834,10 @@ html[data-theme] #calcBtn,
   border-radius: 12px !important;
 }
 
-/* 強制文字/圖示一致（計算分數：唔要文字陰影） */
-:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn :is(span, i),
-html[data-theme] #calcBtn :is(span, i),
-#calcBtn :is(span, i) {
+/* 計算分數：文字黑色、無陰影；icon 另外獨立處理 */
+:is(.theme-light, .theme-light-simple, .theme-light-vintage, .theme-dark) #calcBtn span,
+html[data-theme] #calcBtn span,
+#calcBtn span {
   color: inherit !important;
   text-shadow: none !important;
 }
@@ -1838,7 +1845,26 @@ html[data-theme] #calcBtn :is(span, i),
 /* 內部字體細節（同黑暗版） */
 #calcBtn i {
   font-size: 1.38rem !important;
-  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.65)) !important;
+}
+
+/* 需求：計算機 icon 用白色 + 有陰影（兩個版本都一樣） */
+#calcBtn i.fa-calculator {
+  color: #fff !important;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,0.70))
+    drop-shadow(0 2px 3px rgba(0,0,0,0.50)) !important;
+}
+
+/* 計算分數掣入面嘅計算機 icon：輕微「漲下漲下」 */
+@keyframes calcBtnPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+#calcBtn i.fa-calculator {
+  display: inline-block;
+  animation: calcBtnPulse 1.9s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
 }
 #calcBtn #calcBtnText {
   font-size: 1.46rem !important;
@@ -1892,6 +1918,40 @@ html[data-theme] #calcBtn:active,
 #calcBtn:active {
   transform: translateY(0) !important;
 }
+</style>
+
+<!-- === UI 互動統一（2026-04-02）===
+  目標：
+  - 所有按鈕 hover/active 唔再「喐」(translate/scale)
+  - 改用「斬一斬」式變色/變亮 + 細邊框提示可按
+  - 取消下載箭嘴/圖示額外動畫（保留 #calcBtn 計算機脈衝）
+-->
+<style>
+  :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+      button.language-toggle, button.qr-toggle):hover {
+    transform: none !important;
+    filter: brightness(1.07) saturate(1.04) !important;
+  }
+  :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+      button.language-toggle, button.qr-toggle):active {
+    transform: none !important;
+    filter: brightness(0.98) saturate(1.02) !important;
+  }
+
+  /* hover 提示：加一圈內陰影，令用家一移近就知可按 */
+  :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+      button.language-toggle, button.qr-toggle):hover {
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.18) inset !important;
+  }
+
+  /* 取消大部分按鈕圖示動畫（例如 download 箭嘴），避免得一兩個掣特別郁） */
+  :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn) i {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* 但保留「計算分數」掣入面計算機脈衝 */
+  #calcBtn i.fa-calculator { animation: calcBtnPulse 1.9s ease-in-out infinite !important; }
 </style>
 
 </head>
@@ -4931,7 +4991,7 @@ document.addEventListener('DOMContentLoaded', function() {
     --paper-alpha: calc(0.05 + (var(--paper-strength) * 0.16));
 
     /* 還原：光明模式程式背景用灰色（避免米黃紙底） */
-    --body-bg: linear-gradient(135deg, #9f9f9f, #7f7f7f);
+    --body-bg: linear-gradient(135deg, #9f9f9f, #666666);
 
   }
 
