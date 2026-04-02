@@ -1954,6 +1954,70 @@ html[data-theme] #calcBtn:active,
   #calcBtn i.fa-calculator { animation: calcBtnPulse 1.9s ease-in-out infinite !important; }
 </style>
 
+<!-- === Hover 漸變方向反轉（2026-04-02）===
+  目標：任何有 linear-gradient 背景嘅按鈕，mouse hover 時都會「走位」
+  視覺上等同漸變方向倒轉，令用家一眼見到可按。
+  做法：用 background-position 由左→右切換，唔需要逐個掣寫反向顏色。
+-->
+<style id="hover-gradient-reverse-20260402">
+  :is(button, .btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+      button.language-toggle, button.qr-toggle) {
+    /* 對漸變背景有效；純色背景不會有副作用 */
+    background-size: 200% 200% !important;
+    background-position: 0% 50% !important;
+    transition:
+      background-position 220ms ease,
+      filter 160ms ease,
+      box-shadow 160ms ease,
+      border-color 160ms ease;
+  }
+
+  :is(button, .btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+      button.language-toggle, button.qr-toggle):hover {
+    /* 漸變「倒轉」感覺：由右邊走返去左邊 */
+    background-position: 100% 50% !important;
+  }
+
+  /* 觸控裝置無 hover：避免誤觸發 */
+  @media (hover: none) {
+    :is(button, .btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+        button.language-toggle, button.qr-toggle) {
+      background-size: initial !important;
+      background-position: initial !important;
+    }
+  }
+</style>
+
+<!-- === Select/下拉選擇欄：滑鼠提示（2026-04-02）===
+  目標：用家滑鼠移到「是否」呢類 select 時，都見到可互動提示（cursor + 變色/邊框）。
+-->
+<style id="select-hover-cues-20260402">
+  /* 只針對可用嘅 select，禁用狀態唔好誤導 */
+  select:not([disabled]) {
+    cursor: pointer !important;
+    transition: filter 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
+  }
+
+  /* hover：加清晰邊框/內陰影，等同『呢格可以撳』 */
+  select:not([disabled]):hover {
+    filter: brightness(1.06) saturate(1.03) !important;
+    border-color: rgba(255,255,255,0.45) !important;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.18) inset !important;
+  }
+
+  /* focus-visible：鍵盤操作時更清楚 */
+  select:not([disabled]):focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Light theme：hover 邊框顏色深啲（米白底更易見） */
+  :is(.theme-light, .theme-light-simple, .theme-light-vintage) select:not([disabled]):hover {
+    border-color: rgba(90, 70, 55, 0.55) !important;
+    box-shadow: 0 0 0 2px rgba(90,70,55,0.18) inset !important;
+  }
+</style>
+
 </head>
 <body>
 <div id="appRoot">
