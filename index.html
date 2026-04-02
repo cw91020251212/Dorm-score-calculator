@@ -1945,7 +1945,7 @@ html[data-theme] #calcBtn:active,
   }
 
   /* 取消大部分按鈕圖示動畫（例如 download 箭嘴），避免得一兩個掣特別郁） */
-  :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn) i {
+  :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn) i:not(.fa-calculator) {
     animation: none !important;
     transform: none !important;
   }
