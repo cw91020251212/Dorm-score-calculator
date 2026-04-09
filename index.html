@@ -25,7 +25,13 @@
             --text-light: #fff;
             --text-dark: #333;
             --card-bg: rgba(255, 255, 255, 0.08);
-            --section-bg: rgba(30, 58, 95, 0.7);
+            /* 面板背景：改為完全不透明，徹底遮住底層紋理 */
+            --section-bg: #173a60;
+            /* 輸入欄背景：同樣用實色（避免透底） */
+            --input-bg: #0f2a4a;
+            --input-border: #1f4d7a;
+            /* 卡片/清單項目：實色（之前 0.05 透明會透紋理） */
+            --card-solid-bg: #123154;
             --required: #ff6b6b;
             --hint-pink: #ffb6c1;
             --language-bg: #90EE90; /* 淺綠色背景（不透明） */
@@ -52,6 +58,8 @@
             padding: 0;
             font-family: "Microsoft JhengHei", "Segoe UI", sans-serif;
         }
+
+        html{ background: transparent; }
         
         body {
             /* 背景改用固定底層元素（#agFixedBg）去承載。
@@ -72,6 +80,7 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
+            /* 固定背景層：放喺內容後面，但唔好用 -1（會跌到 html 背景後面而『消失』） */
             z-index: 0;
             background:
               linear-gradient(180deg, rgba(255,255,255,0.26) 0%, rgba(0,0,0,0.58) 100%),
@@ -86,8 +95,8 @@
         :root{
             /* ✅ 鋁材麻布紋理參數（可微調） */
             --ag-bg-texture-size: 110px;
-            --ag-bg-texture-opacity-dark: 0.44;
-            --ag-bg-texture-opacity-light: 0.32;
+            --ag-bg-texture-opacity-dark: 0.20;
+            --ag-bg-texture-opacity-light: 0.14;
             --ag-bg-texture-relief: contrast(240%) brightness(1.06) saturate(1.02);
             --ag-bg-texture-relief-light: contrast(225%) brightness(0.98) saturate(1.02);
         }
@@ -97,11 +106,12 @@
             :root{ --ag-bg-texture-size: 150px; }
         }
 
-        body::before{
+        #agFixedBg::before{
             content: "";
-            position: fixed;
+            position: absolute;
             inset: 0;
             pointer-events: none;
+            /* 紋理層只疊喺背景漸層之上，但仍然喺所有內容之下 */
             z-index: 1;
 
             /* 鋁材：麻布凹凸 + 少少拉絲線（更立體） */
@@ -124,13 +134,14 @@
                 0 0;
 
             opacity: var(--ag-bg-texture-opacity-dark);
-            mix-blend-mode: overlay;
+            /* 避免 overlay/multiply 令紋理『穿透』到內容層感覺 */
+            mix-blend-mode: normal;
             filter: var(--ag-bg-texture-relief);
         }
 
-        .theme-light body::before,
-        .theme-light-simple body::before,
-        .theme-light-vintage body::before{
+        .theme-light #agFixedBg::before,
+        .theme-light-simple #agFixedBg::before,
+        .theme-light-vintage #agFixedBg::before{
             background-image:
                 var(--ag-burlap-weave-dark),
                 var(--ag-burlap-weave-dark),
@@ -148,34 +159,34 @@
                 5px 5px,
                 0 0;
             opacity: var(--ag-bg-texture-opacity-light);
-            mix-blend-mode: multiply;
+            mix-blend-mode: normal;
             filter: var(--ag-bg-texture-relief-light);
         }
 
         /* 輕微暗角：增加凹凸感（唔會太搶） */
-        body::after{
+        #agFixedBg::after{
             content: "";
-            position: fixed;
+            position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 1;
+            z-index: 2;
             background: radial-gradient(1200px 800px at 50% 30%, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
             /* 暗角層太重會令上下變化唔明顯：減淡 */
             opacity: 0.25;
-            mix-blend-mode: soft-light;
+            mix-blend-mode: normal;
         }
-        .theme-light body::after,
-        .theme-light-simple body::after,
-        .theme-light-vintage body::after{
+        .theme-light #agFixedBg::after,
+        .theme-light-simple #agFixedBg::after,
+        .theme-light-vintage #agFixedBg::after{
             background: radial-gradient(1200px 800px at 50% 30%, rgba(255,255,255,0.75), rgba(0,0,0,0.10));
             opacity: 0.14;
-            mix-blend-mode: multiply;
+            mix-blend-mode: normal;
         }
 
-        body > *{ position: relative; z-index: 2; }
+        body > *{ position: relative; z-index: 1; }
 
         @media print{
-            body::before{ display:none !important; }
+            #agFixedBg::before{ display:none !important; }
         }
         
         .container {
@@ -190,6 +201,8 @@
             text-align: center;
             padding: 25px;
             background: var(--section-bg);
+            /* 重要：隔離混合/合成，避免底層紋理視覺上「穿透」 */
+            isolation: isolate;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
@@ -248,6 +261,8 @@
         
         .form-section {
             background: var(--section-bg);
+            /* 重要：隔離混合/合成，避免底層紋理視覺上「穿透」 */
+            isolation: isolate;
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -286,8 +301,9 @@
         .input-control {
             width: 100%;
             padding: 14px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            /* 改用實色，避免任何透明造成見到背景紋理 */
+            background: var(--input-bg) !important;
+            border: 1px solid var(--input-border) !important;
             border-radius: 8px;
             color: var(--text-light);
             font-size: 18px;
@@ -643,7 +659,7 @@
         .result-item {
             padding: 18px;
             margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-solid-bg);
             border-radius: 8px;
             font-size: 1.1rem;
         }
@@ -703,7 +719,7 @@
         }
         
         .data-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-solid-bg);
             border-radius: 10px;
             padding: 20px;
             border-left: 4px solid var(--accent);
@@ -1330,7 +1346,9 @@
                 --text-light: #fff; /* 光明版主要文字改深色 */
                 --text-dark: #111; 
                 --card-bg: rgba(255, 255, 255, 0.95);
-                --section-bg: rgba(255, 255, 255, 0.98);
+                --section-bg: #ffffff;
+                --input-bg: #ffffff;
+                --input-border: #c88fa1;
             }
 
             .theme-light body { color: var(--text-light); }
@@ -1430,7 +1448,9 @@
                 --primary-dark: #1a3658;      /* 由 #0f2a4a 提亮 */
                 --accent: #7fb3e9;            /* 重點色偏淺藍，易讀 */
                 --accent-dark: #4f94d9;
-                --section-bg: rgba(30, 58, 95, 0.60);  /* 由 0.70 降到 0.60，少啲暗 */
+                --section-bg: #173a60;  /* 面板實色 */
+                --input-bg: #0f2a4a;
+                --input-border: #1f4d7a;
                 --card-bg: rgba(255, 255, 255, 0.06);  /* 稍微提亮卡片層 */
                 --text-light: #f2f5f9;        /* 文字偏淺但唔係純白，減刺眼 */
             }
@@ -1447,7 +1467,9 @@
                 --primary-dark: #0f2a4a;
                 --accent: #4f9de8;
                 --accent-dark: #347fd3;
-                --section-bg: rgba(30, 58, 95, 0.70);
+                --section-bg: #173a60;
+                --input-bg: #0f2a4a;
+                --input-border: #1f4d7a;
                 --card-bg: rgba(255, 255, 255, 0.08);
                 --text-light: #fff;
             }
@@ -1478,7 +1500,9 @@
                 --text-light: #fff; 
                 --text-dark: #111; 
                 --card-bg: rgba(255, 255, 255, 0.12);
-                --section-bg: rgba(30, 58, 95, 0.50);
+                --section-bg: #173a60;
+                --input-bg: #0f2a4a;
+                --input-border: #1f4d7a;
             }
             .theme-light .input-control { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.30); }
             /* 覆蓋：光明版文字顏色保持白色，避免早前 #222 覆蓋 */
@@ -1496,7 +1520,9 @@
                 --danger: #f59aa7;           /* 亮：柔紅 */
                 --text-light: #fff;          /* 亮版仍用白字（你的要求） */
                 --text-dark: #111;           
-                --section-bg: rgba(30,58,95,0.65); /* 區塊背景加深透明度，讓白字有對比 */
+                --section-bg: #173a60; /* 面板實色 */
+                --input-bg: #0f2a4a;
+                --input-border: #1f4d7a;
                 --card-bg: rgba(255,255,255,0.10);  /* 卡片微亮，不刺眼 */
             }
             .theme-light body { 
@@ -1736,15 +1762,15 @@
 /* 與 .input-control 統一（深色主題預設） */
 select {
   color: inherit !important;
-  background: rgba(255, 255, 255, 0.1) !important; /* 與 .input-control 相同 */
-  border: 1px solid rgba(255, 255, 255, 0.2) !important; /* 與 .input-control 相同 */
+  background: var(--input-bg) !important; /* 跟隨 input-control 實色 */
+  border: 1px solid var(--input-border) !important;
 }
 /* 選單的每個 option 在可支援的瀏覽器中也強制深色文字 */
 select option { color: inherit !important; background: inherit !important; }
 
 /* 深色主題下反轉顏色以保持對比 */
 html[data-theme="dark"] select,
-.theme-dark select { color: inherit !important; background: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
+.theme-dark select { color: inherit !important; background: var(--input-bg) !important; border-color: var(--input-border) !important; }
 html[data-theme="dark"] select option,
 .theme-dark select option { color: #fff !important; background: #1c1c1c !important; }
 
@@ -1797,6 +1823,87 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 }
 .mini-confirm .mini-btn.ok { background: var(--warning); border-color: rgba(0,0,0,0.08); color: #222; }
 .mini-confirm .mini-btn:active{ transform: translateY(1px); }
+
+
+
+            /* ============================================================
+               Light Mode 修復：把麻布紋理放到「面板」而唔係大背景
+               - 面板包括：header / .form-section / .result-section / .data-section
+               - 尺寸刻意加大（同原本大背景紋理唔同）
+               ============================================================ */
+
+            :root{
+                --ag-panel-texture-size: 220px;           /* ✅ 面板紋理更大 */
+                --ag-panel-texture-opacity: 0.16;         /* ✅ 面板紋理可見但唔搶 */
+                --ag-panel-texture-relief: contrast(210%) brightness(1.05) saturate(1.02);
+            }
+            @media (max-width: 520px){
+                :root{ --ag-panel-texture-size: 260px; }
+            }
+
+            /* 1) 光明模式：保留大背景紋理（你要求背景要保留原本效果/文字） */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) #agFixedBg::before{
+                opacity: var(--ag-bg-texture-opacity-light) !important;
+            }
+
+            /* 2) 光明模式：喺面板上加「同背景同款」麻布紋理層（但尺寸更大） */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) :is(header, .form-section, .result-section, .data-section){
+                position: relative;
+                overflow: hidden; /* 令紋理跟隨圓角裁切 */
+                isolation: isolate; /* 避免紋理混合影響外層 */
+            }
+
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) :is(header, .form-section, .result-section, .data-section)::before{
+                content: "";
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+
+                /* ✅ 面板麻布：同 Light Mode 大背景 #agFixedBg::before 一樣款式
+                   （--ag-burlap-weave-dark + 同一條拉絲 repeating-linear-gradient），但尺寸更大 */
+                background-image:
+                    var(--ag-burlap-weave-dark),
+                    var(--ag-burlap-weave-dark),
+                    repeating-linear-gradient(90deg,
+                        rgba(0,0,0,0.040) 0px,
+                        rgba(0,0,0,0.040) 1px,
+                        rgba(255,255,255,0.00) 5px
+                    );
+                background-size:
+                    var(--ag-panel-texture-size) var(--ag-panel-texture-size),
+                    calc(var(--ag-panel-texture-size) * 0.82) calc(var(--ag-panel-texture-size) * 0.82),
+                    7px 7px;
+                background-position:
+                    0 0,
+                    10px 10px,
+                    0 0;
+
+                opacity: var(--ag-panel-texture-opacity);
+                mix-blend-mode: normal;
+                filter: var(--ag-panel-texture-relief-light);
+            }
+
+            /* 3) 確保面板內容永遠喺紋理上面 */
+            :is(.theme-light, .theme-light-simple, .theme-light-vintage) :is(header, .form-section, .result-section, .data-section) > *{
+                position: relative;
+                z-index: 1;
+            }
+
+        /* 4) ✅ 修復：白色模式下「成績結果」卡片唔應該變藍底
+           目標：卡片背景透明（保留面板紋理），只留邊框；文字用深色提高可讀性 */
+        :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .result-container{
+            background: transparent !important;
+        }
+        :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .result-item{
+            background: transparent !important;
+            border: 2px solid rgba(122, 90, 68, 0.38) !important;
+        }
+        :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .result-label,
+        :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .result-value{
+            color: #3a2e22 !important;
+            text-shadow: none !important;
+        }
 
 </style>
         <style>
@@ -3704,7 +3811,11 @@ function initSalaryTableClipboardFill(){
             const overlayBottom = (t === 'light-vintage') ? 'rgba(0,0,0,0.48)' : 'rgba(0,0,0,0.58)';
             const bgDefault = `linear-gradient(180deg, ${overlayTop} 0%, ${overlayBottom} 100%), linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%)`;
             const bgFinal = bgVar || bgDefault;
-            document.body.style.setProperty('background', bgFinal, 'important');
+            // 2026-04：背景統一交俾 #agFixedBg（避免 body 背景覆蓋造成錯覺）
+            const bgEl = document.getElementById('agFixedBg');
+            if (bgEl) bgEl.style.setProperty('background', bgFinal, 'important');
+            // body 保持透明
+            document.body.style.setProperty('background', 'transparent', 'important');
 
             const fg = getComputedStyle(root).getPropertyValue('--text-light').trim();
             document.body.style.color = fg || '#fff';
@@ -5261,7 +5372,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /* 主要卡片底色：跟住紙色走 */
     --card-bg: hsla(var(--paper-h), var(--paper-s), calc(var(--paper-l1) + 0%), 0.985);
-    --section-bg: hsla(var(--paper-h), var(--paper-s), calc(var(--paper-l1) - 2%), 0.972);
+    --section-bg: hsl(var(--paper-h), var(--paper-s), calc(var(--paper-l1) - 2%));
+    --input-bg: hsl(var(--paper-h), var(--paper-s), calc(var(--paper-l2) - 3%));
+    --input-border: rgba(58,46,34,0.35);
 
     /* 必填星號（你圈住嗰啲）：改橙紅色，更醒目 */
     --required: #ff4d2e;
@@ -5269,16 +5382,16 @@ document.addEventListener('DOMContentLoaded', function() {
     /* --body-bg 由下一段（含紙紋）負責 */
   }
 
-  /* 紙紋版：在漸變上加直條紋（舊舊地）
-     - 調高對比度，舊電腦/低色深都易見
-     - 紙紋強度由 --paper-strength 控制 */
+  /* 2026-04：背景取消紙紋，改用『大格麻布』
+     - 麻布會由 #agFixedBg::before 負責
+     - 這裡只保留底層漸變 */
   .theme-light-vintage {
-    --paper-alpha: calc(0.05 + (var(--paper-strength) * 0.16));
-
-    /* 還原：光明模式程式背景用灰色（避免米黃紙底） */
     /* 上淺下深：光明版背景（程式會讀 --body-bg） */
     --body-bg: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(0,0,0,0.48) 100%), linear-gradient(180deg, #9f9f9f 0%, #666666 100%);
 
+    /* 背景麻布：放大幾倍（大格） */
+    --ag-bg-texture-size: 360px;
+    --ag-bg-texture-opacity-light: 0.22;
   }
 
   /* 共同元件風格（兩個光明版共用） */
@@ -5309,19 +5422,11 @@ document.addEventListener('DOMContentLoaded', function() {
     color: var(--text-dark) !important;
   }
 
-  /* 紙紋版：卡片加輕微紋理（同樣跟紙紋強度走） */
+  /* 2026-04：取消『直條紙紋』；面板保持純色（完全遮住背景麻布） */
   .theme-light-vintage .form-section,
   .theme-light-vintage .result-section,
   .theme-light-vintage .data-section {
-    background:
-      repeating-linear-gradient(
-        90deg,
-        rgba(0, 0, 0, calc(0.03 + (var(--paper-strength) * 0.08))) 0px,
-        rgba(0, 0, 0, calc(0.03 + (var(--paper-strength) * 0.08))) 2px,
-        rgba(255, 255, 255, 0.0) 2px,
-        rgba(255, 255, 255, 0.0) 7px
-      ),
-      var(--section-bg) !important;
+    background: var(--section-bg) !important;
   }
 
   .theme-light-vintage label,
@@ -5503,7 +5608,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* G. Modal（使用須知/儲存確認 等）在紙紋光明：
      用返黑暗版同一套（深色底 + 白字），確保兩邊完全一致 */
   .theme-light-vintage #infoModal.modal {
-    background: rgba(30, 58, 95, 0.70) !important; /* 等同 var(--section-bg) */
+    background: rgba(30, 58, 95, 0.92) !important; /* 等同 var(--section-bg) */
     color: #ffffff !important;
   }
   .theme-light-vintage #infoModal.modal header,
