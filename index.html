@@ -3671,7 +3671,16 @@ function initSalaryTableClipboardFill(){
                 const root = document.documentElement;
                 root.style.setProperty('--paper-tint', String(tint));
                 root.style.setProperty('--paper-strength', String(strength));
+                        // 背景麻布紋（深/淺色都用同一個推桿）
+            (function applyBurlapVars(){
+                const strength = Math.max(0, Math.min(1.4, Number(settings.burlapStrength ?? 1.00)));
+                const root = document.documentElement;
+                // 以比例方式同時調校深/淺底：80% = 原本預設強度
+                root.style.setProperty('--ag-bg-texture-opacity-dark', String(0.55 * strength));
+                root.style.setProperty('--ag-bg-texture-opacity-light', String(0.40 * strength));
             })();
+
+})();
 
             // Theme migration/compat:
             // - keep ONLY paper-texture light mode
@@ -3718,7 +3727,7 @@ function initSalaryTableClipboardFill(){
             let settings = {};
             if (!raw) {
                 // 全新安裝/第一次開：固定預設
-                settings = { theme: 'dark', fontScale: 1.0, brightness: 1, contrast: 1, saturate: 1, warmth: 0, paperTint: 0.65, paperStrength: 0.65, tuneAdvanced: false };
+                settings = { theme: 'dark', fontScale: 1.0, brightness: 1, contrast: 1, saturate: 1, warmth: 0, paperTint: 0.65, paperStrength: 0.65, burlapStrength: 1.00, tuneAdvanced: false };
                 localStorage.setItem('uiSettings', JSON.stringify(settings));
             } else {
                 settings = getUiSettings();
@@ -3732,6 +3741,7 @@ function initSalaryTableClipboardFill(){
                 if (settings.warmth == null) settings.warmth = 0;
                 if (settings.paperTint == null) settings.paperTint = 0.65;
                 if (settings.paperStrength == null) settings.paperStrength = 0.65;
+                if (settings.burlapStrength == null) settings.burlapStrength = 1.00; // 0~1.4：背景麻布紋理強度
                 // 顯示調校：進階滑桿狀態永遠預設收起（不記憶）
                 settings.tuneAdvanced = false;
                 // 舊版本兼容：light/light-simple 一律當 light-vintage
@@ -3759,6 +3769,7 @@ function initSalaryTableClipboardFill(){
             const elW = document.getElementById('tuneWarmth');
             const elPY = document.getElementById('tunePaperTint');
             const elPT = document.getElementById('tunePaperStrength');
+            const elBW = document.getElementById('tuneBurlapStrength');
 
             const valB = document.getElementById('tuneBrightnessVal');
             const valC = document.getElementById('tuneContrastVal');
@@ -3766,6 +3777,7 @@ function initSalaryTableClipboardFill(){
             const valW = document.getElementById('tuneWarmthVal');
             const valPY = document.getElementById('tunePaperTintVal');
             const valPT = document.getElementById('tunePaperStrengthVal');
+            const valBW = document.getElementById('tuneBurlapStrengthVal');
 
             function isZh(){ return (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh'; }
             function syncTuneTexts(){
@@ -3778,12 +3790,14 @@ function initSalaryTableClipboardFill(){
                 const lb4 = document.getElementById('tuneWarmthLabel');
                 const lb5 = document.getElementById('tunePaperTintLabel');
                 const lb6 = document.getElementById('tunePaperStrengthLabel');
+                const lb7 = document.getElementById('tuneBurlapStrengthLabel');
                 if (lb1) lb1.textContent = zh ? '亮度' : 'Brightness';
                 if (lb2) lb2.textContent = zh ? '對比' : 'Contrast';
                 if (lb3) lb3.textContent = zh ? '飽和度' : 'Saturation';
                 if (lb4) lb4.textContent = zh ? '冷暖色' : 'Warmth';
                 if (lb5) lb5.textContent = zh ? '米黃色' : 'Paper tint';
                 if (lb6) lb6.textContent = zh ? '紙紋' : 'Paper texture';
+                if (lb7) lb7.textContent = zh ? '麻布紋' : 'Burlap texture';
                 const hint = document.getElementById('tuneHint');
                 if (hint) hint.textContent = zh ? '提示：主要用預設；需要微調先展開進階滑桿。' : 'Tip: Use presets most of the time; expand advanced sliders only when needed.';
 
@@ -3811,6 +3825,7 @@ function initSalaryTableClipboardFill(){
                 if (elW) elW.value = String(Math.round((settings.warmth ?? 0) * 100));
                 if (elPY) elPY.value = String(Math.round((settings.paperTint ?? 0.65) * 100));
                 if (elPT) elPT.value = String(Math.round((settings.paperStrength ?? 0.65) * 100));
+                if (elBW) elBW.value = String(Math.round((settings.burlapStrength ?? 1.00) * 100));
                 updateValLabels();
             }
             function updateValLabels(){
@@ -3820,6 +3835,7 @@ function initSalaryTableClipboardFill(){
                 if (valW && elW) valW.textContent = String(elW.value);
                 if (valPY && elPY) valPY.textContent = `${elPY.value}%`;
                 if (valPT && elPT) valPT.textContent = `${elPT.value}%`;
+                if (valBW && elBW) valBW.textContent = `${elBW.value}%`;
             }
             function setAdvanced(opened, save){
                 settings.tuneAdvanced = !!opened;
@@ -3858,6 +3874,7 @@ function initSalaryTableClipboardFill(){
                 if (elW) settings.warmth = Number(elW.value)/100; // 0~0.35
                 if (elPY) settings.paperTint = Number(elPY.value)/100;
                 if (elPT) settings.paperStrength = Number(elPT.value)/100;
+                if (elBW) settings.burlapStrength = Number(elBW.value)/100; // 0~1.4
                 updateValLabels();
                 if (save) setUiSettings(settings); else applyUiSettings(settings);
             }
@@ -3871,9 +3888,10 @@ function initSalaryTableClipboardFill(){
                 if (elW) elW.value='0';
                 if (elPY) elPY.value='65';
                 if (elPT) elPT.value='65';
+                if (elBW) elBW.value='100';
                 applyFromSliders(true);
             });
-            [elB, elC, elS, elW, elPY, elPT].forEach(el => { if(el) el.addEventListener('input', () => applyFromSliders(false)); });
+            [elB, elC, elS, elW, elPY, elPT, elBW].forEach(el => { if(el) el.addEventListener('input', () => applyFromSliders(false)); });
 
             // 預設按鍵：一撳即套用（同時保留滑桿微調）
             document.querySelectorAll('.tune-presets .tune-preset').forEach(btn => {
@@ -3888,6 +3906,7 @@ function initSalaryTableClipboardFill(){
                     if (elW) elW.value = String(btn.getAttribute('data-w') || (elW.value || '0'));
                     if (elPY) elPY.value = String(btn.getAttribute('data-py') || (elPY.value || '65'));
                     if (elPT) elPT.value = String(btn.getAttribute('data-pt') || (elPT.value || '65'));
+                    if (elBW) elBW.value = String(btn.getAttribute('data-bw') || (elBW.value || '100'));
                     applyFromSliders(true); // 立即儲存並套用
                 });
             });
@@ -5855,6 +5874,11 @@ document.addEventListener('DOMContentLoaded', function() {
           <label for="tunePaperStrength"><span id="tunePaperStrengthLabel">紙紋</span></label>
           <input id="tunePaperStrength" type="range" min="0" max="100" value="65" />
           <span id="tunePaperStrengthVal" class="tune-val">65%</span>
+        </div>
+        <div class="tune-row">
+          <label for="tuneBurlapStrength"><span id="tuneBurlapStrengthLabel">麻布紋</span></label>
+          <input id="tuneBurlapStrength" type="range" min="0" max="140" value="100" />
+          <span id="tuneBurlapStrengthVal" class="tune-val">100%</span>
         </div>
       </div>
       <div class="tune-hint" id="tuneHint">提示：想「深色啲」通常加少少對比/飽和度，再微調亮度。</div>
