@@ -373,27 +373,25 @@
             box-shadow: 0 0 0 3px rgba(79, 157, 232, 0.3);
         }
         
+        /* 兩欄輸入列：改用 CSS Grid，避免因英文 label 變長而撐爆/被截斷 */
         .form-row {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 15px;
+            align-items: end; /* 令兩個 input/select 底部對齊 */
         }
 
-        /* Desktop only：當同一行有兩個輸入欄時，強制底部對齊。
-           目的：就算 label 因語言/字體放大而換行，兩個 input/select 的底部仍會齊。
-           注意：手機版 (<=600px) 會改為直排，這裡不影響手機版。 */
-        @media (min-width: 601px) {
+        /* label 允許自動換行（英文較長時會換行，而唔會撐爆版面） */
+        .form-group label {
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        /* 手機/窄屏：改為單欄 */
+        @media (max-width: 600px) {
             .form-row {
-                align-items: flex-end;
+                grid-template-columns: 1fr;
             }
-
-            /* Desktop only：label 不換行（按你要求） */
-            .form-group label {
-                white-space: nowrap;
-            }
-        }
-        
-        .form-row .form-group {
-            flex: 1;
         }
         
         .input-hint {
@@ -967,7 +965,7 @@
         
         @media (max-width: 600px) {
             .form-row {
-                flex-direction: column;
+                grid-template-columns: 1fr;
                 gap: 10px;
             }
             
