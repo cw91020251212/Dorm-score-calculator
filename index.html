@@ -37,6 +37,10 @@
             --language-bg: #90EE90; /* 淺綠色背景（不透明） */
             --display-filter: brightness(1) contrast(1) saturate(0.92); /* 顯示光暗/色深調校：全局略降飽和 */
 
+            /* ✅ 輪廓線（版面邊緣最幼邊框） */
+            --panel-outline: rgba(255, 255, 255, 0.14); /* 深色底：用白色幼線 */
+            --h1-outline: rgba(0, 0, 0, 0.70);          /* 大標題：用深色描邊 */
+
             /* === 鋁材頁同款：不規則凹凸紋理（SVG data URI） === */
             --ag-irregular-texture: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27240%27%20height%3D%27240%27%20viewBox%3D%270%200%20240%20240%27%3E%0A%3Cdefs%3E%0A%20%20%3Cfilter%20id%3D%27f%27%20x%3D%27-20%25%27%20y%3D%27-20%25%27%20width%3D%27140%25%27%20height%3D%27140%25%27%3E%0A%20%20%20%20%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.012%200.08%27%20numOctaves%3D%273%27%20seed%3D%278%27%20stitchTiles%3D%27stitch%27%20result%3D%27n%27%2F%3E%0A%20%20%20%20%3CfeDisplacementMap%20in%3D%27SourceGraphic%27%20in2%3D%27n%27%20scale%3D%2726%27%20xChannelSelector%3D%27R%27%20yChannelSelector%3D%27G%27%20%2F%3E%0A%20%20%20%20%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%271%200%200%200%200%20%200%201%200%200%200%20%200%200%201%200%200%20%200%200%200%200.55%200%27%2F%3E%0A%20%20%3C%2Ffilter%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%27240%27%20height%3D%27240%27%20fill%3D%27white%27%20opacity%3D%270%27%2F%3E%0A%3Cg%20filter%3D%27url%28%23f%29%27%20opacity%3D%270.55%27%3E%0A%20%20%3Cpath%20d%3D%27M-20%200%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%206%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2012%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2018%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2024%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2030%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2036%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2042%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2048%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2054%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2060%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2066%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2072%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2078%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2084%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2090%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2096%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20102%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20108%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20114%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20120%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20126%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20132%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20138%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20144%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20150%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20156%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20162%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20168%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20174%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20180%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20186%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20192%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20198%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20204%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20210%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20216%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20222%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20228%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20234%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20240%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E");
 
@@ -69,9 +73,11 @@
 
             color: var(--text-light);
             min-height: 100vh;
-            padding: 20px;
+            /* 以 viewport 做自適應：電視/大螢幕避免 padding 太大，細屏又唔會擠迫 */
+            padding: clamp(10px, 1.4vw, 20px);
             line-height: 1.6;
-            font-size: 18px;
+            /* 關鍵：避免 TV/高 DPR 裝置出現「字體/按鈕過大」 */
+            font-size: clamp(14px, 1.05vw, 18px);
             position: relative; /* for overlay stacking */
         }
 
@@ -190,11 +196,13 @@
         }
         
         .container {
-            max-width: 1200px;
+            /* TV / 大屏：用更大 max-width，但同時確保唔會超出 viewport */
+            max-width: min(1400px, 100%);
+            width: 100%;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: clamp(14px, 1.4vw, 20px);
         }
         
         header {
@@ -209,6 +217,35 @@
             position: relative;
             overflow: hidden;
         }
+
+        /* Header 底部：幼「黃金金屬」質感分隔線（提升設計感） */
+        header::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: linear-gradient(
+                90deg,
+                rgba(0,0,0,0.00) 0%,
+                rgba(255, 193, 7, 0.20) 12%,
+                rgba(255, 236, 170, 0.85) 26%,
+                rgba(212, 159, 38, 0.65) 50%,
+                rgba(255, 236, 170, 0.85) 74%,
+                rgba(255, 193, 7, 0.20) 88%,
+                rgba(0,0,0,0.00) 100%
+            );
+            opacity: 0.95;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* 深色模式：加少少金屬光暈，肉眼更易見 */
+        :is(.theme-dark, html[data-theme="dark"]) header::after {
+            box-shadow: 0 -1px 10px rgba(255, 193, 7, 0.22);
+            opacity: 1;
+        }
         
         h1 {
             /* 以 clamp 做自適應，進一步縮細，確保任何裝置一行內完全顯示 */
@@ -220,8 +257,19 @@
             /* 先用 Google 美術字；如果撈唔到，退到楷書系（都會明顯唔同） */
             font-family: "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "DFKai-SB", "KaiTi", "STKaiti", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif !important;
             /* 降低光暈，避免視覺膨脹感 */
-            text-shadow: 0 0 6px rgba(79, 157, 232, 0.5),
-                         0 0 12px rgba(79, 157, 232, 0.35);
+            /* ✅ 大標題加輪廓線（最幼描邊）+ 保留原本少少光暈 */
+            text-shadow:
+                         0 0 6px rgba(79, 157, 232, 0.5),
+                         0 0 12px rgba(79, 157, 232, 0.35),
+                         1px 0 0 var(--h1-outline),
+                         -1px 0 0 var(--h1-outline),
+                         0 1px 0 var(--h1-outline),
+                         0 -1px 0 var(--h1-outline),
+                         1px 1px 0 var(--h1-outline),
+                         -1px 1px 0 var(--h1-outline),
+                         1px -1px 0 var(--h1-outline),
+                         -1px -1px 0 var(--h1-outline);
+            -webkit-text-stroke: 0.6px var(--h1-outline);
             position: relative;
             z-index: 2;
             letter-spacing: 0.5px;
@@ -255,8 +303,11 @@
         
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            /* 自動分欄：夠位就左右並排；唔夠位（例如某啲 TV 瀏覽器實際 CSS 寬度較細）就會自動變單欄 */
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: clamp(16px, 1.6vw, 25px);
+            /* 重要：避免 grid item 因內容撐爆導致『左右各出一半』 */
+            min-width: 0;
         }
         
         .form-section {
@@ -266,6 +317,7 @@
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 0;
         }
         
         .section-title {
@@ -300,13 +352,14 @@
         
         .input-control {
             width: 100%;
-            padding: 14px 15px;
+            padding: 0.85rem 0.9rem;
             /* 改用實色，避免任何透明造成見到背景紋理 */
             background: var(--input-bg) !important;
             border: 1px solid var(--input-border) !important;
             border-radius: 8px;
             color: var(--text-light);
-            font-size: 18px;
+            /* 跟隨 body 的 clamp 字體，避免 TV 過大 */
+            font-size: 1rem;
         }
         
         .input-control.error {
@@ -404,15 +457,13 @@
         /* 結果區分享掣：再加高（用 min-height + padding，避免被其他 line-height 影響）
            備註：如果你用緊舊檔案，記得 hard refresh / 清 cache。 */
         #shareTextBtn.btn-success {
-            /* 70% 尺寸保持：主要按鈕高度=58px → 70%≈41px
-               但字體參考主要按鈕(21px)等比例放大：21 * 0.7 ≈ 15px
-               為咗「用盡高度」同可讀性，稍為加大到 17px。 */
-            height: 41px !important;
-            min-height: 41px !important;
-            padding: 0 14px !important;
-            font-size: 21px !important;
+            /* 分享掣：跟隨整體字體縮放，TV 唔會過大 */
+            height: clamp(34px, 5vh, 41px) !important;
+            min-height: clamp(34px, 5vh, 41px) !important;
+            padding: 0 0.85rem !important;
+            font-size: 1rem !important;
             font-weight: 800 !important;
-            line-height: 41px !important;
+            line-height: 1 !important;
             background: var(--success) !important;
             color: #fff !important;
         }
@@ -430,8 +481,8 @@
         .btn {
             flex: 1;
             min-width: 120px;
-            padding: 0 16px; /* 由固定高度決定垂直尺寸 */
-            font-size: 18px;
+            padding: 0 0.9rem;
+            font-size: 1rem;
             font-weight: bold;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
@@ -440,11 +491,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 0.45rem;
             position: relative;
             overflow: hidden; /* 反光層 */
             white-space: nowrap; /* 防止文字換行導致高度變大 */
-            line-height: 44px; /* 垂直置中配合固定高度 */
+            line-height: 1.2;
         }
 
         /* 全站按鈕：反光 + 立體感（包括 status-btn / mini-btn / action-btn）
@@ -582,6 +633,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
         
         .result-container {
@@ -698,8 +750,8 @@
         
         .search-box input {
             width: 100%;
-            padding: 14px 14px 14px 45px;
-            font-size: 18px;
+            padding: 0.85rem 0.85rem 0.85rem 2.8rem;
+            font-size: 1rem;
         }
         
         .search-icon {
@@ -1349,6 +1401,10 @@
                 --section-bg: #ffffff;
                 --input-bg: #ffffff;
                 --input-border: #c88fa1;
+
+                /* ✅ 光明版輪廓線：用淺黑幼線 */
+                --panel-outline: rgba(0, 0, 0, 0.14);
+                --h1-outline: rgba(0, 0, 0, 0.62);
             }
 
             .theme-light body { color: var(--text-light); }
@@ -1472,6 +1528,10 @@
                 --input-border: #1f4d7a;
                 --card-bg: rgba(255, 255, 255, 0.08);
                 --text-light: #fff;
+
+                /* ✅ 黑暗版輪廓線：用白色幼線 */
+                --panel-outline: rgba(255, 255, 255, 0.14);
+                --h1-outline: rgba(0, 0, 0, 0.74);
             }
             .theme-dark .input-control { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--text-light); }
 
@@ -1486,6 +1546,30 @@
             }
             .theme-dark header .display-controls {
                 border-radius: 10px !important; /* 工具列本身亦保持四角圓 */
+            }
+
+            /* ✅ 黑暗模式：面板 + 大標題加返更明顯陰影（提升層次感） */
+            :is(.theme-dark, html[data-theme="dark"]) :is(header, .form-section, .result-section) {
+                /* 兩層柔和陰影：近層 + 遠層，立體但唔會太重 */
+                box-shadow:
+                    0 6px 14px rgba(0,0,0,0.22),
+                    0 16px 38px rgba(0,0,0,0.26);
+            }
+
+            :is(.theme-dark, html[data-theme="dark"]) header h1 {
+                /* 淺藍 Glow：更突出，但保持清晰輪廓 */
+                text-shadow:
+                    0 0 6px rgba(122, 190, 255, 0.55),
+                    0 0 14px rgba(122, 190, 255, 0.38),
+                    0 0 26px rgba(122, 190, 255, 0.22),
+                    1px 0 0 var(--h1-outline),
+                    -1px 0 0 var(--h1-outline),
+                    0 1px 0 var(--h1-outline),
+                    0 -1px 0 var(--h1-outline),
+                    1px 1px 0 var(--h1-outline),
+                    -1px 1px 0 var(--h1-outline),
+                    1px -1px 0 var(--h1-outline),
+                    -1px -1px 0 var(--h1-outline);
             }
             
             .theme-light {
@@ -1903,6 +1987,23 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .result-value{
             color: #3a2e22 !important;
             text-shadow: none !important;
+        }
+
+        /* ============================================================
+           ✅ 面板輪廓線：header / 表單 / 結果 / 資料區（光明/黑暗都適用）
+           - 用 ::after 疊一層 1px 邊框，避免覆蓋原本 box-shadow
+           ============================================================ */
+        :is(header, .form-section, .result-section, .data-section){
+            position: relative; /* 確保 ::after 可以定位 */
+        }
+        :is(header, .form-section, .result-section, .data-section)::after{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            border: 1px solid var(--panel-outline);
+            pointer-events: none;
+            z-index: 5;
         }
 
 </style>
@@ -6113,7 +6214,13 @@ input.input-control, select.input-control, textarea.input-control {
 .theme-dark .input-control::-webkit-input-placeholder {
   color: rgba(210,210,210,0.82) !important; /* 淺灰 */
 }
-.button-group .btn { height: 58px !important; font-size: 21px !important; padding: 0 20px !important; min-width: 180px !important; }
+.button-group .btn {
+  /* 主操作按鈕：使用 clamp + rem，電視/高 DPR 裝置唔會「巨型化」 */
+  height: clamp(42px, 6vh, 58px) !important;
+  font-size: 1rem !important;
+  padding: 0 1rem !important;
+  min-width: clamp(140px, 16vw, 180px) !important;
+}
 
 /* 手機：避免按鈕最小寬度令畫面橫向溢出（會感覺偏咗一邊） */
 @media (max-width: 480px){
@@ -6141,7 +6248,7 @@ input.input-control, select.input-control, textarea.input-control {
 #saveNoticeModal .modal-body p { color: #1f2937 !important; }
 #saveNoticeModal .modal-body p[style*="color: #aaa"],
 #saveNoticeModal .modal-body p[style*="color:#aaa"] { color: rgba(31,41,55,0.68) !important; }
-#saveNoticeModal .btn { height: 60px !important; font-size: 22px !important; }
+#saveNoticeModal .btn { height: clamp(44px, 6vh, 60px) !important; font-size: 1rem !important; }
 
 /* 讓「儲存確認」彈窗內兩個按鈕顏色更飽和（不論有冇 id 都生效） */
 #saveNoticeModal .modal-foot .btn-success,
