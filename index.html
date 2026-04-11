@@ -2514,7 +2514,15 @@ html[data-theme] #calcBtn:active,
       /* v3：加大「輸入資料 / 計算結果」之間距離（而唔係大標題同輸入資料） */
       .container .result-section{ margin-bottom: 0 !important; }
       .container .form-section{ margin-bottom: 0 !important; }
-      .container .result-section{ margin-top: clamp(18px, 2.2vh, 30px) !important; }
+
+      /*
+        ✅ 桌面左右並排時：兩邊頂部要齊，所以 result-section 唔可以有 margin-top。
+        ✅ 只有「變成單欄堆疊」時先需要上方間距。
+      */
+      .container .result-section{ margin-top: 0 !important; }
+      @media (max-width: 900px){
+        .container .result-section{ margin-top: clamp(18px, 2.2vh, 30px) !important; }
+      }
 
       /* 深色模式：加少少金屬光暈，肉眼更易見 */
       :is(.theme-dark, html[data-theme="dark"]) .container :is(.form-section, .result-section){
