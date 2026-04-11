@@ -25,6 +25,42 @@
       /* 3) 其他通用 modal：如果未被個別覆蓋，內文最少維持 1rem */
       .modal .modal-body{ font-size: max(1rem, 0.95rem); }
     </style>
+
+    <!-- === Panel Gold Bar + Section Spacing Patch (2026-04-11) === -->
+    <style id="panel-goldbar-spacing">
+      /* 把大標題(header)的「金色橫巴」效果套用到：計算結果/資料區 */
+      :is(.result-section, .data-section){
+        /* 用背景層做頂部 3px 金屬橫巴，避免同 ::before/::after 撞車 */
+        background-image:
+          linear-gradient(
+            90deg,
+            rgba(0,0,0,0.00) 0%,
+            rgba(255, 193, 7, 0.20) 12%,
+            rgba(255, 236, 170, 0.85) 26%,
+            rgba(212, 159, 38, 0.65) 50%,
+            rgba(255, 236, 170, 0.85) 74%,
+            rgba(255, 193, 7, 0.20) 88%,
+            rgba(0,0,0,0.00) 100%
+          );
+        background-size: 100% 3px;
+        background-repeat: no-repeat;
+        background-position: top left;
+        /* 原本 section padding 係 25px（你檔內有 .form-section, .result-section { padding:25px }），
+           加 6px 令橫巴唔貼住內容 */
+        padding-top: calc(25px + 6px);
+      }
+
+      /* 深色模式：加少少金屬光暈，肉眼更易見 */
+      :is(.theme-dark, html[data-theme="dark"]) :is(.result-section, .data-section){
+        box-shadow:
+          0 5px 15px rgba(0,0,0,0.2),
+          0 -1px 10px rgba(255, 193, 7, 0.18);
+      }
+
+      /* 加大「結果 / 資料」之間的距離（目前唔明顯） */
+      .data-section{ margin-top: clamp(18px, 2.2vh, 28px) !important; }
+    </style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dorm Score Calculator</title>
@@ -2448,6 +2484,45 @@ html[data-theme] #calcBtn:active,
     padding: 14px 16px !important;
   }
 </style>
+    <!-- === Panel Gold Bar + Section Spacing Patch v2 (place last) === -->
+    <style id="panel-goldbar-spacing-v2">
+      /*
+        v2 說明（保留註解）：上一版誤解了「資料」= data-section。
+        用戶實際指「輸入資料」(form-section) 與「計算結果」(result-section)。
+        下面已改為 v3 規則，並保留 id 以免多段CSS互相打架。
+      */
+      /* v3：金色橫巴套用到「輸入資料 / 計算結果」 */
+      .container .form-section,
+      .container .result-section{
+        background-color: var(--section-bg) !important; /* 避免 background shorthand 清走 image */
+        background-image: linear-gradient(
+            90deg,
+            rgba(0,0,0,0.00) 0%,
+            rgba(255, 193, 7, 0.20) 12%,
+            rgba(255, 236, 170, 0.85) 26%,
+            rgba(212, 159, 38, 0.65) 50%,
+            rgba(255, 236, 170, 0.85) 74%,
+            rgba(255, 193, 7, 0.20) 88%,
+            rgba(0,0,0,0.00) 100%
+          ) !important;
+        background-size: 100% 4px !important; /* 稍為加粗更明顯 */
+        background-repeat: no-repeat !important;
+        background-position: top left !important;
+        padding-top: calc(25px + 8px) !important; /* 讓橫巴同內容更分明 */
+      }
+
+      /* v3：加大「輸入資料 / 計算結果」之間距離（而唔係大標題同輸入資料） */
+      .container .result-section{ margin-bottom: 0 !important; }
+      .container .form-section{ margin-bottom: 0 !important; }
+      .container .result-section{ margin-top: clamp(18px, 2.2vh, 30px) !important; }
+
+      /* 深色模式：加少少金屬光暈，肉眼更易見 */
+      :is(.theme-dark, html[data-theme="dark"]) .container :is(.form-section, .result-section){
+        box-shadow:
+          0 5px 15px rgba(0,0,0,0.2),
+          0 -1px 10px rgba(255, 193, 7, 0.18) !important;
+      }
+    </style>
 </head>
 <body>
   <!-- ✅ 固定背景層：永遠唔跟住捲動 -->
@@ -7489,5 +7564,226 @@ window.addEventListener('load', function() {
       0 3px 0 rgba(0,0,0,0.16) !important;
   }
 </style>
+
+  <!-- 2026-04-11：右下角「返頂／到底」浮動掣 -->
+  <style id="scrollNavButtons">
+    .scroll-nav{
+      position: fixed;
+      right: calc(10px + env(safe-area-inset-right, 0px));
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    /* 2026-04-11：右下角上下掣（最終覆蓋版）
+       - 高光位 + 立體感 + 3D
+       - 陰影 3 層：投影效果（inset）/ 實色投影（硬邊）/ 灰色投影（blur）
+       - 位移/方向：跟右上角保持一致（右上光、左下暗；shadow 向左下） */
+
+    /*
+      Base（所有模式通用）：尺寸/形狀要同右上 EN / QR 浮動掣一致。
+      之前 v2 喺 dark mode 出現「尺寸變細」係因為主樣式只綁定 light themes，dark 只改咗 box-shadow。
+      所以而家把 size / shape / layout 拆出嚟做成通用 base。
+    */
+    button#btnToTop.scroll-btn,
+    button#btnToBottom.scroll-btn{
+      width: 42px !important;
+      height: 42px !important;
+      border-radius: 50% !important;
+      position: relative !important;
+      overflow: hidden !important;
+
+      /* Base：顏色會由 light/dark 分別覆蓋（避免白色面） */
+      background: #f0f0f0 !important;
+      color: #111 !important;
+      border: 1px solid rgba(0,0,0,0.18) !important;
+
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      padding: 0 !important;
+      font-size: 0.9rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      text-shadow: none !important;
+      transition: none !important;
+    }
+    /*
+      重要：呢兩粒掣喺光明主題會被 #global-button-drop-shadow 覆蓋。
+      原因唔係順序，而係 specificity：
+      #global-button-drop-shadow 入面用咗 :not(#languageToggle):not(#qrButton)...
+      :not() 內嘅 ID 會計入 specificity（+100），所以佢比一般 #btnToTop 規則更「重」。
+
+      解法：我哋用同一套 :is(light themes) + :not(#languageToggle):not(#qrButton):not(.qr-close)
+      去「對等/超過」嗰條規則嘅 specificity，確保一定贏。
+    */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) button#btnToTop.scroll-btn:not(#languageToggle):not(#qrButton):not(.qr-close),
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) button#btnToBottom.scroll-btn:not(#languageToggle):not(#qrButton):not(.qr-close){
+      /*
+        光明模式：把「掣面（原本偏白）」改成暖黃色系（更明顯），
+        同時保留暗位陰影。
+      */
+      background: linear-gradient(180deg, #fff2c6 0%, #ffd98c 100%) !important;
+      border-color: rgba(166, 120, 20, 0.35) !important;
+      color: #1b1b1b !important;
+
+      /*
+        光明模式：只換「白色高光位」做暖色（金黃偏暖），保留暗位/陰影。
+        （箭嘴本身保持深色，唔改色）
+      */
+
+      /*
+        Light theme 只做「投影覆蓋」：
+        尺寸/底色/邊框全部跟 base（即跟右上 EN/QR 的比例）。
+        之前你見到「尺寸唔同」主要係因為 light block 另外加咗漸變底色 + 更粗字重，視覺上會變大。
+      */
+
+      /*
+        問題來源（之前「整完都唔成功」嘅核心原因）：
+        - 光明模式有全站按鈕陰影（#global-button-drop-shadow），會喺 light theme 對所有 button 施加較細嘅 -3px 4px 投影。
+        - 如果右下角呢兩粒掣嘅陰影偏淡/偏細，就會睇落好似「冇跟上面 EN/QR 浮動掣」。
+
+        做法：喺呢度用「帶 ID + class」嘅 selector（比全站規則更高 specificity）+ !important，
+        強制把陰影位移/力度調到同右上角浮動掣一致：左下偏移、外層陰影更深。
+      */
+      /*
+        光明模式投影顏色：跟返右上 EN / QR（唔再加深）。
+        你講得啱：v2 個 blur 層 (0.34) 會令色「明顯深咗」。
+      */
+      box-shadow:
+        inset -2px 2px 4px rgba(255, 206, 92, 0.75),
+        inset 3px -4px 7px rgba(0,0,0,0.10),
+        inset 0 0 0 1px rgba(255, 206, 92, 0.28),
+        -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+    }
+
+    /*
+      保留黑暗模式已成功嘅表現：
+      黑底本身對比高，如果陰影太深會顯得「髒」；所以 dark theme 把外層 blur 陰影收返輕少少。
+    */
+    /* 黑暗模式：同樣跟右上 EN/QR（黑暗版已成功嗰套） */
+    :is(.theme-dark, html[data-theme="dark"]) button#btnToTop.scroll-btn,
+    :is(.theme-dark, html[data-theme="dark"]) button#btnToBottom.scroll-btn{
+      /*
+        黑暗模式：把「掣面（原本偏白）」改成淺藍色系（更一致），
+        同時保留暗位陰影。
+      */
+      background: linear-gradient(180deg, #a9dcff 0%, #6ebcff 100%) !important;
+      border-color: rgba(79, 157, 232, 0.55) !important; /* 用返 accent tone */
+      color: #0b2238 !important; /* 深色箭嘴 */
+
+      /*
+        黑暗模式：只換「白色高光位」做淺藍（跟全站藍色系一致，但更淺），保留暗位/陰影。
+        （箭嘴本身保持深色，唔改色）
+      */
+
+      box-shadow:
+        inset -2px 2px 4px rgba(126, 200, 255, 0.78),
+        inset 3px -4px 7px rgba(0,0,0,0.10),
+        inset 0 0 0 1px rgba(126, 200, 255, 0.30),
+        -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+    }
+
+    /* 右上反光（specular highlight）：唔用純白，改用主題色系的淺色高光 */
+    button#btnToTop.scroll-btn::before,
+    button#btnToBottom.scroll-btn::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    /* 光明模式：暖金高光 */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) button#btnToTop.scroll-btn::before,
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) button#btnToBottom.scroll-btn::before{
+      background:
+        radial-gradient(circle at 78% 20%, rgba(255, 206, 92, 0.95) 0%, rgba(255, 206, 92, 0.62) 11%, rgba(255, 206, 92, 0.18) 23%, rgba(255, 206, 92, 0.00) 46%),
+        radial-gradient(circle at 66% 14%, rgba(255, 206, 92, 0.70) 0%, rgba(255, 206, 92, 0.00) 14%);
+    }
+
+    /* 黑暗模式：淺藍高光（跟 accent，但更淺） */
+    :is(.theme-dark, html[data-theme="dark"]) button#btnToTop.scroll-btn::before,
+    :is(.theme-dark, html[data-theme="dark"]) button#btnToBottom.scroll-btn::before{
+      background:
+        radial-gradient(circle at 78% 20%, rgba(126, 200, 255, 0.95) 0%, rgba(126, 200, 255, 0.62) 11%, rgba(126, 200, 255, 0.18) 23%, rgba(126, 200, 255, 0.00) 46%),
+        radial-gradient(circle at 66% 14%, rgba(126, 200, 255, 0.70) 0%, rgba(126, 200, 255, 0.00) 14%);
+    }
+
+    /* 微細外圈高光邊（唔係投影）：同樣跟主題色系 */
+    button#btnToTop.scroll-btn::after,
+    button#btnToBottom.scroll-btn::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) button#btnToTop.scroll-btn::after,
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) button#btnToBottom.scroll-btn::after{
+      box-shadow: inset 0 0 0 1px rgba(255, 206, 92, 0.22);
+    }
+    :is(.theme-dark, html[data-theme="dark"]) button#btnToTop.scroll-btn::after,
+    :is(.theme-dark, html[data-theme="dark"]) button#btnToBottom.scroll-btn::after{
+      box-shadow: inset 0 0 0 1px rgba(126, 200, 255, 0.22);
+    }
+
+    /* 跟右上角一致：hover/active 唔再位移、唔變色 */
+    button#btnToTop.scroll-btn:hover,
+    button#btnToBottom.scroll-btn:hover,
+    button#btnToTop.scroll-btn:active,
+    button#btnToBottom.scroll-btn:active{
+      /* hover/active：保持各主題已設定嘅底色，只係輕微提亮 */
+      filter: brightness(1.04) saturate(1.02) !important;
+      color: inherit !important;
+      transform: none !important;
+    }
+
+    @media (max-width: 600px){
+      button#btnToTop.scroll-btn,
+      button#btnToBottom.scroll-btn{ width: 36px !important; height: 36px !important; font-size: 0.85rem !important; }
+    }
+  </style>
+
+  <div class="scroll-nav" aria-label="頁面快速導航">
+    <button class="scroll-btn" id="btnToTop" aria-label="返回頂部" type="button">▲</button>
+    <button class="scroll-btn" id="btnToBottom" aria-label="前往底部" type="button">▼</button>
+  </div>
+
+  <script>
+    (function(){
+      const btnToTop = document.getElementById('btnToTop');
+      const btnToBottom = document.getElementById('btnToBottom');
+      const scrollNav = document.querySelector('.scroll-nav');
+
+      btnToTop?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      btnToBottom?.addEventListener('click', () => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      });
+
+      function syncScrollNav(){
+        if (!scrollNav) return;
+        const show = window.scrollY > 200;
+        scrollNav.style.opacity = show ? '1' : '0';
+        scrollNav.style.pointerEvents = show ? 'auto' : 'none';
+      }
+
+      window.addEventListener('scroll', syncScrollNav, { passive: true });
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncScrollNav, { once: true });
+      } else {
+        syncScrollNav();
+      }
+    })();
+  </script>
 </body>
 </html>
