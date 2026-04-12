@@ -1234,7 +1234,7 @@
             /* === 顯示光暗/色深調校：只影響 appRoot（避免彈窗被 filter） === */
             /* 注意：filter 會令 position:fixed 變成跟住滾動。
                所以只對「內容區」套用 filter，浮動鍵（EN/QR）唔會受影響。 */
-            #contentRoot { filter: var(--display-filter); transition: filter 180ms ease; padding-bottom: 72px; }
+            #contentRoot { filter: var(--display-filter); transition: filter 180ms ease; padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
 
             /* === 顯示調校彈窗（modal） === */
             .tune-backdrop {
@@ -1268,7 +1268,7 @@
   display: flex;
   flex-direction: column;
 
-  background: rgba(25,25,25,0.92);
+  background: rgba(65,65,65,0.92);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 16px;
   box-shadow: 0 18px 50px rgba(0,0,0,0.45);
@@ -1280,7 +1280,7 @@
 @supports (height: 100dvh) {
   .tune-modal { max-height: calc(100dvh - 36px - env(safe-area-inset-bottom, 0px)); }
 }
-            .theme-light-vintage .tune-modal, .theme-light .tune-modal, .theme-light-simple .tune-modal { background: rgba(255,255,255,0.92); border-color: rgba(0,0,0,0.12); }
+            .theme-light-vintage .tune-modal, .theme-light .tune-modal, .theme-light-simple .tune-modal { background: rgba(230,230,230,0.92); border-color: rgba(0,0,0,0.12); }
             .tune-header { display:flex; align-items:center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.12); }
             .theme-light-vintage .tune-header, .theme-light .tune-header, .theme-light-simple .tune-header { border-bottom-color: rgba(0,0,0,0.10); }
             .tune-title { font-weight: 800; font-size: 1.05rem; color: var(--text-light); }
@@ -1291,8 +1291,8 @@
   padding: 12px 14px 14px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* 保留底部安全區空間，避免被 iPhone 底部手勢條遮住 */
-  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  /* 保留底部安全區空間 + 額外空位，避免最後一行 slider / 提示文字貼邊或被遮 */
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 56px);
 }
 
 /* 重要：取消 sticky 浮層，按鈕跟內容自然排版（彈窗本體向下伸延） */
@@ -1434,9 +1434,93 @@
               box-shadow: 0 4px 10px rgba(0,0,0,0.22);
             }
 
-            @media (max-width: 430px) {
-              .tune-presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            }
+            /* === 顯示調校：按鍵 3D 立體（硬邊陰影 + 高光反光，避免霧化） === */
+.tune-presets .tune-preset{
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.32);
+  /* 外層陰影：偏硬邊、少模糊；內層：上高光、下陰影做凸起 */
+  box-shadow:
+    0 8px 0 rgba(0,0,0,0.16),
+    0 12px 16px rgba(0,0,0,0.16),
+    inset 0 2px 0 rgba(255,255,255,0.55),
+    inset 0 -8px 14px rgba(0,0,0,0.22);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+}
+.tune-presets .tune-preset::before{
+  /* 反光高光位（不會霧化） */
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.62) 0%,
+    rgba(255,255,255,0.18) 38%,
+    rgba(255,255,255,0.00) 62%
+  );
+  pointer-events: none;
+  opacity: 0.95;
+}
+.tune-presets .tune-preset:hover{
+  filter: brightness(1.03) saturate(1.03);
+  transform: translateY(-1px);
+}
+.tune-presets .tune-preset:active{
+  transform: translateY(2px);
+  box-shadow:
+    0 5px 0 rgba(0,0,0,0.14),
+    0 8px 12px rgba(0,0,0,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -6px 10px rgba(0,0,0,0.20);
+}
+/* 光明主題：邊框/文字陰影減淡 */
+.theme-light-vintage .tune-presets .tune-preset,
+.theme-light .tune-presets .tune-preset,
+.theme-light-simple .tune-presets .tune-preset{
+  border-color: rgba(0,0,0,0.18);
+  text-shadow: none;
+}
+
+/* 補齊：護眼模式（暖黃/柔橙）同樣有漸變 + 金屬高光 */
+.tune-presets .tune-preset.preset-eye{
+  background: linear-gradient(135deg, #ffe9b8 0%, #ffd18a 45%, #f0ab5a 100%) !important;
+  color: #1b1b1b !important;
+  border-color: rgba(0,0,0,0.22);
+  text-shadow: none;
+}
+
+/* 進階滑桿展開/收起掣：同樣做成 3D */
+.tune-advanced-toggle{
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.24);
+  box-shadow:
+    0 7px 0 rgba(0,0,0,0.14),
+    0 10px 14px rgba(0,0,0,0.14),
+    inset 0 2px 0 rgba(255,255,255,0.50),
+    inset 0 -8px 14px rgba(0,0,0,0.18);
+}
+.tune-advanced-toggle::before{
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.14) 40%, rgba(255,255,255,0.00) 64%);
+  pointer-events: none;
+}
+.tune-advanced-toggle:hover{ transform: translateY(-1px); }
+.tune-advanced-toggle:active{ transform: translateY(2px); }
+
+/* === 顯示調校：range 推桿避免『顯示唔曬』(thumb shadow 被裁切) === */
+.tune-row input[type="range"]{ overflow: visible; }
+
+@media (max-width: 430px) {
+  .tune-presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* 小屏幕：俾 slider 多啲橫向空間 */
+  .tune-row{ grid-template-columns: 82px 1fr 54px; gap: 8px; }
+}
 
             /* 讓 header 內部元素遵循文流 */
             header { position: relative; overflow: visible; }
@@ -6955,7 +7039,7 @@ window.addEventListener('load', function() {
 
   /* === C) 顯示調校（displayTuneModal）：兩主題都用同一套（米白底）=== */
   #displayTuneModal .tune-modal {
-    background: rgba(248, 246, 241, 0.96) !important; /* 米白（唔黃） */
+    background: rgba(210,210,210,0.96) !important; /* 灰底（光暗同用） */
     border: 1px solid rgba(0,0,0,0.14) !important;
     box-shadow: 0 18px 50px rgba(0,0,0,0.28) !important;
   }
@@ -7089,7 +7173,7 @@ window.addEventListener('load', function() {
     max-height: min(78dvh, 520px) !important;
     max-height: min(78vh, 520px) !important; /* fallback */
     overflow: hidden !important;
-    background: rgba(248,246,241,0.98) !important; /* 米白（實色啲，唔霧） */
+    background: rgba(210,210,210,0.98) !important; /* 米白（實色啲，唔霧） */
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border: 1px solid rgba(0,0,0,0.14) !important;
@@ -7148,43 +7232,80 @@ window.addEventListener('load', function() {
     margin: 0 !important;
   }
   #displayTuneModal .tune-presets .tune-preset {
-    padding: 7px 10px !important;
-    font-size: 0.90rem !important;
-    border-radius: 12px !important;
-    /* 跟返你外面啲掣：實色 + 立體感（唔要霧化灰底） */
-    background: linear-gradient(135deg, #ffffff 0%, #f3eee7 55%, #e7dfd4 100%) !important;
-    border: 1px solid rgba(0,0,0,0.22) !important;
-    color: #1f1a14 !important;
-    text-shadow: none !important;
-    /* 預設鍵陰影細返少少，唔會「肉酸」 */
-    box-shadow: 0 6px 14px rgba(0,0,0,0.18), inset 0 2px 0 rgba(255,255,255,0.70), inset 0 -2px 0 rgba(0,0,0,0.10) !important;
+    position: relative;
+    padding: 8px 10px !important;
+    font-size: 0.92rem !important;
+    border-radius: 18px !important;
+
+    /* ✅ 統一（光亮/黑暗同一套）：3D 凸起（硬邊陰影 + 清晰高光反光位） */
+    border: 1px solid rgba(0,0,0,0.28) !important;
+    box-shadow:
+      0 8px 0 rgba(0,0,0,0.16),
+      0 12px 16px rgba(0,0,0,0.16),
+      inset 0 2px 0 rgba(255,255,255,0.58),
+      inset 0 -8px 14px rgba(0,0,0,0.22) !important;
+
+    /* 背景/文字色由各 preset class 決定（下面已有 preset-xxx 背景/字色） */
+    background: transparent !important;
+  }
+  #displayTuneModal .tune-presets .tune-preset::before{
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.18) 38%, rgba(255,255,255,0.00) 62%);
+    pointer-events: none;
+    opacity: 0.95;
   }
   #displayTuneModal .tune-presets .tune-preset:hover {
-    filter: brightness(1.05) saturate(1.03) !important;
+    filter: brightness(1.03) saturate(1.03) !important;
+    transform: translateY(-1px) !important;
   }
   #displayTuneModal .tune-presets .tune-preset:active {
-    transform: translateY(1px) !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.62), inset 0 -2px 0 rgba(0,0,0,0.12) !important;
+    transform: translateY(2px) !important;
+    box-shadow:
+      0 5px 0 rgba(0,0,0,0.14),
+      0 8px 12px rgba(0,0,0,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.45),
+      inset 0 -6px 10px rgba(0,0,0,0.20) !important;
   }
 
   /* 3-6) 進階滑桿掣：同預設一樣密身 */
   #displayTuneModal .tune-advanced-toggle {
-    padding: 7px 10px !important;
+    position: relative;
+    padding: 8px 10px !important;
     margin: 6px 0 4px !important;
-    font-size: 0.90rem !important;
-    border-radius: 12px !important;
+    font-size: 0.92rem !important;
+    border-radius: 18px !important;
     background: linear-gradient(135deg, #ffffff 0%, #f3eee7 55%, #e7dfd4 100%) !important;
     border: 1px solid rgba(0,0,0,0.22) !important;
     color: #1f1a14 !important;
     text-shadow: none !important;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.18), inset 0 2px 0 rgba(255,255,255,0.70), inset 0 -2px 0 rgba(0,0,0,0.10) !important;
+    box-shadow:
+      0 8px 0 rgba(0,0,0,0.14),
+      0 12px 16px rgba(0,0,0,0.14),
+      inset 0 2px 0 rgba(255,255,255,0.60),
+      inset 0 -8px 14px rgba(0,0,0,0.18) !important;
+  }
+  #displayTuneModal .tune-advanced-toggle::before{
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.14) 40%, rgba(255,255,255,0.00) 64%);
+    pointer-events: none;
   }
   #displayTuneModal .tune-advanced-toggle:hover {
-    filter: brightness(1.05) saturate(1.03) !important;
+    filter: brightness(1.03) saturate(1.03) !important;
+    transform: translateY(-1px) !important;
   }
   #displayTuneModal .tune-advanced-toggle:active {
-    transform: translateY(1px) !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.62), inset 0 -2px 0 rgba(0,0,0,0.12) !important;
+    transform: translateY(2px) !important;
+    box-shadow:
+      0 5px 0 rgba(0,0,0,0.12),
+      0 8px 12px rgba(0,0,0,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.50),
+      inset 0 -6px 10px rgba(0,0,0,0.16) !important;
   }
 
   /* 3-7) 滑桿行：列距收窄，避免彈窗過長 */
@@ -7202,7 +7323,7 @@ window.addEventListener('load', function() {
     bottom: 0 !important;
     padding: 10px 0 calc(6px + env(safe-area-inset-bottom)) !important;
     margin-top: 10px !important;
-    background: rgba(248,246,241,0.98) !important;
+    background: rgba(210,210,210,0.98) !important;
     border-top: 1px solid rgba(0,0,0,0.10) !important;
     z-index: 2;
   }
