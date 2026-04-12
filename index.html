@@ -7433,6 +7433,32 @@ window.addEventListener('load', function() {
     }
   </style>
 
+  <!-- 2026-04-12：修正黑暗模式「顯示調校」底部兩鍵缺少陰影 -->
+  <style id="restore-displaytune-actions-shadow-dark">
+    /* 只補回 #displayTuneModal 底部「重置 / 完成」兩個掣陰影（黑暗模式） */
+    :is(.theme-dark, html[data-theme="dark"]) #displayTuneModal :is(#tuneReset, #tuneDone) {
+      box-shadow:
+        inset -1px 1px 2px rgba(255,255,255,0.55),
+        inset 1px -2px 3px rgba(0,0,0,0.10),
+        -3px 4px 0 1px rgba(0,0,0,0.18),
+        -3px 4px 10px 2px rgba(0,0,0,0.14) !important;
+    }
+    :is(.theme-dark, html[data-theme="dark"]) #displayTuneModal :is(#tuneReset, #tuneDone):hover {
+      box-shadow:
+        inset -1px 1px 2px rgba(255,255,255,0.62),
+        inset 1px -2px 3px rgba(0,0,0,0.12),
+        -3px 4px 0 1px rgba(0,0,0,0.20),
+        -3px 4px 12px 2px rgba(0,0,0,0.16) !important;
+    }
+    :is(.theme-dark, html[data-theme="dark"]) #displayTuneModal :is(#tuneReset, #tuneDone):active {
+      box-shadow:
+        inset -1px 1px 2px rgba(255,255,255,0.50),
+        inset 1px -2px 3px rgba(0,0,0,0.14),
+        -2px 3px 0 1px rgba(0,0,0,0.16),
+        -2px 3px 8px 2px rgba(0,0,0,0.12) !important;
+    }
+  </style>
+
   <!-- 2026-03-21：把紅圈位置（分數卡片/段落卡片）陰影改為跟按鈕一致 -->
   <style id="apply-button-shadow-to-highlight-and-sections">
     /* 2026-03-22：黑暗版—4 個主要按鈕白字保留少少陰影（計算分數除外） */
