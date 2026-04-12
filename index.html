@@ -7926,5 +7926,30 @@ window.addEventListener('load', function() {
       }
     })();
   </script>
+
+  <!-- === FIX 2026-04-12: Light Mode 加返金色橫條 === -->
+  <style id="light-mode-goldbar-fix">
+    /* 有啲光明主題（尤其 theme-light-vintage）後段 CSS 會用 background: ... !important
+       清走咗 earlier 的 background-image（金色橫條）。
+       呢段放喺最尾，確保光明模式都一定見到金色橫條。 */
+
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .container :is(.form-section, .result-section){
+      background-color: var(--section-bg) !important;
+      background-image: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.00) 0%,
+        rgba(255, 193, 7, 0.20) 12%,
+        rgba(255, 236, 170, 0.85) 26%,
+        rgba(212, 159, 38, 0.65) 50%,
+        rgba(255, 236, 170, 0.85) 74%,
+        rgba(255, 193, 7, 0.20) 88%,
+        rgba(0,0,0,0.00) 100%
+      ) !important;
+      background-size: 100% 4px !important;
+      background-repeat: no-repeat !important;
+      background-position: top left !important;
+      padding-top: calc(25px + 8px) !important;
+    }
+  </style>
 </body>
 </html>
