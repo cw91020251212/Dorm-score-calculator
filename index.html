@@ -7997,12 +7997,25 @@ window.addEventListener('load', function() {
 
   <!-- === UPDATE 2026-04-13: Light Mode 取消所有金色橫巴 === -->
   <style id="light-mode-remove-goldbars">
-    /* 光明版：header / 輸入資料 / 計算結果 / 已儲存資料 — 全部唔要金色橫巴 */
-    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .container :is(header, .form-section, .result-section, .data-section){
+    /* 光明版：輸入資料 / 計算結果 / 已儲存資料 — 唔要金色橫巴（保留頂部藍色大標題底） */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .container :is(.form-section, .result-section, .data-section){
       background-image: none !important;
       background-position: initial !important;
       background-size: initial !important;
       background-repeat: initial !important;
+    }
+
+    /* 光明模式：頂部大標題 header 維持藍色底（參考原版） */
+    :is(.theme-light, .theme-light-simple, html[data-theme="light"]) .container > header{
+      background-color: #1e3a5f !important;
+      background-image:
+        linear-gradient(180deg, rgba(79,157,232,0.26) 0%, rgba(15,42,74,0.10) 100%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.06) 0 1px, rgba(255,255,255,0) 1px 16px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 1px, rgba(255,255,255,0) 1px 16px) !important;
+      background-blend-mode: overlay, normal, normal;
+      background-size: auto, auto, auto !important;
+      background-repeat: no-repeat, repeat, repeat !important;
+      background-position: center, center, center !important;
     }
 
     /* 還原 v4 追加的 padding（避免頂/底多出 8px 空位） */
