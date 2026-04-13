@@ -2576,11 +2576,21 @@ html[data-theme] #calcBtn:active,
         用戶實際指「輸入資料」(form-section) 與「計算結果」(result-section)。
         下面已改為 v3 規則，並保留 id 以免多段CSS互相打架。
       */
-      /* v3：金色橫巴套用到「輸入資料 / 計算結果」 */
-      .container .form-section,
-      .container .result-section{
-        background-color: var(--section-bg) !important; /* 避免 background shorthand 清走 image */
-        background-image: linear-gradient(
+      /* v4：每個版面（輸入資料 / 計算結果 / 已儲存資料）頂 + 底都加同款金色橫巴 */
+      .container :is(.form-section, .result-section, .data-section){
+        background-color: var(--section-bg) !important; /* 避免 shorthand 清走 image */
+        background-image:
+          linear-gradient(
+            90deg,
+            rgba(0,0,0,0.00) 0%,
+            rgba(255, 193, 7, 0.20) 12%,
+            rgba(255, 236, 170, 0.85) 26%,
+            rgba(212, 159, 38, 0.65) 50%,
+            rgba(255, 236, 170, 0.85) 74%,
+            rgba(255, 193, 7, 0.20) 88%,
+            rgba(0,0,0,0.00) 100%
+          ),
+          linear-gradient(
             90deg,
             rgba(0,0,0,0.00) 0%,
             rgba(255, 193, 7, 0.20) 12%,
@@ -2590,10 +2600,42 @@ html[data-theme] #calcBtn:active,
             rgba(255, 193, 7, 0.20) 88%,
             rgba(0,0,0,0.00) 100%
           ) !important;
-        background-size: 100% 4px !important; /* 稍為加粗更明顯 */
-        background-repeat: no-repeat !important;
-        background-position: top left !important;
-        padding-top: calc(25px + 8px) !important; /* 讓橫巴同內容更分明 */
+        background-size: 100% 4px, 100% 4px !important; /* 稍為加粗更明顯 */
+        background-repeat: no-repeat, no-repeat !important;
+        background-position: top left, bottom left !important;
+
+        /* 頂/底預留少少空間，避免內容貼住橫巴 */
+        padding-top: calc(25px + 8px) !important;
+        padding-bottom: calc(25px + 8px) !important;
+      }
+
+      /* v4補漏：header 面板底部（同頂部）都要同款金色橫巴 */
+      .container > header{
+        background-color: var(--primary) !important; /* header 用主色底 */
+        background-image:
+          linear-gradient(
+            90deg,
+            rgba(0,0,0,0.00) 0%,
+            rgba(255, 193, 7, 0.20) 12%,
+            rgba(255, 236, 170, 0.85) 26%,
+            rgba(212, 159, 38, 0.65) 50%,
+            rgba(255, 236, 170, 0.85) 74%,
+            rgba(255, 193, 7, 0.20) 88%,
+            rgba(0,0,0,0.00) 100%
+          ),
+          linear-gradient(
+            90deg,
+            rgba(0,0,0,0.00) 0%,
+            rgba(255, 193, 7, 0.20) 12%,
+            rgba(255, 236, 170, 0.85) 26%,
+            rgba(212, 159, 38, 0.65) 50%,
+            rgba(255, 236, 170, 0.85) 74%,
+            rgba(255, 193, 7, 0.20) 88%,
+            rgba(0,0,0,0.00) 100%
+          ) !important;
+        background-size: 100% 4px, 100% 4px !important;
+        background-repeat: no-repeat, no-repeat !important;
+        background-position: top left, bottom left !important;
       }
 
       /* v3：加大「輸入資料 / 計算結果」之間距離（而唔係大標題同輸入資料） */
@@ -2610,7 +2652,7 @@ html[data-theme] #calcBtn:active,
       }
 
       /* 深色模式：加少少金屬光暈，肉眼更易見 */
-      :is(.theme-dark, html[data-theme="dark"]) .container :is(.form-section, .result-section){
+      :is(.theme-dark, html[data-theme="dark"]) .container :is(.form-section, .result-section, .data-section){
         box-shadow:
           0 5px 15px rgba(0,0,0,0.2),
           0 -1px 10px rgba(255, 193, 7, 0.18) !important;
@@ -7953,20 +7995,24 @@ window.addEventListener('load', function() {
     })();
   </script>
 
-  <!-- === FIX 2026-04-12: Light Mode 取消所有金色橫條 === -->
+  <!-- === UPDATE 2026-04-13: Light Mode 取消所有金色橫巴 === -->
   <style id="light-mode-remove-goldbars">
-    /* 1) 取消「輸入資料 / 計算結果」頂部金色橫條（包括早期 v2/v3 patch） */
-    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .container :is(.form-section, .result-section){
+    /* 光明版：header / 輸入資料 / 計算結果 / 已儲存資料 — 全部唔要金色橫巴 */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .container :is(header, .form-section, .result-section, .data-section){
       background-image: none !important;
       background-position: initial !important;
       background-size: initial !important;
       background-repeat: initial !important;
-      /* 還原 padding-top（早期 patch 會 +8px） */
-      padding-top: 25px !important;
     }
 
-    /* 2) 取消頂部大標題（header）底部金色橫條 */
-    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .container > header::after{
+    /* 還原 v4 追加的 padding（避免頂/底多出 8px 空位） */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .container :is(.form-section, .result-section, .data-section){
+      padding-top: 25px !important;
+      padding-bottom: 25px !important;
+    }
+
+    /* header 原本用 ::after 畫底部金色分隔線：光明版一律取消 */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .container > header::after{
       content: none !important;
       display: none !important;
       background: none !important;
