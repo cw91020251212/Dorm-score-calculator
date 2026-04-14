@@ -267,7 +267,8 @@
         
         header {
             text-align: center;
-            padding: 25px;
+            /* 大標題高度縮細：大約原本 2/3 */
+            padding: 17px 18px 18px;
             background: var(--section-bg);
             /* 重要：隔離混合/合成，避免底層紋理視覺上「穿透」 */
             isolation: isolate;
@@ -1531,8 +1532,9 @@
             .theme-light .form-section, .theme-light .result-section, .theme-light .data-section { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
             .theme-light .highlight-score { color: var(--warning); border-color: var(--warning); background: rgba(255,255,255,0.8); }
             /* 標題高度微縮 */
-            header { padding: 12px 16px 20px !important; }
-            h1 { font-size: 2.8rem !important; }
+            /* 大標題高度縮細：大約現有 2/3，避免太矮同字太大 */
+            header { padding: 14px 16px 18px !important; }
+            header h1 { font-size: clamp(1.6rem, 4.6vw, 2.1rem) !important; margin: 0 !important; line-height: 1.05 !important; }
             /* 修正輸入欄位行高，避免字體縮放後擠壓或截斷 */
             .input-control { line-height: 1.5 !important; }
             /* 語言切換：浮動圓形按鈕（不影響版面），兼容瀏海安全距 */
@@ -2622,6 +2624,214 @@ html[data-theme] #calcBtn:active,
           0 -1px 10px rgba(255, 193, 7, 0.18) !important;
       }
     </style>
+
+    <style id="ag-quick-settings">
+      /* 右上角齒輪彈出功能列（沿用原本按鈕視覺） */
+      /* ✅ 重要：Quick Settings 7 掣唔可以壓住任何彈窗；所以 z-index 要低過 modal/backdrop */
+      .quick-settings{ position: fixed; top: 58px; right: clamp(10px, 1.4vw, 20px); z-index: 900; }
+      .quick-settings[hidden]{ display:none !important; }
+      .quick-settings-inner{
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        /* 與齒輪同高，避免遮住齒輪（要保留齒輪可見可關閉） */
+        height: 42px;
+        padding: 0 10px;
+        border-radius: 12px;
+        /* 右側貼齒輪：右邊角變直，視覺更似 8 個掣一排 */
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+
+        /* ✅ 背板透明（只保留 7 個圓形鍵本身） */
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      /* 光明模式：功能列底色照舊檔，唔好黑沉沉 */
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .quick-settings-inner{
+        /* ✅ 光明版同樣：背板透明 */
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      /* QR：用文字代替圖案，細 size 都易認 */
+      #qrButtonPanel .qs-qr-text{
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        /* ✅ 同一把尺：跟其他 icon 用同一個字級，視覺唔會一粒大一粒細 */
+        font-size: 14px;
+        line-height: 1;
+        display:inline-block;
+        transform: translateY(-0.5px);
+        color: #111 !important; /* ✅ 粉色底都清楚 */
+        text-shadow: none !important;
+      }
+
+      /* === Quick Settings 功能鍵：統一投影（跟中英轉換鍵/齒輪掣同一光源）=== */
+      #quickSettings .btn,
+      #quickSettings .btn:hover,
+      #quickSettings .btn:active{
+        box-sizing: border-box !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        max-width: 42px !important;
+        min-height: 42px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        font-size: 13px !important;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+
+        /* ✅ 為 ::before/::after 反光層準備 */
+        position: relative !important;
+        overflow: hidden !important;
+
+        /* ✅ 按鈕本身：不透明實色（暗色） */
+        background: #2b4a6f !important;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        color: rgba(255, 255, 255, 0.92) !important;
+
+        /* ✅ 取消任何原本「陰影」：改用硬邊實色投影（同中英轉換鍵一致） */
+        box-shadow:
+          inset -2px 2px 4px rgba(255,255,255,0.75),
+          inset 3px -4px 7px rgba(0,0,0,0.10),
+          inset 0 0 0 1px rgba(255,255,255,0.35),
+          -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+
+        filter: none !important;
+        transform: none !important;
+      }
+      /* 右上反光（同中英轉換鍵） */
+      #quickSettings .btn::before{
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 78% 20%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.65) 10%, rgba(255,255,255,0.18) 22%, rgba(255,255,255,0.00) 45%),
+          radial-gradient(circle at 66% 14%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.00) 14%);
+        pointer-events: none;
+        mix-blend-mode: screen;
+      }
+      /* 微細外圈高光邊（唔係投影） */
+      #quickSettings .btn::after{
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.20);
+        pointer-events: none;
+      }
+      #quickSettings .btn i,
+      #quickSettings .btn span{
+        animation: none !important;
+        text-shadow: none !important;
+        /* ✅ 統一 icon / 文字視覺尺寸 */
+        font-size: 14px !important;
+        line-height: 1 !important;
+      }
+
+      /* hover：只做細微縮放，唔改底色（因為每個掣都有自己嘅淡色） */
+      #quickSettings .btn:hover{ transform: scale(1.05) !important; }
+      #quickSettings .btn:active{ transform: scale(0.98) !important; }
+
+      /* Light themes：舊檔係偏米白/淡啡灰，文字用深色 */
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn,
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:hover,
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:active{
+        /* ✅ 按鈕本身：不透明實色（光明） */
+        background: #ffffff !important;
+        border: 1px solid rgba(167, 132, 85, 0.70) !important;
+        color: rgba(58,46,34,0.92) !important;
+
+        /* ✅ 跟中英轉換鍵/齒輪掣同一套硬邊投影 */
+        box-shadow:
+          inset -2px 2px 4px rgba(255,255,255,0.75),
+          inset 3px -4px 7px rgba(0,0,0,0.10),
+          inset 0 0 0 1px rgba(255,255,255,0.35),
+          -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+      }
+      /* 光明 hover：同樣只做縮放，唔改底色 */
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:hover{ transform: scale(1.05) !important; }
+
+      /* ✅ 2026-04-14：7 掣加返淡淡地色彩（唔好清一色） */
+      /* Light themes：用好淺 pastel，睇得出有色但唔會搶眼 */
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #fontInc,
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #fontDec{
+        background: #d8ecff !important;  /* 加/減：同系列同色 */
+        border-color: #9ec7f0 !important;
+        color: #123 !important;
+      }
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #themeToggle{
+        background: #eadfff !important;
+        border-color: #c0a9f2 !important;
+        color: #2a1a4a !important;
+      }
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #welcomeToggleBtn{
+        background: #dcf7e6 !important;
+        border-color: #9bd7b1 !important;
+        color: #163523 !important;
+      }
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #displayTuneBtn{
+        background: #ffe6d4 !important;
+        border-color: #e8ba98 !important;
+        color: #4a2a16 !important;
+      }
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #infoBtn{
+        background: #fff2c9 !important;
+        border-color: #e3c86e !important;
+        color: #3a2a10 !important;
+      }
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #qrButtonPanel{
+        background: #ffd6e0 !important;
+        border-color: #e7a3b6 !important;
+        color: #3a0f1d !important;
+      }
+
+      /* Dark themes：同一套色相，但壓暗少少（仍然見到分別） */
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #fontInc,
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #fontDec{
+        background: #3f6f9f !important;
+        border-color: rgba(255,255,255,0.28) !important;
+        color: rgba(255,255,255,0.92) !important;
+      }
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #themeToggle{ background: #5b4a8f !important; }
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #welcomeToggleBtn{ background: #3e7b58 !important; }
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #displayTuneBtn{ background: #8a5a3a !important; }
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #infoBtn{ background: #8a7a33 !important; }
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #qrButtonPanel{ background: #8a3f57 !important; }
+
+      /* QR 鍵（最後右手邊）：跟返同一套，但文字確保夠清楚 */
+      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #qrButtonPanel .qs-qr-text{ color: rgba(255,255,255,0.92) !important; }
+      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #qrButtonPanel .qs-qr-text{ color: #111 !important; }
+      @media (max-width: 520px){
+        .quick-settings{ top: 54px; right: 10px; }
+        .quick-settings-inner{ gap: 6px; height: 36px; padding: 0 10px; }
+        /* 手機：按鈕尺寸跟返中英轉換鍵（media query 會變 36px） */
+        #quickSettings .btn,
+        #quickSettings .btn:hover,
+        #quickSettings .btn:active{
+          width: 36px !important;
+          height: 36px !important;
+          min-width: 36px !important;
+          max-width: 36px !important;
+          min-height: 36px !important;
+        }
+        /* 手機：icon/字略細少少，更平均 */
+        #quickSettings .btn i,
+        #quickSettings .btn span{ font-size: 13px !important; }
+      }
+      /* 額外：減少 header 視覺高度（裝飾層唔好令文字睇落『浮』得太高） */
+      header .header-decoration{ height: 100% !important; }
+    </style>
 </head>
 <body>
   <!-- ✅ 固定背景層：永遠唔跟住捲動 -->
@@ -2631,7 +2841,19 @@ html[data-theme] #calcBtn:active,
 
     <!-- 右上角浮動鍵（永遠固定喺畫面上；唔會跟住內容滾動） -->
     <button id="languageToggle" class="language-toggle" aria-label="切換語言" style="background-color:#90EE90 !important; color:#000 !important; border:1px solid #7fd67f !important;">EN</button>
-    <button id="qrButton" class="qr-toggle" aria-label="QR Code" style="background-color:#555 !important; color:#fff !important; border:1px solid #333 !important;">QR</button>
+    <button id="qrButton" class="qr-toggle" type="button" aria-label="設定" title="設定" style="background-color:#555 !important; color:#fff !important; border:1px solid #333 !important;"><i class="fas fa-gear" aria-hidden="true"></i></button>
+
+    <div id="quickSettings" class="quick-settings" hidden>
+      <div class="quick-settings-inner" role="dialog" aria-label="功能鍵">
+        <button id="fontInc" class="btn btn-warning no-text-shadow btn-small btn-3d" type="button" title="Increase text" aria-label="Increase text"><i class="fas fa-plus"></i></button>
+        <button id="fontDec" class="btn btn-warning no-text-shadow btn-small btn-3d" type="button" title="Decrease text" aria-label="Decrease text"><i class="fas fa-minus"></i></button>
+        <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small btn-3d" type="button" title="Toggle theme" aria-label="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
+        <button id="welcomeToggleBtn" class="btn btn-warning no-text-shadow btn-small btn-3d" type="button" title="歡迎畫面：已開" aria-label="歡迎畫面"><i class="fas fa-door-open"></i></button>
+        <button id="displayTuneBtn" class="btn btn-warning no-text-shadow btn-small btn-3d" type="button" title="顯示調校" aria-label="顯示調校"><i class="fas fa-sliders"></i></button>
+        <button id="infoBtn" class="btn btn-warning no-text-shadow btn-small btn-3d" type="button" title="使用須知" aria-label="使用須知"><i class="fas fa-info-circle"></i></button>
+        <button id="qrButtonPanel" class="btn btn-primary no-text-shadow btn-small btn-3d" type="button" title="QR Code" aria-label="QR Code"><span class="qs-qr-text" aria-hidden="true">QR</span></button>
+      </div>
+    </div>
 
     <div id="contentRoot">
     <div class="container">
@@ -2646,21 +2868,6 @@ html[data-theme] #calcBtn:active,
             </div>
             
             <h1><i class="fas fa-calculator"></i> <span id="appTitle">宿舍分數計算器</span></h1>
-        <div class="display-controls" aria-label="顯示調校工具列">
-            
-            <button id="fontInc" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Increase text"><i class="fas fa-plus"></i></button>
-            <button id="fontDec" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Decrease text"><i class="fas fa-minus"></i></button>
-            
-            <button id="themeToggle" class="btn btn-warning no-text-shadow btn-small btn-3d" title="Toggle theme"><i class="fas fa-circle-half-stroke"></i></button>
-
-            <!-- 新增功能鍵：歡迎畫面開關（記憶設定） -->
-            <button id="welcomeToggleBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="歡迎畫面：已開"><i class="fas fa-door-open"></i></button>
-
-            <!-- 顯示光暗/色深調校 -->
-            <button id="displayTuneBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="顯示調校"><i class="fas fa-sliders"></i></button>
-            
-            <button id="infoBtn" type="button" class="btn btn-warning no-text-shadow btn-small btn-3d" title="使用須知"><i class="fas fa-info-circle"></i></button>
-        </div>
         </header>
         
         <div class="main-content">
@@ -3262,6 +3469,29 @@ function initSalaryTableClipboardFill(){
             // 同步歡迎視窗語言（如果存在）
             try { if (typeof window.setWelcomeLanguage === 'function') window.setWelcomeLanguage(newLang); } catch(e) {}
         });
+
+        // ✅ 右上角齒輪：彈出功能鍵（水平排列；不會因揀功能而自動收起）
+        (function(){
+            const toggle = document.getElementById('qrButton');
+            const panel = document.getElementById('quickSettings');
+            if (!toggle || !panel) return;
+
+            const open = () => { panel.hidden = false; toggle.setAttribute('aria-expanded','true'); };
+            const close = () => { panel.hidden = true; toggle.setAttribute('aria-expanded','false'); };
+            const isOpen = () => !panel.hidden;
+
+            toggle.setAttribute('aria-expanded','false');
+            toggle.addEventListener('click', (e) => {
+              e.stopPropagation();
+              isOpen() ? close() : open();
+            });
+
+            // ✅ 重要：揀任何功能都唔會自動收起。
+            // ✅ 收起規則：只可以「再撳一次齒輪」先會收起。
+            // （唔會因為撳畫面其他地方 / ESC 而自動消失）
+
+            // NOTE: 刻意唔加 document click/ESC 自動 close
+        })();
         
         // 計算規則
         const scoringRules = {
@@ -5581,13 +5811,15 @@ document.addEventListener('DOMContentLoaded', function() {
     <style>
         /* 最終覆蓋：強制對齊與顏色（不透明灰、黑字） */
         button#languageToggle.language-toggle,
-        button#qrButton.qr-toggle { 
+        button#qrButton.qr-toggle {
+            /* 齒輪用更淺色，方便同其他功能掣分辨 */
+         
             position: fixed !important;
-            right: calc(10px + env(safe-area-inset-right)) !important;
+            right: calc(0px + env(safe-area-inset-right)) !important;
             width: 42px !important;
             height: 42px !important;
             border-radius: 50% !important;
-            background: #f0f0f0 !important; /* 灰色、不透明 */
+            background: #f7f7f7 !important; /* 更淺灰（齒輪會再白少少） */
             color: #000 !important;          /* 黑色文字 */
             border: 1px solid #ccc !important;
             display: flex !important;
@@ -5635,18 +5867,40 @@ document.addEventListener('DOMContentLoaded', function() {
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.20);
             pointer-events: none;
         }
-        button#languageToggle.language-toggle { top: calc(10px + env(safe-area-inset-top)) !important; }
-        button#qrButton.qr-toggle { top: calc(10px + env(safe-area-inset-top) + 52px) !important; }
+        button#languageToggle.language-toggle { top: calc(10px + env(safe-area-inset-top) + 26px) !important; }
+        button#qrButton.qr-toggle { top: calc(10px + env(safe-area-inset-top) + 86px) !important; }
+        /* Quick Settings 面板：水平彈出喺齒輪左邊，同齒輪同一水平；唔遮住齒輪 */
+        #quickSettings.quick-settings{
+          top: calc(10px + env(safe-area-inset-top) + 86px) !important;
+          right: calc(42px + 0px + env(safe-area-inset-right)) !important; /* 預留齒輪闊度；貼實齒輪 */
+        }
         button#languageToggle.language-toggle:hover,
         button#qrButton.qr-toggle:hover,
         button#languageToggle.language-toggle:active,
         button#qrButton.qr-toggle:active { 
-            background: #f0f0f0 !important; color: #000 !important; transform: none !important; 
+            background: #f7f7f7 !important; color: #000 !important; transform: none !important; 
+        }
+
+        /* 只針對齒輪：再淺一級，視覺上好似第 8 個掣 */
+        button#qrButton.qr-toggle{
+          background: #ffffff !important;
+          border-color: #d8d8d8 !important;
+          color: #111 !important;
+        }
+        button#qrButton.qr-toggle:hover,
+        button#qrButton.qr-toggle:active{
+          background: #ffffff !important;
+          color: #111 !important;
         }
         @media (max-width: 600px) {
             button#languageToggle.language-toggle,
             button#qrButton.qr-toggle { width: 36px !important; height: 36px !important; font-size: 0.85rem !important; }
-            button#qrButton.qr-toggle { top: calc(10px + env(safe-area-inset-top) + 45px) !important; }
+            button#languageToggle.language-toggle { top: calc(10px + env(safe-area-inset-top) + 23px) !important; }
+            button#qrButton.qr-toggle { top: calc(10px + env(safe-area-inset-top) + 77px) !important; }
+            #quickSettings.quick-settings{
+              top: calc(10px + env(safe-area-inset-top) + 77px) !important;
+              right: calc(36px + 0px + env(safe-area-inset-right)) !important;
+            }
         }
         /* QR 視窗改為灰色主題 */
         .qr-backdrop {
@@ -5672,7 +5926,9 @@ document.addEventListener('DOMContentLoaded', function() {
   /* 最終色彩保險：強制顏色顯示 */
   :root { --language-bg: #d7f4d7; }
   #languageToggle.language-toggle { background-color: var(--language-bg) !important; color: #000 !important; border: 1px solid #7fd67f !important; }
-  #qrButton.qr-toggle { background-color: #555 !important; color: #fff !important; border: 1px solid #333 !important; }
+  /* QR/設定（齒輪）掣：黑暗模式可深色；光明模式要光返啲 + 有高光 */
+  :is(.theme-dark, html[data-theme="dark"]) #qrButton.qr-toggle { background-color: #555 !important; color: #fff !important; border: 1px solid #333 !important; }
+  :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #qrButton.qr-toggle { background-color: #f0f0f0 !important; color: #000 !important; border: 1px solid #ccc !important; }
 
   /* === 2026-03-07: 光明復古主題（紙紋）=== */
   .theme-light-vintage {
@@ -6045,17 +6301,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 gap: 10px !important;
             }
 
-            /* B-1. HEADER: 垂直置中標題 + 功能鍵（依使用者要求） */
+            /* B-1. HEADER: 內容自動收縮高度（修正：避免 min-height 令上下留太多虛位） */
             .container > header {
                 display: flex !important;
                 flex-direction: column !important;
-                justify-content: center !important; /* 上下置中 */
-                align-items: center !important;      /* 左右置中 */
-                min-height: 150px !important;        /* 讓置中效果更明顯 */
-                padding: 22px 16px !important;       /* 上下左右對稱 */
+                justify-content: center !important;  /* 仍然置中，但高度會跟內容 */
+                align-items: center !important;
+                min-height: auto !important;         /* ✅ 關鍵：取消固定最小高度 */
+                padding: 16px 16px 16px !important;  /* ✅ 加回少少上下空間（唔好太細） */
             }
             .container > header .display-controls {
-                margin-top: 14px !important;         /* 把4鍵往下移 */
+                margin-top: 12px !important;         /* ✅ 加回少少距離（唔好太迫） */
                 margin-bottom: 0 !important;
             }
 
@@ -6341,7 +6597,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const domTitle = document.getElementById('appTitle')?.textContent || document.title || 'Dormitory Score Calculator';
                 return domTitle.trim();
             }
-            const btn = document.getElementById('qrButton');
+            const btn = document.getElementById('qrButtonPanel');
             const modal = document.getElementById('qrModal');
             const closeBtn = document.getElementById('qrClose');
             const qrBox = document.getElementById('qrCode');
@@ -6371,7 +6627,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Backdrop click closes
             modal.addEventListener('click', function(e){ if(e.target.classList.contains('qr-backdrop')) closeModal(); });
             closeBtn.addEventListener('click', closeModal);
-            if(btn) btn.addEventListener('click', openModal);
+            // 對外提供：齒輪面板 QR 按鈕會用到
+            try { window.openQrModal = openModal; } catch(e) {}
+            if(btn) btn.addEventListener('click', function(){
+                openModal();
+                // 由齒輪面板按入嚟：即刻收起面板
+                try {
+                  const panel = document.getElementById('quickSettings');
+                  const gear = document.getElementById('qrButton');
+                  if (panel && gear) { panel.hidden = true; gear.setAttribute('aria-expanded','false'); }
+                } catch(e){}
+            });
         })();
     </script>
 
@@ -7436,6 +7702,22 @@ window.addEventListener('load', function() {
         inset 1px -2px 3px rgba(0,0,0,0.14),
         -2px 3px 0 1px rgba(0,0,0,0.16),
         -2px 3px 8px 2px rgba(0,0,0,0.12) !important;
+    }
+  </style>
+
+  <!-- ✅ 2026-04-14：強制 Quick Settings 7 掣投影統一（避免被全站光明陰影覆蓋） -->
+  <style id="quicksettings-force-shadow">
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn,
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:hover,
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:active,
+    :is(.theme-dark, html[data-theme="dark"]) #quickSettings .btn,
+    :is(.theme-dark, html[data-theme="dark"]) #quickSettings .btn:hover,
+    :is(.theme-dark, html[data-theme="dark"]) #quickSettings .btn:active{
+      box-shadow:
+        inset -2px 2px 4px rgba(255,255,255,0.75),
+        inset 3px -4px 7px rgba(0,0,0,0.10),
+        inset 0 0 0 1px rgba(255,255,255,0.35),
+        -8px 11px 0 1px rgba(0,0,0,0.22) !important;
     }
   </style>
 
