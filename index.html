@@ -2704,7 +2704,9 @@ html[data-theme] #calcBtn:active,
           inset -2px 2px 4px rgba(255,255,255,0.75),
           inset 3px -4px 7px rgba(0,0,0,0.10),
           inset 0 0 0 1px rgba(255,255,255,0.35),
-          -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+          /* ✅ 外投影：加大 + 更遠 + 更軟（跟中英轉換掣） */
+          -10px 14px 0 2px rgba(0,0,0,0.14),
+          -10px 14px 22px 4px rgba(0,0,0,0.22) !important;
 
         filter: none !important;
         transform: none !important;
@@ -2734,8 +2736,8 @@ html[data-theme] #calcBtn:active,
       #quickSettings .btn span{
         animation: none !important;
         text-shadow: none !important;
-        /* ✅ 統一 icon / 文字視覺尺寸 */
-        font-size: 14px !important;
+        /* ✅ 統一 icon / 文字視覺尺寸（再放大少少，但保持按鈕尺寸不變） */
+        font-size: 18px !important;
         line-height: 1 !important;
       }
 
@@ -2757,61 +2759,80 @@ html[data-theme] #calcBtn:active,
           inset -2px 2px 4px rgba(255,255,255,0.75),
           inset 3px -4px 7px rgba(0,0,0,0.10),
           inset 0 0 0 1px rgba(255,255,255,0.35),
-          -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+          /* ✅ 外投影：加大 + 更遠 + 更軟（跟中英轉換掣） */
+          -10px 14px 0 2px rgba(0,0,0,0.14),
+          -10px 14px 22px 4px rgba(0,0,0,0.22) !important;
       }
       /* 光明 hover：同樣只做縮放，唔改底色 */
       :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:hover{ transform: scale(1.05) !important; }
 
-      /* ✅ 2026-04-14：7 掣加返淡淡地色彩（唔好清一色） */
-      /* Light themes：用好淺 pastel，睇得出有色但唔會搶眼 */
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #fontInc,
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #fontDec{
-        background: #d8ecff !important;  /* 加/減：同系列同色 */
+      /* ✅ 2026-04-15：功能鍵配色整理
+         - 7 個功能鍵：一律淺灰（光/暗模式都一樣）
+         - 文字放大/縮細：保持淺藍色
+         - 歡迎掣：門閂＝紅色；門開＝綠色
+      */
+      #quickSettings .btn,
+      #quickSettings .btn:hover,
+      #quickSettings .btn:active{
+        background: #cfcfcf !important;
+        border: 1px solid rgba(120,120,120,0.65) !important;
+        color: #222 !important;
+      }
+      #quickSettings .btn i,
+      #quickSettings .btn span{ color: inherit !important; }
+
+      /* 3D 凹凸感（加強光源同按下效果；唔改按鈕大小） */
+      #quickSettings .btn{
+        box-shadow:
+          inset 2px 2px 5px rgba(255,255,255,0.95),
+          inset -5px -7px 12px rgba(0,0,0,0.14),
+          inset 0 0 0 1px rgba(255,255,255,0.35),
+          /* ✅ 外投影：加大 + 更遠 + 更軟（跟中英轉換掣） */
+          -10px 14px 0 2px rgba(0,0,0,0.14),
+          -10px 14px 22px 4px rgba(0,0,0,0.22) !important;
+      }
+      #quickSettings .btn:hover{
+        transform: translateY(-1px) scale(1.06) !important;
+        box-shadow:
+          inset 2px 2px 6px rgba(255,255,255,0.95),
+          inset -6px -8px 14px rgba(0,0,0,0.16),
+          inset 0 0 0 1px rgba(255,255,255,0.35),
+          /* ✅ hover：投影同樣更大更軟（略加強） */
+          -11px 15px 0 2px rgba(0,0,0,0.15),
+          -11px 15px 24px 5px rgba(0,0,0,0.24) !important;
+      }
+      #quickSettings .btn:active{
+        transform: translateY(2px) scale(0.98) !important;
+        box-shadow:
+          inset -1px -1px 3px rgba(255,255,255,0.70),
+          inset 6px 8px 14px rgba(0,0,0,0.20),
+          inset 0 0 0 1px rgba(255,255,255,0.22),
+          /* ✅ active：投影收返少少，仍然保留距離同柔和 */
+          -7px 10px 0 2px rgba(0,0,0,0.12),
+          -7px 10px 16px 4px rgba(0,0,0,0.20) !important;
+      }
+
+      /* 文字放大 / 縮細：淺藍（特別） */
+      #quickSettings #fontInc,
+      #quickSettings #fontDec{
+        background: #d8ecff !important;
         border-color: #9ec7f0 !important;
-        color: #123 !important;
-      }
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #themeToggle{
-        background: #eadfff !important;
-        border-color: #c0a9f2 !important;
-        color: #2a1a4a !important;
-      }
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #welcomeToggleBtn{
-        background: #dcf7e6 !important;
-        border-color: #9bd7b1 !important;
-        color: #163523 !important;
-      }
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #displayTuneBtn{
-        background: #ffe6d4 !important;
-        border-color: #e8ba98 !important;
-        color: #4a2a16 !important;
-      }
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #infoBtn{
-        background: #fff2c9 !important;
-        border-color: #e3c86e !important;
-        color: #3a2a10 !important;
-      }
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #qrButtonPanel{
-        background: #ffd6e0 !important;
-        border-color: #e7a3b6 !important;
-        color: #3a0f1d !important;
+        color: #0f3d70 !important;
       }
 
-      /* Dark themes：同一套色相，但壓暗少少（仍然見到分別） */
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #fontInc,
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #fontDec{
-        background: #3f6f9f !important;
-        border-color: rgba(255,255,255,0.28) !important;
-        color: rgba(255,255,255,0.92) !important;
+      /* 歡迎掣：門閂（off）紅、門開（on）綠 */
+      #quickSettings #welcomeToggleBtn.on{
+        background: #2fb46e !important;
+        border-color: #1e7e4a !important;
+        color: #fff !important;
       }
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #themeToggle{ background: #5b4a8f !important; }
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #welcomeToggleBtn{ background: #3e7b58 !important; }
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #displayTuneBtn{ background: #8a5a3a !important; }
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #infoBtn{ background: #8a7a33 !important; }
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #qrButtonPanel{ background: #8a3f57 !important; }
-
-      /* QR 鍵（最後右手邊）：跟返同一套，但文字確保夠清楚 */
-      :is(.theme-dark, html[data-theme="dark"]) #quickSettings #qrButtonPanel .qs-qr-text{ color: rgba(255,255,255,0.92) !important; }
-      :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings #qrButtonPanel .qs-qr-text{ color: #111 !important; }
+      #quickSettings #welcomeToggleBtn.off{
+        background: #d63a3a !important;
+        border-color: #9f2323 !important;
+        color: #fff !important;
+      }
+      #quickSettings #welcomeToggleBtn.on i,
+      #quickSettings #welcomeToggleBtn.off i{ color: #fff !important; }
       @media (max-width: 520px){
         .quick-settings{ top: 54px; right: 10px; }
         .quick-settings-inner{ gap: 6px; height: 36px; padding: 0 10px; }
@@ -2827,7 +2848,7 @@ html[data-theme] #calcBtn:active,
         }
         /* 手機：icon/字略細少少，更平均 */
         #quickSettings .btn i,
-        #quickSettings .btn span{ font-size: 13px !important; }
+        #quickSettings .btn span{ font-size: 17px !important; }
       }
       /* 額外：減少 header 視覺高度（裝飾層唔好令文字睇落『浮』得太高） */
       header .header-decoration{ height: 100% !important; }
@@ -5836,8 +5857,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 inset -2px 2px 4px rgba(255,255,255,0.75), /* 右上高光 */
                 inset 3px -4px 7px rgba(0,0,0,0.10),      /* 左下暗位 */
                 inset 0 0 0 1px rgba(255,255,255,0.35),  /* 內圈微高光邊 */
-                /* 實體化投影：0 blur 硬邊（跟「光綠色」按鈕實邊效果一致） */
-                -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+                /* ✅ 外投影：加大 + 更遠 + 更軟（同 Quick Settings 7 掣一致） */
+                -10px 14px 0 2px rgba(0,0,0,0.14),
+                -10px 14px 22px 4px rgba(0,0,0,0.22) !important;
             text-shadow: none !important;
             z-index: 1000 !important;
             transition: none !important; /* 取消任何變色過渡 */
@@ -7666,8 +7688,9 @@ window.addEventListener('load', function() {
         inset -2px 2px 4px rgba(255,255,255,0.75),
         inset 3px -4px 7px rgba(0,0,0,0.10),
         inset 0 0 0 1px rgba(255,255,255,0.35),
-        -8px 11px 1px 1px rgba(0,0,0,0.18),
-        -8px 11px 16px 2px rgba(0,0,0,0.14) !important;
+        /* ✅ 外投影：加大 + 更遠 + 更軟（同 Quick Settings 7 掣一致） */
+        -10px 14px 0 2px rgba(0,0,0,0.14),
+        -10px 14px 22px 4px rgba(0,0,0,0.22) !important;
     }
   </style>
 
@@ -7707,17 +7730,33 @@ window.addEventListener('load', function() {
 
   <!-- ✅ 2026-04-14：強制 Quick Settings 7 掣投影統一（避免被全站光明陰影覆蓋） -->
   <style id="quicksettings-force-shadow">
-    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn,
-    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:hover,
-    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) #quickSettings .btn:active,
-    :is(.theme-dark, html[data-theme="dark"]) #quickSettings .btn,
-    :is(.theme-dark, html[data-theme="dark"]) #quickSettings .btn:hover,
-    :is(.theme-dark, html[data-theme="dark"]) #quickSettings .btn:active{
+    /* ✅ 2026-04-15：Quick Settings 7 掣投影最終統一（光/暗模式一致） */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"], .theme-dark, html[data-theme="dark"]) #quickSettings .btn:not(#languageToggle):not(#qrButton):not(.qr-close){
       box-shadow:
-        inset -2px 2px 4px rgba(255,255,255,0.75),
-        inset 3px -4px 7px rgba(0,0,0,0.10),
+        inset 2px 2px 5px rgba(255,255,255,0.95),
+        inset -5px -7px 12px rgba(0,0,0,0.14),
         inset 0 0 0 1px rgba(255,255,255,0.35),
-        -8px 11px 0 1px rgba(0,0,0,0.22) !important;
+        /* ✅ 外投影：加大 + 更遠 + 更軟（跟中英轉換掣） */
+        -10px 14px 0 2px rgba(0,0,0,0.14),
+        -10px 14px 22px 4px rgba(0,0,0,0.22) !important;
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"], .theme-dark, html[data-theme="dark"]) #quickSettings .btn:not(#languageToggle):not(#qrButton):not(.qr-close):hover{
+      box-shadow:
+        inset 2px 2px 6px rgba(255,255,255,0.95),
+        inset -6px -8px 14px rgba(0,0,0,0.16),
+        inset 0 0 0 1px rgba(255,255,255,0.35),
+        /* ✅ hover：投影同樣更大更軟（略加強） */
+        -11px 15px 0 2px rgba(0,0,0,0.15),
+        -11px 15px 24px 5px rgba(0,0,0,0.24) !important;
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"], .theme-dark, html[data-theme="dark"]) #quickSettings .btn:not(#languageToggle):not(#qrButton):not(.qr-close):active{
+      box-shadow:
+        inset -1px -1px 3px rgba(255,255,255,0.70),
+        inset 6px 8px 14px rgba(0,0,0,0.20),
+        inset 0 0 0 1px rgba(255,255,255,0.22),
+        /* ✅ active：投影收返少少，仍然保留距離同柔和 */
+        -7px 10px 0 2px rgba(0,0,0,0.12),
+        -7px 10px 16px 4px rgba(0,0,0,0.20) !important;
     }
   </style>
 
