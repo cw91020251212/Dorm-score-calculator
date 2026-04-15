@@ -4573,7 +4573,30 @@ function initSalaryTableClipboardFill(){
             const valBW = document.getElementById('tuneBurlapStrengthVal');
 
             function isZh(){ return (document.documentElement.getAttribute('data-lang') || 'zh') === 'zh'; }
+
+            // ✅ 字體大小調校：即時於狀態欄顯示「字型 + 大小」
+            function getUiFontSnapshot(){
+                const sampleEl = document.querySelector('.form-section .input-control') || document.querySelector('.form-section') || document.body;
+                const cs = getComputedStyle(sampleEl);
+                const rawFamily = (cs.fontFamily || '').trim();
+                const primaryFamily = rawFamily.split(',')[0]?.replace(/["']/g,'').trim();
+                const family = primaryFamily || rawFamily || 'default';
+                const sizePx = (cs.fontSize || '').trim();
+                const scale = Number(settings.fontScale ?? 1.0);
+                return { family, sizePx, scale };
+            }
+            function showFontStatus(){
+                try {
+                    if (typeof updateStatus !== 'function') return;
+                    const zh = isZh();
+                    const { sizePx, scale } = getUiFontSnapshot();
+                    const pct = Math.round(scale * 100);
+                    updateStatus(zh ? `字體大小：${pct}%（${sizePx}）` : `Text size: ${pct}% (${sizePx})`);
+                } catch(e) {}
+            }
+
             function syncTuneTexts(){
+
                 const zh = isZh();
                 const title = document.getElementById('tuneTitle');
                 if (title) title.textContent = zh ? '顯示調校' : 'Display Tuning';
@@ -4709,21 +4732,33 @@ function initSalaryTableClipboardFill(){
                 setAdvanced(!settings.tuneAdvanced, false);
             });
 
-            if (tuneBtn) tuneBtn.addEventListener('click', openTune);
+            if (tuneBtn) tuneBtn.addEventListener('click', function(){
+                try { if (typeof updateStatus === 'function') updateStatus(isZh() ? '已打開顯示調校（可拉動滑桿即時預覽）' : 'Display tuning opened (sliders preview live)'); } catch(e) {}
+                openTune();
+            });
 
             if (inc) inc.addEventListener('click', () => {
                 settings.fontScale = Math.min(settings.fontScale + 0.1, 1.6);
                 setUiSettings(settings);
+                requestAnimationFrame(showFontStatus);
             });
             if (dec) dec.addEventListener('click', () => {
                 settings.fontScale = Math.max(settings.fontScale - 0.1, 0.8);
                 setUiSettings(settings);
+                requestAnimationFrame(showFontStatus);
             });
             if (themeBtn) themeBtn.addEventListener('click', () => {
                 // Cycle: dark <-> light-vintage (paper texture only)
                 const t = (settings.theme === 'light' || settings.theme === 'light-simple') ? 'light-vintage' : (settings.theme || 'dark');
                 settings.theme = (t === 'dark') ? 'light-vintage' : 'dark';
                 setUiSettings(settings);
+                try {
+                    if (typeof updateStatus === 'function') {
+                        const zh = isZh();
+                        updateStatus(zh ? (settings.theme === 'dark' ? '已切換：深色主題' : '已切換：淺色（復古紙紋）')
+                                        : (settings.theme === 'dark' ? 'Theme: Dark' : 'Theme: Light (vintage paper)'));
+                    }
+                } catch(e) {}
             });
 
         }
@@ -5481,6 +5516,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const closeBtn = document.getElementById('closeModal');
             function openInfo() {
                 if (!overlay || !modal) return;
+                try { if (typeof updateStatus === 'function') updateStatus((currentLang === 'en') ? 'User guide opened' : '已打開使用須知'); } catch(e) {}
                 overlay.style.display = 'block';
                 modal.style.display = 'block';
                 modal.setAttribute('aria-hidden', 'false');
@@ -6732,13 +6768,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // 對外提供：齒輪面板 QR 按鈕會用到
             try { window.openQrModal = openModal; } catch(e) {}
             if(btn) btn.addEventListener('click', function(){
+                try { if (typeof updateStatus === 'function') updateStatus((currentLang === 'en') ? 'QR code opened' : '已打開 QR Code'); } catch(e) {}
                 openModal();
-                // 由齒輪面板按入嚟：即刻收起面板
-                try {
-                  const panel = document.getElementById('quickSettings');
-                  const gear = document.getElementById('qrButton');
-                  if (panel && gear) { panel.hidden = true; gear.setAttribute('aria-expanded','false'); }
-                } catch(e){}
+                // ✅ 重要：QR Code 唔會自動收起「功能鍵面板」；
+                // 面板只可以由用家再撳一次右上角交叉掣（齒輪）先會關閉。
             });
         })();
     </script>
