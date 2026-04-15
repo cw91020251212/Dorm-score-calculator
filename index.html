@@ -62,64 +62,10 @@
       })();
     </script>
     <!-- === Modal Font Sync Patch (2026-04-10) === -->
-    <style id="modal-font-sync">
-      /*
-        目的：同步你已選的「按鈕較大字體」觀感，
-        把主要彈窗（儲存確認/使用須知）字體略為加大。
-      */
-
-      /* 1) 儲存確認：兩個按鈕原本被鎖死 font-size:1rem !important，會顯得偏細 */
-      #saveNoticeModal .btn{
-        font-size: 1.15rem !important;
-        font-weight: 800 !important;
-      }
-      /* 小字副標（0.8em）在大字環境會太細，稍微拉回可讀 */
-      #saveNoticeModal #saveModalSubMsg{ font-size: 0.92em !important; }
-
-      /* 2) 使用須知（infoModal）：內文略加大，手機都清楚 */
-      #infoModal .modal-body{ font-size: 1.05rem !important; line-height: 1.65; }
-      @media (max-width: 600px){
-        #infoModal .modal-body{ font-size: 1.00rem !important; }
-      }
-
-      /* 3) 其他通用 modal：如果未被個別覆蓋，內文最少維持 1rem */
-      .modal .modal-body{ font-size: max(1rem, 0.95rem); }
-    </style>
+    
 
     <!-- === Panel Gold Bar + Section Spacing Patch (2026-04-11) === -->
-    <style id="panel-goldbar-spacing">
-      /* 把大標題(header)的「金色橫巴」效果套用到：計算結果/資料區 */
-      :is(.result-section, .data-section){
-        /* 用背景層做頂部 3px 金屬橫巴，避免同 ::before/::after 撞車 */
-        background-image:
-          linear-gradient(
-            90deg,
-            rgba(0,0,0,0.00) 0%,
-            rgba(255, 193, 7, 0.20) 12%,
-            rgba(255, 236, 170, 0.85) 26%,
-            rgba(212, 159, 38, 0.65) 50%,
-            rgba(255, 236, 170, 0.85) 74%,
-            rgba(255, 193, 7, 0.20) 88%,
-            rgba(0,0,0,0.00) 100%
-          );
-        background-size: 100% 3px;
-        background-repeat: no-repeat;
-        background-position: top left;
-        /* 原本 section padding 係 25px（你檔內有 .form-section, .result-section { padding:25px }），
-           加 6px 令橫巴唔貼住內容 */
-        padding-top: calc(25px + 6px);
-      }
-
-      /* 深色模式：加少少金屬光暈，肉眼更易見 */
-      :is(.theme-dark, html[data-theme="dark"]) :is(.result-section, .data-section){
-        box-shadow:
-          0 5px 15px rgba(0,0,0,0.2),
-          0 -1px 10px rgba(255, 193, 7, 0.18);
-      }
-
-      /* 加大「結果 / 資料」之間的距離（目前唔明顯） */
-      .data-section{ margin-top: clamp(18px, 2.2vh, 28px) !important; }
-    </style>
+    
 
     <!-- Android Chrome 白底閃：用 theme-color/背景預設壓住 -->
     <meta name="color-scheme" content="dark light">
@@ -2207,16 +2153,7 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 </style>
 
 	<!-- ✅ 2026-04-15：光明平板 - 大標題面板黃色圍邊外加最幼邊沿線 -->
-	<style id="light-tablet-header-hairline">
-	  /* 平板：介乎手機(520)同桌面之間 */
-	  @media (min-width: 521px) and (max-width: 900px){
-	    .theme-light-vintage .container > header{
-	      /* 外加一條最幼線，喺原本黃色圍邊之外 */
-	      outline: 1px solid rgba(212,159,38,0.65) !important;
-	      outline-offset: 0 !important; /* 貼住金邊，唔留虛位 */
-	    }
-	  }
-	</style>
+	
 
         <style>
         .modal-overlay {
@@ -2569,8 +2506,91 @@ html[data-theme] #calcBtn:active,
   視覺上等同漸變方向倒轉，令用家一眼見到可按。
   做法：用 background-position 由左→右切換，唔需要逐個掣寫反向顏色。
 -->
-<style id="hover-gradient-reverse-20260402">
-  :is(button, .btn, .status-btn, .mini-btn, .action-btn, .close-btn,
+
+
+<!-- === Select/下拉選擇欄：滑鼠提示（2026-04-02）===
+  目標：用家滑鼠移到「是否」呢類 select 時，都見到可互動提示（cursor + 變色/邊框）。
+-->
+
+
+
+<!-- === Button Font Preset D FIX (override !important) === -->
+
+    <!-- === Panel Gold Bar + Section Spacing Patch v2 (place last) === -->
+    
+
+    
+
+    <!-- === Round2 merged head patches (keep order) === -->
+    <style id="ag-merged-head-patches">
+/* === merged from #modal-font-sync === */
+/*
+        目的：同步你已選的「按鈕較大字體」觀感，
+        把主要彈窗（儲存確認/使用須知）字體略為加大。
+      */
+
+      /* 1) 儲存確認：兩個按鈕原本被鎖死 font-size:1rem !important，會顯得偏細 */
+      #saveNoticeModal .btn{
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+      }
+      /* 小字副標（0.8em）在大字環境會太細，稍微拉回可讀 */
+      #saveNoticeModal #saveModalSubMsg{ font-size: 0.92em !important; }
+
+      /* 2) 使用須知（infoModal）：內文略加大，手機都清楚 */
+      #infoModal .modal-body{ font-size: 1.05rem !important; line-height: 1.65; }
+      @media (max-width: 600px){
+        #infoModal .modal-body{ font-size: 1.00rem !important; }
+      }
+
+      /* 3) 其他通用 modal：如果未被個別覆蓋，內文最少維持 1rem */
+      .modal .modal-body{ font-size: max(1rem, 0.95rem); }
+
+/* === merged from #panel-goldbar-spacing === */
+/* 把大標題(header)的「金色橫巴」效果套用到：計算結果/資料區 */
+      :is(.result-section, .data-section){
+        /* 用背景層做頂部 3px 金屬橫巴，避免同 ::before/::after 撞車 */
+        background-image:
+          linear-gradient(
+            90deg,
+            rgba(0,0,0,0.00) 0%,
+            rgba(255, 193, 7, 0.20) 12%,
+            rgba(255, 236, 170, 0.85) 26%,
+            rgba(212, 159, 38, 0.65) 50%,
+            rgba(255, 236, 170, 0.85) 74%,
+            rgba(255, 193, 7, 0.20) 88%,
+            rgba(0,0,0,0.00) 100%
+          );
+        background-size: 100% 3px;
+        background-repeat: no-repeat;
+        background-position: top left;
+        /* 原本 section padding 係 25px（你檔內有 .form-section, .result-section { padding:25px }），
+           加 6px 令橫巴唔貼住內容 */
+        padding-top: calc(25px + 6px);
+      }
+
+      /* 深色模式：加少少金屬光暈，肉眼更易見 */
+      :is(.theme-dark, html[data-theme="dark"]) :is(.result-section, .data-section){
+        box-shadow:
+          0 5px 15px rgba(0,0,0,0.2),
+          0 -1px 10px rgba(255, 193, 7, 0.18);
+      }
+
+      /* 加大「結果 / 資料」之間的距離（目前唔明顯） */
+      .data-section{ margin-top: clamp(18px, 2.2vh, 28px) !important; }
+
+/* === merged from #light-tablet-header-hairline === */
+/* 平板：介乎手機(520)同桌面之間 */
+	  @media (min-width: 521px) and (max-width: 900px){
+	    .theme-light-vintage .container > header{
+	      /* 外加一條最幼線，喺原本黃色圍邊之外 */
+	      outline: 1px solid rgba(212,159,38,0.65) !important;
+	      outline-offset: 0 !important; /* 貼住金邊，唔留虛位 */
+	    }
+	  }
+
+/* === merged from #hover-gradient-reverse-20260402 === */
+:is(button, .btn, .status-btn, .mini-btn, .action-btn, .close-btn,
       button.language-toggle, button.qr-toggle) {
     /* 對漸變背景有效；純色背景不會有副作用 */
     background-size: 200% 200% !important;
@@ -2596,13 +2616,9 @@ html[data-theme] #calcBtn:active,
       background-position: initial !important;
     }
   }
-</style>
 
-<!-- === Select/下拉選擇欄：滑鼠提示（2026-04-02）===
-  目標：用家滑鼠移到「是否」呢類 select 時，都見到可互動提示（cursor + 變色/邊框）。
--->
-<style id="select-hover-cues-20260402">
-  /* 只針對可用嘅 select，禁用狀態唔好誤導 */
+/* === merged from #select-hover-cues-20260402 === */
+/* 只針對可用嘅 select，禁用狀態唔好誤導 */
   select:not([disabled]) {
     cursor: pointer !important;
     transition: filter 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
@@ -2626,21 +2642,17 @@ html[data-theme] #calcBtn:active,
     border-color: rgba(90, 70, 55, 0.55) !important;
     box-shadow: 0 0 0 2px rgba(90,70,55,0.18) inset !important;
   }
-</style>
 
-
-<!-- === Button Font Preset D FIX (override !important) === -->
-<style id="btn-font-preset-fix">
-  :is(#calcBtn,#resetBtn,#saveDataBtn,#cancelSaveBtn,#loadBtn).btn{
+/* === merged from #btn-font-preset-fix === */
+:is(#calcBtn,#resetBtn,#saveDataBtn,#cancelSaveBtn,#loadBtn).btn{
     font-size: 1.30rem !important;
     height: auto !important;
     min-height: 56px !important;
     padding: 14px 16px !important;
   }
-</style>
-    <!-- === Panel Gold Bar + Section Spacing Patch v2 (place last) === -->
-    <style id="panel-goldbar-spacing-v2">
-      /*
+
+/* === merged from #panel-goldbar-spacing-v2 === */
+/*
         v2 說明（保留註解）：上一版誤解了「資料」= data-section。
         用戶實際指「輸入資料」(form-section) 與「計算結果」(result-section)。
         下面已改為 v3 規則，並保留 id 以免多段CSS互相打架。
@@ -2725,10 +2737,9 @@ html[data-theme] #calcBtn:active,
           0 5px 15px rgba(0,0,0,0.2),
           0 -1px 10px rgba(255, 193, 7, 0.18) !important;
       }
-    </style>
 
-    <style id="ag-quick-settings">
-      /* 右上角齒輪彈出功能列（沿用原本按鈕視覺） */
+/* === merged from #ag-quick-settings === */
+/* 右上角齒輪彈出功能列（沿用原本按鈕視覺） */
       /* ✅ 重要：Quick Settings 7 掣唔可以壓住任何彈窗；所以 z-index 要低過 modal/backdrop */
       .quick-settings{ position: fixed; top: 58px; right: clamp(10px, 1.4vw, 20px); z-index: 900; }
       .quick-settings[hidden]{ display:none !important; }
@@ -2954,7 +2965,9 @@ html[data-theme] #calcBtn:active,
       }
       /* 額外：減少 header 視覺高度（裝飾層唔好令文字睇落『浮』得太高） */
       header .header-decoration{ height: 100% !important; }
+
     </style>
+
 </head>
 <body>
   <!-- ✅ 固定背景層：永遠唔跟住捲動 -->
@@ -3108,11 +3121,9 @@ html[data-theme] #calcBtn:active,
                     <button id="cancelSaveBtn" class="btn btn-danger no-text-shadow btn-3d" title="刪除已儲存的資料">
                         <i class="fas fa-ban"></i> <span id="cancelSaveText">取消儲存</span>
                     </button>
-                    <select id="deleteSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
                     <button id="loadBtn" class="btn btn-primary no-text-shadow btn-3d">
                         <i class="fas fa-download"></i> <span id="loadText">載入資料</span>
                     </button>
-                    <select id="loadSelect" class="input-control" style="max-width: 280px; display: none; margin-left: 10px;"></select>
                 </div>
             </div>
             
@@ -3183,13 +3194,6 @@ html[data-theme] #calcBtn:active,
             bar.classList.toggle('collapsed');
             updateStatusToggleLabel();
         }
-        
-    function exitApp() {
-        const toggleBtn = document.getElementById('statusToggleBtn');
-        if (toggleBtn) toggleBtn.addEventListener('click', toggleStatusBarVisibility);
-        updateStatusToggleLabel();
-        try { window.close(); } catch(e) {}
-    }
 
 const translations = {
             'zh': {
@@ -3676,12 +3680,7 @@ function initSalaryTableClipboardFill(){
             setVal('defect', 'no');
             
             // 收起載入／刪除下拉（如果有打開）
-            const loadSelect = document.getElementById('loadSelect');
-            const deleteSelect = document.getElementById('deleteSelect');
-            if (loadSelect) loadSelect.style.display = 'none';
-            if (deleteSelect) deleteSelect.style.display = 'none';
-            
-            // 重置結果區域
+// 重置結果區域
             document.querySelector('.result-container').innerHTML = `
                 <div class="result-placeholder" id="resultPlaceholder">
                     <i class="fas fa-file-alt"></i>
@@ -4841,93 +4840,7 @@ function initSalaryTableClipboardFill(){
   const obs = new MutationObserver(fitLangBtn);
   if(langBtn) obs.observe(langBtn, {childList:true, characterData:true, subtree:true});
 })();
-        const loadBtnEl = document.getElementById('loadBtn');
-        const loadSelectEl = document.getElementById('loadSelect');
-        if (loadBtnEl && loadSelectEl) {
-            loadBtnEl.addEventListener('click', showLoadSelect);
-            loadSelectEl.addEventListener('change', function() {
-                const name = this.value;
-                if (name) loadSavedData(name);
-                // 選擇後收起下拉
-                this.style.display = 'none';
-            });
-        }
-        const cancelSaveBtn = document.getElementById('cancelSaveBtn');
-        const deleteSelectEl = document.getElementById('deleteSelect');
-        if (cancelSaveBtn && deleteSelectEl) {
-            cancelSaveBtn.addEventListener('click', showDeleteSelect);
-            deleteSelectEl.addEventListener('change', function() {
-                const name = this.value;
-                if (!name) { this.style.display = 'none'; return; }
-                if (name === '__DELETE_ALL__') {
-                    deleteAllSavedData();
-                } else {
-                    deleteSavedData(name);
-                }
-                this.style.display = 'none';
-            });
-        }
-        
-        // 顯示載入選單並填入所有儲存的檔名（依建立時間新到舊）
-        function showLoadSelect() {
-            let savedData = {};
-            try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
-            const keys = Object.keys(savedData);
-            if (keys.length === 0) {
-                const msg = currentLang === 'zh' ? "沒有可載入的資料" : "No data to load";
-                updateStatus(msg);
-                return;
-            }
-            // 排序：按 createdAt 升序（舊到新）→ 最新會放最底；沒有 createdAt 的放最後
-            keys.sort((a,b) => (savedData[a].createdAt||0) - (savedData[b].createdAt||0));
-            const sel = document.getElementById('loadSelect');
-            sel.innerHTML = '';
-            // 先加一個提示選項
-            const placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.textContent = currentLang === 'zh' ? '選擇要載入的檔名…' : 'Select a record to load…';
-            sel.appendChild(placeholder);
-            for (const k of keys) {
-                const opt = document.createElement('option');
-                opt.value = k;
-                opt.textContent = k;
-                sel.appendChild(opt);
-            }
-            sel.style.display = 'inline-block';
-            sel.focus();
-        }
-        
-        // 顯示刪除選單（包含「刪除全部」及所有檔名）
-        function showDeleteSelect() {
-            let savedData = {};
-            try { savedData = JSON.parse(localStorage.getItem('dormData')) || {}; } catch(e) { savedData = {}; }
-            const keys = Object.keys(savedData);
-            if (keys.length === 0) {
-                const msg = currentLang === 'zh' ? '目前沒有可刪除的資料' : 'No saved record to delete';
-                updateStatus(msg);
-                return;
-            }
-            // 排序（舊到新）→ 最新會放最底
-            keys.sort((a,b) => (savedData[a].createdAt||0) - (savedData[b].createdAt||0));
-            const sel = document.getElementById('deleteSelect');
-            sel.innerHTML = '';
-            const placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.textContent = currentLang === 'zh' ? '選擇要刪除的檔名…' : 'Select a record to delete…';
-            sel.appendChild(placeholder);
-            const deleteAll = document.createElement('option');
-            deleteAll.value = '__DELETE_ALL__';
-            deleteAll.textContent = currentLang === 'zh' ? '刪除全部（Danger）' : 'Delete ALL (Danger)';
-            sel.appendChild(deleteAll);
-            for (const k of keys) {
-                const opt = document.createElement('option');
-                opt.value = k;
-                opt.textContent = k;
-                sel.appendChild(opt);
-            }
-            sel.style.display = 'inline-block';
-            sel.focus();
-        }
+
         
         // 刪除全部儲存資料
         function deleteAllSavedData() {
@@ -5787,17 +5700,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 </p>
             </div>
             <div class="modal-foot">
-                <button onclick="proceedSave()" class="btn btn-success btn-3d" style="margin-right: 10px;">
+                <button id="confirmSaveBtn" type="button" class="btn btn-success btn-3d" style="margin-right: 10px;">
                     <span class="lang-zh">✓ 確認</span>
                     <span class="lang-en" style="display:none;">✓ Confirm</span>
                 </button>
-                <button onclick="document.getElementById('saveNoticeModal').style.display='none'" class="btn btn-danger btn-3d">
+                <button id="cancelSaveModalBtn" type="button" class="btn btn-danger btn-3d">
                     <span class="lang-zh">✕ 取消</span>
                     <span class="lang-en" style="display:none;">✕ Cancel</span>
                 </button>
             </div>
         </div>
     </div>
+
+    <script>
+      (function bindSaveModalButtons(){
+        const modal = document.getElementById('saveNoticeModal');
+        const ok = document.getElementById('confirmSaveBtn');
+        const cancel = document.getElementById('cancelSaveModalBtn');
+        if (cancel) cancel.addEventListener('click', function(){ if(modal) modal.style.display='none'; });
+        if (ok) ok.addEventListener('click', function(){ if (window.proceedSave) window.proceedSave(); });
+      })();
+    </script>
 
   <style>
     /* 梅花間竹：相鄰相反相位，上下交替 */
@@ -6064,31 +5987,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
     <!-- ✅ 兩個浮動掣：圖標/文字盡量放大（紅圈內） -->
-    <style id="floating-btn-icon-size">
-      /* EN 掣：字盡量大但唔爆格 */
-      #languageToggle.language-toggle{
-        font-size: 1.05rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.5px;
-      }
-
-      /* 齒輪掣：Font Awesome 圖標盡量大 */
-      #qrButton.qr-toggle i{
-        font-size: 22px !important;
-        line-height: 1 !important;
-        color: inherit !important; /* ✅ 收起時：跟返按鈕原本顏色（唔強行變灰） */
-      }
-
-      /* ✅ 展開 Quick Settings 時：齒輪變 X 同時轉粉紅色（更搶眼） */
-      #qrButton.qr-toggle.open i{
-        color: #ff4fa3 !important;
-      }
-
-      @media (max-width: 600px){
-        #languageToggle.language-toggle{ font-size: 0.98rem !important; }
-        #qrButton.qr-toggle i{ font-size: 20px !important; }
-      }
-    </style>
+    
 
     <style>
         /* 以類名 fixed-btn 作最後保險覆蓋（含 !important）*/
@@ -7257,23 +7156,13 @@ input.input-control, select.input-control, textarea.input-control {
     customDeleteModal(keys);
   };
 })();
-
-    // 6. SWAP BUTTONS
-    function swapButton(id, newHandlerName) {
-        var oldBtn = document.getElementById(id);
-        if(!oldBtn) return;
-        var newBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-        newBtn.addEventListener('click', function(e){
-            e.preventDefault();
-            if(window[newHandlerName]) window[newHandlerName]();
-        });
-    }
-    setTimeout(function(){
-        swapButton('loadBtn', 'showLoadSelect');
-        swapButton('cancelSaveBtn', 'showDeleteSelect');
-        swapButton('saveDataBtn', 'saveCurrentData');
-    }, 200);
+  // 6. Bind toolbar buttons (clean version; no cloning)
+  ;(function bindToolbarButtons(){
+    const loadBtn = document.getElementById('loadBtn');
+    const delBtn  = document.getElementById('cancelSaveBtn');
+    if (loadBtn) loadBtn.addEventListener('click', function(e){ e.preventDefault(); if (window.showLoadSelect) window.showLoadSelect(); });
+    if (delBtn)  delBtn.addEventListener('click', function(e){ e.preventDefault(); if (window.showDeleteSelect) window.showDeleteSelect(); });
+  })();
 })();
 </script>
 
@@ -7301,9 +7190,265 @@ window.addEventListener('load', function() {
 </script>
 
 <!-- === FIX 2026-03-20: 統一「計算分數/重置表單」圓角 + 黃色掣立體漸變 + 恢復動畫 === -->
-<style id="btn-fix-20260320">
 
-  :root { --main-action-radius: 8px; }
+
+<!-- === FIX 2026-03-20 v10: 強制 calcBtn 掃光一定郁 === -->
+
+
+<!-- === FIX 2026-03-20 v23: 只加深圈住嗰兩組按鈕 + 白字加陰影（唔改米白背景） === -->
+
+
+
+<!-- === FIX 2026-03-20 v25: 圓角 + 兩個彈窗色彩/字色統一 === -->
+
+
+
+
+    <!-- 2026-03-21：取消所有按鈕陰影（按你最新要求） -->
+    <style>
+      /* 只針對兩個主按鈕：完全取消投影（包括 hover/active 任何覆寫） */
+      :is(#calcBtn, #resetBtn) {
+        filter: none !important; /* 防止用 filter 做陰影/發光 */
+      }
+      :is(#calcBtn, #resetBtn):hover,
+      :is(#calcBtn, #resetBtn):active {
+        filter: none !important;
+      }
+    </style>
+
+
+
+
+  <!-- 2026-03-21：最終覆蓋（放到文件最後）— 取消所有按鈕陰影（包括 hover/active/偽元素） -->
+  <style>
+    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+        #calcBtn, #resetBtn, #languageToggle, #qrButton,
+        .qr-close) {
+      filter: none !important; /* 防止用 filter 做陰影/發光 */
+    }
+    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+        #calcBtn, #resetBtn, #languageToggle, #qrButton,
+        .qr-close):hover,
+    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+        #calcBtn, #resetBtn, #languageToggle, #qrButton,
+        .qr-close):active {
+      filter: none !important;
+    }
+
+    /* 連偽元素都一併禁用，避免偽元素帶陰影/濾鏡 */
+    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+        #calcBtn, #resetBtn, #languageToggle, #qrButton,
+        .qr-close)::before,
+    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
+        #calcBtn, #resetBtn, #languageToggle, #qrButton,
+        .qr-close)::after {
+      filter: none !important;
+    }
+  </style>
+
+  <!-- 2026-03-21：還原 EN / QR 浮動按鈕陰影（跟隨參考檔：左下偏移立體感） -->
+  
+
+  <!-- 2026-03-21：全站按鈕投影式陰影（方向一致、位移少少；不影響右上 EN/QR） -->
+  
+
+  <!-- ✅ 2026-04-14：強制 Quick Settings 7 掣投影統一（避免被全站光明陰影覆蓋） -->
+  
+
+  <!-- 2026-04-12：修正黑暗模式「顯示調校」底部兩鍵缺少陰影 -->
+  
+
+  <!-- 2026-03-21：把紅圈位置（分數卡片/段落卡片）陰影改為跟按鈕一致 -->
+  
+
+  <!-- EXP 2026-03-22：所有白色文字自動加少少陰影（實驗用） -->
+  
+
+  <script id="exp-auto-white-text-shadow">
+    // EXP 2026-03-22: Auto add shadow to anything rendered as white-ish text
+    // Fix: avoid MutationObserver infinite loops / heavy re-scan that can freeze the page
+    (function(){
+      const CLASS = 'white-text-shadow';
+      const THRESH = 245; // near-white
+
+      let running = false;
+      let scheduled = false;
+
+      function isWhiteish(rgb){
+        // rgb(a) like: "rgb(255, 255, 255)" or "rgba(255, 255, 255, 1)"
+        const m = rgb && rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
+        if (!m) return false;
+        const r = +m[1], g = +m[2], b = +m[3];
+        const a = (m[4] == null) ? 1 : +m[4];
+        return a > 0.6 && r >= THRESH && g >= THRESH && b >= THRESH;
+      }
+
+      function apply(){
+        if (running) return;
+        running = true;
+        try {
+          const root = document.body;
+          if (!root) return;
+          const all = root.querySelectorAll('*');
+          all.forEach(el => {
+            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+
+            // 例外：QR modal 內全部唔加陰影（由 CSS 全禁）
+            if (el.closest && el.closest('#qrModal')) {
+              el.classList.remove(CLASS);
+              return;
+            }
+
+            // 例外（只限非黑暗模式）：儲存確認彈窗內文係黑字，唔應該被自動加陰影
+            // 黑暗模式會將內文改成白字，所以黑暗模式唔做呢個例外
+            const isDark = (document.documentElement.getAttribute('data-theme') === 'dark') ||
+                           document.documentElement.classList.contains('theme-dark');
+            if (!isDark && el.closest && el.closest('#saveNoticeModal')) {
+              el.classList.remove(CLASS);
+              return;
+            }
+
+            // Text detection:
+            // - normal elements: textContent
+            // - form controls: value / selected option text
+            let txt = (el.textContent || '').trim();
+            const tag = (el.tagName || '').toUpperCase();
+            if (!txt) {
+              if (tag === 'INPUT' || tag === 'TEXTAREA') txt = String(el.value || '').trim();
+              else if (tag === 'SELECT') {
+                const opt = el.selectedOptions && el.selectedOptions[0];
+                txt = String((opt && opt.textContent) || el.value || '').trim();
+              }
+            }
+            if (!txt) { el.classList.remove(CLASS); return; }
+
+            const cs = getComputedStyle(el);
+            if (!cs) return;
+            if (cs.visibility === 'hidden' || cs.display === 'none') { el.classList.remove(CLASS); return; }
+
+            if (isWhiteish(cs.color)) el.classList.add(CLASS);
+            else el.classList.remove(CLASS);
+          });
+        } finally {
+          running = false;
+        }
+      }
+
+      function scheduleApply(){
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(() => {
+          scheduled = false;
+          apply();
+        });
+      }
+
+      // Initial
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', scheduleApply, { once: true });
+      } else {
+        scheduleApply();
+      }
+
+      // Re-apply only when theme-related attrs change or new nodes inserted
+      const moTheme = new MutationObserver(scheduleApply);
+      moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['class','data-theme','style','data-lang'] });
+
+      const moDom = new MutationObserver(scheduleApply);
+      // 同時監察 style/class 變更（例如彈窗 display 切換），確保顏色變咗會即時重新判斷
+      moDom.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class','style']
+      });
+
+      window.__applyWhiteTextShadow = scheduleApply;
+    })();
+  </script>
+
+  <!-- 顯示調校：顏色提示最終覆蓋（放文件尾，確保一定生效） -->
+  
+
+<!-- 2026-04-01：歡迎畫面按鈕漸變＋3D 效果覆蓋 -->
+
+
+  <!-- 2026-04-11：右下角「返頂／到底」浮動掣 -->
+  
+
+  <div class="scroll-nav" aria-label="頁面快速導航">
+    <button class="scroll-btn" id="btnToTop" aria-label="返回頂部" type="button">▲</button>
+    <button class="scroll-btn" id="btnToBottom" aria-label="前往底部" type="button">▼</button>
+  </div>
+
+  <script>
+    (function(){
+      const btnToTop = document.getElementById('btnToTop');
+      const btnToBottom = document.getElementById('btnToBottom');
+      const scrollNav = document.querySelector('.scroll-nav');
+
+      btnToTop?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      btnToBottom?.addEventListener('click', () => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      });
+
+      function syncScrollNav(){
+        if (!scrollNav) return;
+        const show = window.scrollY > 200;
+        scrollNav.style.opacity = show ? '1' : '0';
+        scrollNav.style.pointerEvents = show ? 'auto' : 'none';
+      }
+
+      window.addEventListener('scroll', syncScrollNav, { passive: true });
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncScrollNav, { once: true });
+      } else {
+        syncScrollNav();
+      }
+    })();
+  </script>
+
+  <!-- === UPDATE 2026-04-13: Light Mode 取消所有金色橫巴 === -->
+  
+
+  <!-- ✅ FINAL FIX 2026-04-15: 強制大標題輪廓線 + 無化陰影（最高優先） -->
+  
+
+  <!-- ✅ FINAL FIX 2026-04-15: 光明模式七鍵貼邊輪廓線（最高優先） -->
+  
+
+  <!-- === Round2 merged body patches (keep order) === -->
+  <style id="ag-merged-body-patches">
+/* === merged from #floating-btn-icon-size === */
+/* EN 掣：字盡量大但唔爆格 */
+      #languageToggle.language-toggle{
+        font-size: 1.05rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.5px;
+      }
+
+      /* 齒輪掣：Font Awesome 圖標盡量大 */
+      #qrButton.qr-toggle i{
+        font-size: 22px !important;
+        line-height: 1 !important;
+        color: inherit !important; /* ✅ 收起時：跟返按鈕原本顏色（唔強行變灰） */
+      }
+
+      /* ✅ 展開 Quick Settings 時：齒輪變 X 同時轉粉紅色（更搶眼） */
+      #qrButton.qr-toggle.open i{
+        color: #ff4fa3 !important;
+      }
+
+      @media (max-width: 600px){
+        #languageToggle.language-toggle{ font-size: 0.98rem !important; }
+        #qrButton.qr-toggle i{ font-size: 20px !important; }
+      }
+
+/* === merged from #btn-fix-20260320 === */
+:root { --main-action-radius: 8px; }
 
   /* 1) 兩個主按鈕：圓角完全一致（光/暗版都一樣） */
   #calcBtn, #resetBtn {
@@ -7399,11 +7544,8 @@ window.addEventListener('load', function() {
     #calcBtn::after { animation: calcBtnSheen 3.2s ease-in-out infinite !important; }
   }
 
-</style>
-
-<!-- === FIX 2026-03-20 v10: 強制 calcBtn 掃光一定郁 === -->
-<style id="calcbtn-sheen-force-v10">
-  /* v13：唔再靠 #calcBtn::after（因為新版入面 ::after 太多衝突會被蓋走）。
+/* === merged from #calcbtn-sheen-force-v10 === */
+/* v13：唔再靠 #calcBtn::after（因為新版入面 ::after 太多衝突會被蓋走）。
      改用按鈕入面一個真實元素 .calcbtn-sheen，100% 唔會俾其他 ::after 規則影響。 */
   @keyframes calcBtnSheenElemV13 {
     /* 節奏：先停頓，再慢慢掃過（整體更柔和） */
@@ -7485,11 +7627,9 @@ window.addEventListener('load', function() {
       animation-play-state: running !important;
     }
   }
-</style>
 
-<!-- === FIX 2026-03-20 v23: 只加深圈住嗰兩組按鈕 + 白字加陰影（唔改米白背景） === -->
-<style id="modal-action-buttons-v24">
-  /* v24：
+/* === merged from #modal-action-buttons-v24 === */
+/* v24：
      1) #calcBtn 四隻圓角 = #resetBtn（兩個主題一致）
      2) 你圈住嗰兩個畫面：標題 + 兩個按鈕色要更「豐富/明亮」，白字要有陰影
      3) 顯示調校（displayTuneModal）同一套樣式俾黑暗版用（唔再太黑） */
@@ -7590,12 +7730,9 @@ window.addEventListener('load', function() {
     color: #fff !important;
     text-shadow: 0 2px 6px rgba(0,0,0,0.75) !important;
   }
-</style>
 
-
-<!-- === FIX 2026-03-20 v25: 圓角 + 兩個彈窗色彩/字色統一 === -->
-<style id="ui-fixes-v25">
-  /* 1) 主頁：計算分數圓角 = 重置圓角（兩主題一致） */
+/* === merged from #ui-fixes-v25 === */
+/* 1) 主頁：計算分數圓角 = 重置圓角（兩主題一致） */
   #calcBtn, #resetBtn { border-radius: 8px !important; }
   #calcBtn::before { border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
   #calcBtn .calcbtn-sheen { border-radius: 8px !important; }
@@ -7810,55 +7947,9 @@ window.addEventListener('load', function() {
     font-size: 16px !important;
     padding: 0 12px !important;
   }
-</style>
 
-
-
-    <!-- 2026-03-21：取消所有按鈕陰影（按你最新要求） -->
-    <style>
-      /* 只針對兩個主按鈕：完全取消投影（包括 hover/active 任何覆寫） */
-      :is(#calcBtn, #resetBtn) {
-        filter: none !important; /* 防止用 filter 做陰影/發光 */
-      }
-      :is(#calcBtn, #resetBtn):hover,
-      :is(#calcBtn, #resetBtn):active {
-        filter: none !important;
-      }
-    </style>
-
-
-
-
-  <!-- 2026-03-21：最終覆蓋（放到文件最後）— 取消所有按鈕陰影（包括 hover/active/偽元素） -->
-  <style>
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        #calcBtn, #resetBtn, #languageToggle, #qrButton,
-        .qr-close) {
-      filter: none !important; /* 防止用 filter 做陰影/發光 */
-    }
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        #calcBtn, #resetBtn, #languageToggle, #qrButton,
-        .qr-close):hover,
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        #calcBtn, #resetBtn, #languageToggle, #qrButton,
-        .qr-close):active {
-      filter: none !important;
-    }
-
-    /* 連偽元素都一併禁用，避免偽元素帶陰影/濾鏡 */
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        #calcBtn, #resetBtn, #languageToggle, #qrButton,
-        .qr-close)::before,
-    :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
-        #calcBtn, #resetBtn, #languageToggle, #qrButton,
-        .qr-close)::after {
-      filter: none !important;
-    }
-  </style>
-
-  <!-- 2026-03-21：還原 EN / QR 浮動按鈕陰影（跟隨參考檔：左下偏移立體感） -->
-  <style id="restore-floating-btn-shadow">
-    /* 跟隨參考檔（index (3).html）：內陰影 + 左下投影 */
+/* === merged from #restore-floating-btn-shadow === */
+/* 跟隨參考檔（index (3).html）：內陰影 + 左下投影 */
     #languageToggle.language-toggle,
     #qrButton.qr-toggle,
     #languageToggle.language-toggle:hover,
@@ -7873,11 +7964,9 @@ window.addEventListener('load', function() {
         -8px 10px 0 0 rgba(0,0,0,0.14),
         -8px 10px 14px 0 rgba(0,0,0,0.20) !important;
     }
-  </style>
 
-  <!-- 2026-03-21：全站按鈕投影式陰影（方向一致、位移少少；不影響右上 EN/QR） -->
-  <style id="global-button-drop-shadow">
-    /* 光明版先保留立體陰影；黑暗版唔喺度加（避免暗底肉酸） */
+/* === merged from #global-button-drop-shadow === */
+/* 光明版先保留立體陰影；黑暗版唔喺度加（避免暗底肉酸） */
     :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) 
       :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
           input[type="button"], input[type="submit"], input[type="reset"]):not(#languageToggle):not(#qrButton):not(.qr-close) {
@@ -7907,11 +7996,9 @@ window.addEventListener('load', function() {
         -2px 3px 0 1px rgba(0,0,0,0.16),
         -2px 3px 8px 2px rgba(0,0,0,0.12) !important;
     }
-  </style>
 
-  <!-- ✅ 2026-04-14：強制 Quick Settings 7 掣投影統一（避免被全站光明陰影覆蓋） -->
-  <style id="quicksettings-force-shadow">
-    /* ✅ 2026-04-15：Quick Settings 7 掣投影最終統一（光/暗模式一致） */
+/* === merged from #quicksettings-force-shadow === */
+/* ✅ 2026-04-15：Quick Settings 7 掣投影最終統一（光/暗模式一致） */
     :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"], .theme-dark, html[data-theme="dark"]) #quickSettings .btn:not(#languageToggle):not(#qrButton):not(.qr-close){
       box-shadow:
         inset 2px 2px 5px rgba(255,255,255,0.95),
@@ -7939,11 +8026,9 @@ window.addEventListener('load', function() {
         -6px 8px 0 0 rgba(0,0,0,0.12),
         -6px 8px 12px 0 rgba(0,0,0,0.18) !important;
     }
-  </style>
 
-  <!-- 2026-04-12：修正黑暗模式「顯示調校」底部兩鍵缺少陰影 -->
-  <style id="restore-displaytune-actions-shadow-dark">
-    /* 只補回 #displayTuneModal 底部「重置 / 完成」兩個掣陰影（黑暗模式） */
+/* === merged from #restore-displaytune-actions-shadow-dark === */
+/* 只補回 #displayTuneModal 底部「重置 / 完成」兩個掣陰影（黑暗模式） */
     :is(.theme-dark, html[data-theme="dark"]) #displayTuneModal :is(#tuneReset, #tuneDone) {
       box-shadow:
         inset -1px 1px 2px rgba(255,255,255,0.55),
@@ -7965,11 +8050,9 @@ window.addEventListener('load', function() {
         -2px 3px 0 1px rgba(0,0,0,0.16),
         -2px 3px 8px 2px rgba(0,0,0,0.12) !important;
     }
-  </style>
 
-  <!-- 2026-03-21：把紅圈位置（分數卡片/段落卡片）陰影改為跟按鈕一致 -->
-  <style id="apply-button-shadow-to-highlight-and-sections">
-    /* 2026-03-22：黑暗版—4 個主要按鈕白字保留少少陰影（計算分數除外） */
+/* === merged from #apply-button-shadow-to-highlight-and-sections === */
+/* 2026-03-22：黑暗版—4 個主要按鈕白字保留少少陰影（計算分數除外） */
     :is(.theme-dark, html[data-theme="dark"]) :is(#resetBtn, #saveDataBtn, #cancelSaveBtn, #loadBtn) :is(span, i) {
       text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important;
     }
@@ -8028,11 +8111,9 @@ window.addEventListener('load', function() {
         0 0 18px rgba(0,0,0,0.20),
         0 0 42px rgba(0,0,0,0.16) !important;
     }
-  </style>
 
-  <!-- EXP 2026-03-22：所有白色文字自動加少少陰影（實驗用） -->
-  <style id="exp-white-text-shadow">
-    .white-text-shadow {
+/* === merged from #exp-white-text-shadow === */
+.white-text-shadow {
       text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important;
     }
     /* 補充：有啲手機瀏覽器對 input/select 文字陰影較挑剔，直接加多一層 */
@@ -8082,114 +8163,9 @@ window.addEventListener('load', function() {
       font-size: 1.05rem !important;
       font-weight: 600 !important;
     }
-  </style>
 
-  <script id="exp-auto-white-text-shadow">
-    // EXP 2026-03-22: Auto add shadow to anything rendered as white-ish text
-    // Fix: avoid MutationObserver infinite loops / heavy re-scan that can freeze the page
-    (function(){
-      const CLASS = 'white-text-shadow';
-      const THRESH = 245; // near-white
-
-      let running = false;
-      let scheduled = false;
-
-      function isWhiteish(rgb){
-        // rgb(a) like: "rgb(255, 255, 255)" or "rgba(255, 255, 255, 1)"
-        const m = rgb && rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
-        if (!m) return false;
-        const r = +m[1], g = +m[2], b = +m[3];
-        const a = (m[4] == null) ? 1 : +m[4];
-        return a > 0.6 && r >= THRESH && g >= THRESH && b >= THRESH;
-      }
-
-      function apply(){
-        if (running) return;
-        running = true;
-        try {
-          const root = document.body;
-          if (!root) return;
-          const all = root.querySelectorAll('*');
-          all.forEach(el => {
-            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
-
-            // 例外：QR modal 內全部唔加陰影（由 CSS 全禁）
-            if (el.closest && el.closest('#qrModal')) {
-              el.classList.remove(CLASS);
-              return;
-            }
-
-            // 例外（只限非黑暗模式）：儲存確認彈窗內文係黑字，唔應該被自動加陰影
-            // 黑暗模式會將內文改成白字，所以黑暗模式唔做呢個例外
-            const isDark = (document.documentElement.getAttribute('data-theme') === 'dark') ||
-                           document.documentElement.classList.contains('theme-dark');
-            if (!isDark && el.closest && el.closest('#saveNoticeModal')) {
-              el.classList.remove(CLASS);
-              return;
-            }
-
-            // Text detection:
-            // - normal elements: textContent
-            // - form controls: value / selected option text
-            let txt = (el.textContent || '').trim();
-            const tag = (el.tagName || '').toUpperCase();
-            if (!txt) {
-              if (tag === 'INPUT' || tag === 'TEXTAREA') txt = String(el.value || '').trim();
-              else if (tag === 'SELECT') {
-                const opt = el.selectedOptions && el.selectedOptions[0];
-                txt = String((opt && opt.textContent) || el.value || '').trim();
-              }
-            }
-            if (!txt) { el.classList.remove(CLASS); return; }
-
-            const cs = getComputedStyle(el);
-            if (!cs) return;
-            if (cs.visibility === 'hidden' || cs.display === 'none') { el.classList.remove(CLASS); return; }
-
-            if (isWhiteish(cs.color)) el.classList.add(CLASS);
-            else el.classList.remove(CLASS);
-          });
-        } finally {
-          running = false;
-        }
-      }
-
-      function scheduleApply(){
-        if (scheduled) return;
-        scheduled = true;
-        requestAnimationFrame(() => {
-          scheduled = false;
-          apply();
-        });
-      }
-
-      // Initial
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', scheduleApply, { once: true });
-      } else {
-        scheduleApply();
-      }
-
-      // Re-apply only when theme-related attrs change or new nodes inserted
-      const moTheme = new MutationObserver(scheduleApply);
-      moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['class','data-theme','style','data-lang'] });
-
-      const moDom = new MutationObserver(scheduleApply);
-      // 同時監察 style/class 變更（例如彈窗 display 切換），確保顏色變咗會即時重新判斷
-      moDom.observe(document.body || document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class','style']
-      });
-
-      window.__applyWhiteTextShadow = scheduleApply;
-    })();
-  </script>
-
-  <!-- 顯示調校：顏色提示最終覆蓋（放文件尾，確保一定生效） -->
-  <style id="tuneColorOverrides">
-    /* 預設掣：深→淺 + 暖色（覆蓋後段 #displayTuneModal 統一灰底規則） */
+/* === merged from #tuneColorOverrides === */
+/* 預設掣：深→淺 + 暖色（覆蓋後段 #displayTuneModal 統一灰底規則） */
     #displayTuneModal .tune-presets .tune-preset.preset-ultra-black{ background: linear-gradient(180deg, #1a1a1e 0%, #0f0f12 100%) !important; color:#fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important; }
     #displayTuneModal .tune-presets .tune-preset.preset-extra-deep{  background: linear-gradient(180deg, #3a3a42 0%, #24242b 100%) !important; color:#fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important; }
     #displayTuneModal .tune-presets .tune-preset.preset-deeper{      background: linear-gradient(180deg, #61616d 0%, #3e3e48 100%) !important; color:#fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important; }
@@ -8202,11 +8178,9 @@ window.addEventListener('load', function() {
       color:#1b1b1b !important;
       text-shadow: none !important;
     }
-  </style>
 
-<!-- 2026-04-01：歡迎畫面按鈕漸變＋3D 效果覆蓋 -->
-<style id="welcomeButton3DOverrides">
-  /* 「開始使用」：以白色為主、極淺淺紫漸變 + 少少 3D（好淡） */
+/* === merged from #welcomeButton3DOverrides === */
+/* 「開始使用」：以白色為主、極淺淺紫漸變 + 少少 3D（好淡） */
   :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"],
       .theme-dark, html[data-theme="dark"]) #welcomeStart.welcome-btn.primary {
     background:
@@ -8236,11 +8210,9 @@ window.addEventListener('load', function() {
       inset 0 -8px 14px rgba(84, 60, 140, 0.10),
       0 3px 0 rgba(0,0,0,0.16) !important;
   }
-</style>
 
-  <!-- 2026-04-11：右下角「返頂／到底」浮動掣 -->
-  <style id="scrollNavButtons">
-    .scroll-nav{
+/* === merged from #scrollNavButtons === */
+.scroll-nav{
       position: fixed;
       right: calc(10px + env(safe-area-inset-right, 0px));
       bottom: calc(12px + env(safe-area-inset-bottom, 0px));
@@ -8422,46 +8394,9 @@ window.addEventListener('load', function() {
       button#btnToTop.scroll-btn,
       button#btnToBottom.scroll-btn{ width: 36px !important; height: 36px !important; font-size: 0.85rem !important; }
     }
-  </style>
 
-  <div class="scroll-nav" aria-label="頁面快速導航">
-    <button class="scroll-btn" id="btnToTop" aria-label="返回頂部" type="button">▲</button>
-    <button class="scroll-btn" id="btnToBottom" aria-label="前往底部" type="button">▼</button>
-  </div>
-
-  <script>
-    (function(){
-      const btnToTop = document.getElementById('btnToTop');
-      const btnToBottom = document.getElementById('btnToBottom');
-      const scrollNav = document.querySelector('.scroll-nav');
-
-      btnToTop?.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-
-      btnToBottom?.addEventListener('click', () => {
-        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-      });
-
-      function syncScrollNav(){
-        if (!scrollNav) return;
-        const show = window.scrollY > 200;
-        scrollNav.style.opacity = show ? '1' : '0';
-        scrollNav.style.pointerEvents = show ? 'auto' : 'none';
-      }
-
-      window.addEventListener('scroll', syncScrollNav, { passive: true });
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', syncScrollNav, { once: true });
-      } else {
-        syncScrollNav();
-      }
-    })();
-  </script>
-
-  <!-- === UPDATE 2026-04-13: Light Mode 取消所有金色橫巴 === -->
-  <style id="light-mode-remove-goldbars">
-    /* 光明版：輸入資料 / 計算結果 / 已儲存資料 — 唔要金色橫巴（保留頂部藍色大標題底） */
+/* === merged from #light-mode-remove-goldbars === */
+/* 光明版：輸入資料 / 計算結果 / 已儲存資料 — 唔要金色橫巴（保留頂部藍色大標題底） */
     :is(.theme-light, .theme-light-simple, .theme-light-vintage, html[data-theme="light"]) .container :is(.form-section, .result-section, .data-section){
       background-image: none !important;
       background-position: initial !important;
@@ -8496,11 +8431,9 @@ window.addEventListener('load', function() {
       box-shadow: none !important;
       height: 0 !important;
     }
-  </style>
 
-  <!-- ✅ FINAL FIX 2026-04-15: 強制大標題輪廓線 + 無化陰影（最高優先） -->
-  <style id="final-title-outline-fix">
-    /* 確保裝飾層永遠喺文字後面，唔會遮住文字描邊/陰影 */
+/* === merged from #final-title-outline-fix === */
+/* 確保裝飾層永遠喺文字後面，唔會遮住文字描邊/陰影 */
     header .header-decoration{ z-index: 0 !important; }
     header h1{ position: relative; z-index: 2 !important; }
 
@@ -8544,11 +8477,9 @@ window.addEventListener('load', function() {
       /* 第 1 條：貼住金邊外側的 1px hairline；第 2 條：原本霧化陰影 */
       box-shadow: 0 0 0 1px rgba(58,46,34,0.62), 0 0 18px rgba(0,0,0,0.22), 0 0 42px rgba(0,0,0,0.18) !important;
     }
-  </style>
 
-  <!-- ✅ FINAL FIX 2026-04-15: 光明模式七鍵貼邊輪廓線（最高優先） -->
-  <style id="final-quicksettings-outline-fix">
-    /*
+/* === merged from #final-quicksettings-outline-fix === */
+/*
       問題：黑暗模式見到輪廓線，但光明模式被較高 specificity 規則覆蓋，睇落似無加。
       解法：用光明主題 selector + !important，直接鎖死 1px 貼邊深色輪廓線。
     */
@@ -8583,6 +8514,8 @@ window.addEventListener('load', function() {
         inset 0 0 0 1px rgba(255,255,255,0.22),
         -6px 8px 0 0 rgba(0,0,0,0.20) !important;
     }
+
   </style>
+
 </body>
 </html>
