@@ -3459,6 +3459,8 @@ function initSalaryTableClipboardFill(){
             updateStatusToggleLabel();
             // 同步更新「歡迎畫面開關」提示字（title/aria-label）
             try { if (typeof window.refreshWelcomeToggle === 'function') window.refreshWelcomeToggle(); } catch(e) {}
+            // 同步更新右上角「設定/關閉」齒輪/X（title/aria-label + icon）
+            try { if (typeof window.refreshQuickSettingsToggle === 'function') window.refreshQuickSettingsToggle(); } catch(e) {}
             
             // 更新數據狀態文本
             updateDataCount();
@@ -3530,26 +3532,46 @@ function initSalaryTableClipboardFill(){
         });
 
         // ✅ 右上角齒輪：彈出功能鍵（水平排列；不會因揀功能而自動收起）
+        // ✅ 改良：展開時把齒輪圖示改成「X」，令用家一眼知道可以關閉
         (function(){
             const toggle = document.getElementById('qrButton');
             const panel = document.getElementById('quickSettings');
             if (!toggle || !panel) return;
 
-            const open = () => { panel.hidden = false; toggle.setAttribute('aria-expanded','true'); };
-            const close = () => { panel.hidden = true; toggle.setAttribute('aria-expanded','false'); };
+            const icon = toggle.querySelector('i');
             const isOpen = () => !panel.hidden;
 
-            toggle.setAttribute('aria-expanded','false');
+            function updateToggleUi(){
+                const opened = isOpen();
+                // icon
+                if (icon) icon.className = opened ? 'fas fa-xmark' : 'fas fa-gear';
+                // aria/title（跟語言同步）
+                const labelZh = opened ? '關閉' : '設定';
+                const labelEn = opened ? 'Close' : 'Settings';
+                const label = (typeof currentLang === 'string' && currentLang === 'en') ? labelEn : labelZh;
+                try { toggle.setAttribute('aria-label', label); } catch(e) {}
+                try { toggle.setAttribute('title', label); toggle.title = label; } catch(e) {}
+                try { toggle.setAttribute('aria-expanded', opened ? 'true' : 'false'); } catch(e) {}
+                toggle.classList.toggle('open', opened);
+            }
+
+            const open = () => { panel.hidden = false; updateToggleUi(); };
+            const close = () => { panel.hidden = true; updateToggleUi(); };
+
+            // 俾 setLanguage() 用：語言切換時都會重新同步（包括 icon/label）
+            try { window.refreshQuickSettingsToggle = updateToggleUi; } catch(e) {}
+
             toggle.addEventListener('click', (e) => {
               e.stopPropagation();
               isOpen() ? close() : open();
             });
 
             // ✅ 重要：揀任何功能都唔會自動收起。
-            // ✅ 收起規則：只可以「再撳一次齒輪」先會收起。
+            // ✅ 收起規則：只可以「再撳一次齒輪／X」先會收起。
             // （唔會因為撳畫面其他地方 / ESC 而自動消失）
 
-            // NOTE: 刻意唔加 document click/ESC 自動 close
+            // 初始化一次 UI
+            updateToggleUi();
         })();
         
         // 計算規則
@@ -5989,6 +6011,12 @@ document.addEventListener('DOMContentLoaded', function() {
       #qrButton.qr-toggle i{
         font-size: 22px !important;
         line-height: 1 !important;
+        color: inherit !important; /* ✅ 收起時：跟返按鈕原本顏色（唔強行變灰） */
+      }
+
+      /* ✅ 展開 Quick Settings 時：齒輪變 X 同時轉粉紅色（更搶眼） */
+      #qrButton.qr-toggle.open i{
+        color: #ff4fa3 !important;
       }
 
       @media (max-width: 600px){
