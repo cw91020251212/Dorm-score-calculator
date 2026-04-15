@@ -1,6 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- === Anti-flash preload (FOUC/主題閃爍修正) === -->
+    <style id="ag-anti-flash">
+      /* 目的：避免首次 paint 用錯主題/字體後再跳，導致『閃幾閃』 */
+      /* 不再用 opacity:0（會變成『先白/黑一閃再出現』）；
+         改為：先鎖定背景/主題/濾鏡，減少整頁重繪感覺 */
+      html.ag-preload *{ transition:none !important; animation:none !important; }
+      /* 防止 GitHub Pages 首次 paint 用到瀏覽器預設白底 */
+      html, body{ background: linear-gradient(180deg, rgba(255,255,255,0.26) 0%, rgba(0,0,0,0.58) 100%), linear-gradient(180deg, #1e3a5f 0%, #0f2a4a 100%); }
+      html.theme-light-vintage, html.theme-light-vintage body{ background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(0,0,0,0.48) 100%), linear-gradient(180deg, #1e3a5f 0%, #0f2a4a 100%); }
+    </style>
+    <script id="ag-early-theme">
+      (function(){
+        var root = document.documentElement;
+        root.classList.add('ag-preload');
+
+        // 1) 盡早讀 uiSettings，避免 theme/filter/fontScale 之後先套用造成整頁跳
+        var s = {};
+        try{
+          var raw = localStorage.getItem('uiSettings') || '{}';
+          s = JSON.parse(raw) || {};
+        }catch(e){ s = {}; }
+
+        // 2) Theme（同 applyUiSettings 對齊）
+        var t = s.theme || 'dark';
+        if (t === 'light' || t === 'light-simple') t = 'light-vintage';
+        root.classList.remove('theme-dark','theme-light','theme-light-simple','theme-light-vintage');
+        if (t === 'light-vintage') root.classList.add('theme-light-vintage');
+        else root.classList.add('theme-dark');
+
+        // 3) Display filter（同 applyUiSettings 對齊）
+        var b = Number((s.brightness != null) ? s.brightness : 1);
+        var c = Number((s.contrast   != null) ? s.contrast   : 1);
+        var sat = Number((s.saturate != null) ? s.saturate   : 1);
+        var w = Math.max(0, Math.min(0.35, Number((s.warmth != null) ? s.warmth : 0)));
+        var filter = 'brightness(' + b + ') contrast(' + c + ') saturate(' + sat + ') sepia(' + w + ') hue-rotate(' + (-w*14).toFixed(2) + 'deg)';
+        root.style.setProperty('--display-filter', filter);
+
+        // 4) Paper/burlap vars（避免 light-vintage / 背景紋理遲套用）
+        var paperTint = Math.max(0, Math.min(1, Number((s.paperTint != null) ? s.paperTint : 0.65)));
+        var paperStrength = Math.max(0, Math.min(1, Number((s.paperStrength != null) ? s.paperStrength : 0.65)));
+        root.style.setProperty('--paper-tint', String(paperTint));
+        root.style.setProperty('--paper-strength', String(paperStrength));
+        var burlapStrength = Math.max(0, Math.min(1.4, Number((s.burlapStrength != null) ? s.burlapStrength : 1.00)));
+        root.style.setProperty('--ag-bg-texture-opacity-dark', String(0.55 * burlapStrength));
+        root.style.setProperty('--ag-bg-texture-opacity-light', String(0.40 * burlapStrength));
+
+        // 5) 盡早 set 語言屬性（避免首次出現 EN/中跳）
+        try{
+          var lang = localStorage.getItem('appLangPref') || localStorage.getItem('welcomeLangPref');
+          if (lang) root.setAttribute('data-lang', lang);
+        }catch(e){}
+
+        // 6) preload class 只係用嚟禁 transition/animation
+        if (document.readyState === 'loading'){
+          document.addEventListener('DOMContentLoaded', function(){ root.classList.remove('ag-preload'); }, {once:true});
+        }else{
+          root.classList.remove('ag-preload');
+        }
+      })();
+    </script>
     <!-- === Modal Font Sync Patch (2026-04-10) === -->
     <style id="modal-font-sync">
       /*
@@ -60,6 +120,11 @@
       /* 加大「結果 / 資料」之間的距離（目前唔明顯） */
       .data-section{ margin-top: clamp(18px, 2.2vh, 28px) !important; }
     </style>
+
+    <!-- Android Chrome 白底閃：用 theme-color/背景預設壓住 -->
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#0f2a4a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f1f1f5" media="(prefers-color-scheme: light)">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
