@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-score-theme="gold">
 <head>
     <!-- === Anti-flash preload (FOUC/主題閃爍修正) === -->
     <style id="ag-anti-flash">
@@ -721,20 +721,141 @@
             color: var(--accent);
         }
         
-        .highlight-score {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+        /* === 總分卡重新設計（同時兼顧中/英文） =====================
+           目標：
+           - 燈膽係『實體 UI 元素』，唔係水印，清晰易認
+           - 英文標題較長都唔會迫爆：標題可換行，數字永遠獨立一行
+           - 提供多套配色，只需改 html dataset 即可切換
+        ============================================================ */
+
+        :root{
+            /* 3 套配色：gold / ice / mint（預設 gold） */
+            --score-theme: gold;
+
+            /* 結構/尺寸 */
+            --score-card-pad-y: 18px;
+            --score-card-pad-x: 16px;
+            --score-bulb-size: 54px;      /* 燈泡圖標大小 */
+            --score-bulb-gap: 10px;
+
+            /* 色彩（會被 theme 覆寫） */
+            --score-accent: #ffc107;
+            --score-accent-2: #ffdd6e;
+            --score-bg: rgba(0,0,0,0.20);
+            --score-border: rgba(255,193,7,0.85);
+            --score-glow: rgba(255,193,7,0.34);
+
+            /* 燈泡線條 */
+            --bulb-stroke: rgba(255, 213, 79, 1);
+            --bulb-filament: rgba(255, 248, 219, 1);
+            --bulb-base: rgba(255, 193, 7, 0.95);
+        }
+
+        /* theme：Gold（暖金） */
+        html[data-score-theme="gold"]{
+            --score-accent: #ffc107;
+            --score-accent-2: #ffe08a;
+            --score-bg: rgba(0,0,0,0.20);
+            --score-border: rgba(255,193,7,0.85);
+            --score-glow: rgba(255,193,7,0.34);
+            --bulb-stroke: rgba(255, 213, 79, 1);
+            --bulb-filament: rgba(255, 248, 219, 1);
+            --bulb-base: rgba(255, 193, 7, 0.95);
+        }
+
+        /* theme：Ice（藍白冰晶） */
+        html[data-score-theme="ice"]{
+            --score-accent: #79c7ff;
+            --score-accent-2: #d6f0ff;
+            --score-bg: rgba(10, 30, 55, 0.26);
+            --score-border: rgba(121,199,255,0.75);
+            --score-glow: rgba(121,199,255,0.30);
+            --bulb-stroke: rgba(214, 240, 255, 1);
+            --bulb-filament: rgba(255, 255, 255, 0.98);
+            --bulb-base: rgba(121, 199, 255, 0.90);
+        }
+
+        /* theme：Mint（薄荷綠） */
+        html[data-score-theme="mint"]{
+            --score-accent: #4be3b1;
+            --score-accent-2: #c9fff0;
+            --score-bg: rgba(0, 0, 0, 0.18);
+            --score-border: rgba(75,227,177,0.70);
+            --score-glow: rgba(75,227,177,0.26);
+            --bulb-stroke: rgba(201, 255, 240, 1);
+            --bulb-filament: rgba(255, 255, 255, 0.98);
+            --bulb-base: rgba(75, 227, 177, 0.90);
+        }
+
+        .highlight-score{
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
             gap: 10px;
             margin: 20px 0;
-            padding: 18px 16px;
-            color: var(--warning);
-            text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            border: 2px solid var(--warning);
+            padding: var(--score-card-pad-y) var(--score-card-pad-x);
+            border-radius: 14px;
+            border: 2px solid var(--score-border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.0)), var(--score-bg);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 上半：燈泡 + 標題（英文字長都可換行） */
+        .highlight-score .score-head{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--score-bulb-gap);
+            flex-wrap: wrap;
+        }
+
+        .highlight-score .score-bulb{
+            width: var(--score-bulb-size);
+            height: var(--score-bulb-size);
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            filter: drop-shadow(0 0 14px var(--score-glow));
+        }
+        .highlight-score .score-bulb svg{ width: 100%; height: 100%; }
+        .highlight-score .score-bulb .bulb-stroke{ stroke: var(--bulb-stroke); }
+        .highlight-score .score-bulb .bulb-filament{ stroke: var(--bulb-filament); }
+        .highlight-score .score-bulb .bulb-base{ stroke: var(--bulb-base); }
+
+        .highlight-score .score-title{
+            font-family: "ZCOOL KuaiLe", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            font-size: 2.05rem;
+            font-weight: 650;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+            color: var(--score-accent-2);
+            text-shadow: 0 0 12px var(--score-glow);
+            max-width: 18ch; /* 英文會較長：容許換行 */
+        }
+        html[data-lang="zh"] .highlight-score .score-title{
+            font-family: "Fredoka", "ZCOOL KuaiLe", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            letter-spacing: 0.04em;
+        }
+
+        /* 下半：分數值（永遠獨立一行，唔受英文標題影響） */
+        .highlight-score .score-value{
+            font-family: "Abril Fatface", "Montserrat", "Segoe UI", "Microsoft JhengHei", sans-serif;
+            font-size: clamp(2.8rem, 6.2vw, 4.1rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: 0.02em;
+            font-variant-numeric: tabular-nums;
+            color: var(--score-accent);
+            text-shadow: 0 0 18px var(--score-glow);
+        }
+
+        /* 小裝置：標題/燈泡縮少少，避免迫 */
+        @media (max-width: 480px){
+            :root{ --score-bulb-size: 48px; }
+            .highlight-score .score-title{ font-size: 1.8rem; max-width: 20ch; }
         }
 
         /* Score card typography */
@@ -1838,14 +1959,14 @@
             }
     /* 歡迎視窗樣式與動畫 */
 .welcome-overlay { position: fixed; inset: 0;
-  /* 還原：有浮層/歡迎畫面時，背景應該霧化 */
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  /* ✅ 開機歡迎：背景保持霧化，但『唔好太實色』 */
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 420ms ease; }
 .welcome-modal { width: min(520px, 92vw); border-radius: 20px; padding: 20px; max-height: 64vh; background: linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(59,130,246,0.86) 40%, rgba(168,85,247,0.84) 70%, rgba(245,158,11,0.82) 100%); color: #fff;
-  /* 暗黑模式：跟光明模式一樣用「實體化」投影（唔要模糊化） */
-  box-shadow: -14px 14px 0 rgba(0,0,0,0.30);
+  /* ✅ 主畫面（歡迎視窗）：由投影改為普通霧化陰影（更自然） */
+  box-shadow: 0 22px 46px rgba(0,0,0,0.34), 0 2px 0 rgba(0,0,0,0.10);
   transform: translateY(0) scale(1); opacity: 1; position: relative; overflow: hidden; backdrop-filter: saturate(1.1) contrast(1.05); transition: opacity 360ms ease, transform 360ms ease; z-index: 2; }
 .welcome-modal::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 160%; height: 160%; background: radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%); transform: rotate(12deg); pointer-events: none; }
 .welcome-title { font-size: 2.4rem; font-weight: 800; letter-spacing: .03em; display: flex; align-items: center; gap: 10px; }
@@ -1899,8 +2020,8 @@
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* 主題相容：在光明主題時調整對比 */
 .theme-light .welcome-modal { background: linear-gradient(135deg, rgba(255,255,255,0.62) 0%, rgba(219,234,254,0.50) 32%, rgba(252,165,165,0.42) 66%, rgba(216,180,254,0.45) 100%); color: #2b6cb0;
-  /* 光明模式：同樣保持「實體化」投影，但輕啲 */
-  box-shadow: -14px 14px 0 rgba(0,0,0,0.18) !important;
+  /* 光明模式：同樣用霧化陰影（更輕） */
+  box-shadow: 0 18px 36px rgba(0,0,0,0.18), 0 2px 0 rgba(0,0,0,0.06) !important;
 }
 .theme-light .welcome-btn { background: rgba(43,108,176,0.12); color: #2b6cb0;
   /* 光明模式同樣用實投影（更輕） */
@@ -3922,7 +4043,24 @@ function initSalaryTableClipboardFill(){
             if (currentLang === 'zh') {
                 resultContainer.innerHTML = `
                     <div class="highlight-score">
-                        <div class="score-title">總分：</div>
+                        <div class="score-head">
+                            <div class="score-bulb" aria-hidden="true">
+  <svg viewBox="0 0 64 64" role="presentation" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- bulb glass -->
+    <path class="bulb-stroke" d="M32 6c-10.6 0-19.2 8.6-19.2 19.2 0 7.1 3.7 11.1 7.1 14.8 2.5 2.7 4.7 5.1 5.1 8.5h14c.4-3.4 2.6-5.8 5.1-8.5 3.4-3.7 7.1-7.7 7.1-14.8C51.2 14.6 42.6 6 32 6Z" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- filament (鎢絲) -->
+    <path class="bulb-filament" d="M24 30c2.6 2.2 5.2 2.2 8 0 2.8 2.2 5.4 2.2 8 0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="bulb-filament" d="M28 26h8" stroke-width="2.2" stroke-linecap="round"/>
+
+    <!-- base -->
+    <path class="bulb-base" d="M25 48h14" stroke-width="3.4" stroke-linecap="round"/>
+    <path class="bulb-base" d="M26 53h12" stroke-width="3.4" stroke-linecap="round"/>
+    <path class="bulb-base" d="M28 58h8" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+                            </div>
+                            <div class="score-title">總分：</div>
+                        </div>
                         <div class="score-value">${totalScore.toFixed(4)}</div>
                     </div>
 
@@ -3976,7 +4114,24 @@ function initSalaryTableClipboardFill(){
             } else {
                 resultContainer.innerHTML = `
                     <div class="highlight-score">
-                        <div class="score-title">Total Score:</div>
+                        <div class="score-head">
+                            <div class="score-bulb" aria-hidden="true">
+  <svg viewBox="0 0 64 64" role="presentation" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- bulb glass -->
+    <path class="bulb-stroke" d="M32 6c-10.6 0-19.2 8.6-19.2 19.2 0 7.1 3.7 11.1 7.1 14.8 2.5 2.7 4.7 5.1 5.1 8.5h14c.4-3.4 2.6-5.8 5.1-8.5 3.4-3.7 7.1-7.7 7.1-14.8C51.2 14.6 42.6 6 32 6Z" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- filament (鎢絲) -->
+    <path class="bulb-filament" d="M24 30c2.6 2.2 5.2 2.2 8 0 2.8 2.2 5.4 2.2 8 0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="bulb-filament" d="M28 26h8" stroke-width="2.2" stroke-linecap="round"/>
+
+    <!-- base -->
+    <path class="bulb-base" d="M25 48h14" stroke-width="3.4" stroke-linecap="round"/>
+    <path class="bulb-base" d="M26 53h12" stroke-width="3.4" stroke-linecap="round"/>
+    <path class="bulb-base" d="M28 58h8" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+                            </div>
+                            <div class="score-title">Total Score:</div>
+                        </div>
                         <div class="score-value">${totalScore.toFixed(4)}</div>
                     </div>
 
@@ -6181,6 +6336,14 @@ document.addEventListener('DOMContentLoaded', function() {
       0 1px 0 rgba(255,255,255,0.65),
       0 6px 14px rgba(58,46,34,0.08) !important;
     border-width: 2px !important;
+  }
+
+  /* 復古皮膚：燈泡同分數卡配色更溫柔（紙感） */
+  .theme-light-vintage{
+    --score-glow: rgba(58,46,34,0.10);
+    --bulb-stroke: rgba(192, 138, 0, 0.78);
+    --bulb-filament: rgba(212, 175, 55, 0.78);
+    --bulb-base: rgba(122,90,68,0.70);
   }
   /* 右上角小高光（你圈住嘅位置）
      已取消：避免高光遮住「總分：」右上角，令字形變怪/不完整 */
