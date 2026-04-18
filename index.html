@@ -3125,6 +3125,32 @@ html[data-theme] #calcBtn:active,
 
     </style>
 
+  <!-- === 總分卡：光明版可讀性最終強制修正（防 cache/覆蓋） === -->
+  <style id="ag-scorecard-light-final-fix">
+    /* 同時覆蓋 theme-light / theme-light-vintage / light-simple */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score{
+      color: #2b1a12 !important;
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score .score-title{
+      color: #2b1a12 !important;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.55) !important;
+    }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score .score-value{
+      color: #8a5600 !important;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.45), 0 10px 18px rgba(58,46,34,0.10) !important;
+    }
+
+    /* 燈泡線條強制加深（唔再靠變數） */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score .score-bulb .bulb-stroke{ stroke: rgba(122,90,68,0.85) !important; }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score .score-bulb .bulb-filament{ stroke: rgba(138, 86, 0, 0.82) !important; }
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score .score-bulb .bulb-base{ stroke: rgba(122,90,68,0.80) !important; }
+
+    /* 光明版 pulsing glow 調低，避免洗走燈泡/文字 */
+    :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score .score-bulb::after{
+      background: radial-gradient(circle at 50% 45%, rgba(255, 210, 120, 0.95), transparent 62%) !important;
+      opacity: 0.12 !important;
+    }
+  </style>
 </head>
 <body>
   <!-- ✅ 固定背景層：永遠唔跟住捲動 -->
@@ -6375,11 +6401,32 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   /* 復古皮膚：燈泡同分數卡配色更溫柔（紙感） */
-  .theme-light-vintage{
-    --score-glow: rgba(58,46,34,0.10);
-    --bulb-stroke: rgba(192, 138, 0, 0.78);
-    --bulb-filament: rgba(212, 175, 55, 0.78);
-    --bulb-base: rgba(122,90,68,0.70);
+  html.theme-light-vintage, body.theme-light-vintage{
+    /* 總分卡：光明(復古紙紋)下提高對比，避免「淡黃字 + 淡黃底」睇唔到 */
+    --score-accent: #8a5600;         /* 分數數字：深金啡 */
+    --score-accent-2: #2b1a12;       /* 標題：深啡近黑 */
+
+    --score-glow: rgba(122,90,68,0.22);
+    --bulb-stroke: rgba(122,90,68,0.82);
+    --bulb-filament: rgba(138, 86, 0, 0.80);
+    --bulb-base: rgba(122,90,68,0.78);
+  }
+
+  /* 光明(復古紙紋)：文字直接用深色，陰影收斂，提升可讀性 */
+  .theme-light-vintage .highlight-score .score-title{
+    color: var(--score-accent-2) !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.55) !important;
+  }
+  .theme-light-vintage .highlight-score .score-value{
+    /* 直接硬指定，避免被 html[data-score-theme] 變數牽連 */
+    color: #8a5600 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.45), 0 10px 18px rgba(58,46,34,0.10) !important;
+  }
+
+  /* 光明(復古紙紋)：燈泡呼吸光唔好洗走線條 */
+  .theme-light-vintage .highlight-score .score-bulb::after{
+    background: radial-gradient(circle at 50% 45%, rgba(255, 210, 120, 0.95), transparent 62%) !important;
+    opacity: 0.14;
   }
   /* 右上角小高光（你圈住嘅位置）
      已取消：避免高光遮住「總分：」右上角，令字形變怪/不完整 */
