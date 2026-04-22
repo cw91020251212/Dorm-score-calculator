@@ -5966,7 +5966,8 @@ function initSalaryTableClipboardFill(){
             if (!toggle || !panel) return;
 
             const icon = toggle.querySelector('i');
-            const isOpen = () => !panel.hidden;
+            // ✅ 用 class 判斷開關狀態（因為關閉動畫期間 hidden 會延遲設定）
+            const isOpen = () => panel.classList.contains('qs-open');
 
             function updateToggleUi(){
                 const opened = isOpen();
