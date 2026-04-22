@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-score-theme="gold" lang="en">
 <head>
-<!-- === Anti-flash preload (FOUC/主題閃爍修正) === -->
+
 <style id="ag-anti-flash">
       /* 目的：避免首次 paint 用錯主題/字體後再跳，導致『閃幾閃』 */
       /* 不再用 opacity:0（會變成『先白/黑一閃再出現』）；
@@ -11,72 +11,10 @@
       html, body{ background: linear-gradient(180deg, rgba(255,255,255,0.26) 0%, rgba(0,0,0,0.58) 100%), linear-gradient(180deg, #1e3a5f 0%, #0f2a4a 100%); }
       html.theme-light-vintage, html.theme-light-vintage body{ background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(0,0,0,0.48) 100%), linear-gradient(180deg, #1e3a5f 0%, #0f2a4a 100%); }
     </style>
-<script id="ag-early-theme">
-      (function(){
-        var root = document.documentElement;
-        root.classList.add('ag-preload');
 
-        // 1) 盡早讀 uiSettings，避免 theme/filter/fontScale 之後先套用造成整頁跳
-        var s = {};
-        try{
-          var raw = localStorage.getItem('uiSettings') || '{}';
-          s = JSON.parse(raw) || {};
-        }catch(e){ s = {}; }
-
-        // 2) Theme（同 applyUiSettings 對齊）
-        var t = s.theme || 'dark';
-        if (t === 'light' || t === 'light-simple') t = 'light-vintage';
-        root.classList.remove('theme-dark','theme-light','theme-light-simple','theme-light-vintage');
-        if (t === 'light-vintage') root.classList.add('theme-light-vintage');
-        else root.classList.add('theme-dark');
-
-        // 3) Display filter（同 applyUiSettings 對齊）
-        var b = Number((s.brightness != null) ? s.brightness : 1);
-        var c = Number((s.contrast   != null) ? s.contrast   : 1);
-        var sat = Number((s.saturate != null) ? s.saturate   : 1);
-        var w = Math.max(0, Math.min(0.35, Number((s.warmth != null) ? s.warmth : 0)));
-        var filter = 'brightness(' + b + ') contrast(' + c + ') saturate(' + sat + ') sepia(' + w + ') hue-rotate(' + (-w*14).toFixed(2) + 'deg)';
-        root.style.setProperty('--display-filter', filter);
-
-        // 4) Paper/burlap vars（避免 light-vintage / 背景紋理遲套用）
-        var paperTint = Math.max(0, Math.min(1, Number((s.paperTint != null) ? s.paperTint : 0.65)));
-        var paperStrength = Math.max(0, Math.min(1, Number((s.paperStrength != null) ? s.paperStrength : 0.65)));
-        root.style.setProperty('--paper-tint', String(paperTint));
-        root.style.setProperty('--paper-strength', String(paperStrength));
-        var burlapStrength = Math.max(0, Math.min(1.4, Number((s.burlapStrength != null) ? s.burlapStrength : 1.00)));
-        root.style.setProperty('--ag-bg-texture-opacity-dark', String(0.55 * burlapStrength));
-        root.style.setProperty('--ag-bg-texture-opacity-light', String(0.40 * burlapStrength));
-
-        // 5) 盡早 set 語言屬性（避免首次出現 EN/中跳）
-        try{
-          var lang = localStorage.getItem('appLangPref') || localStorage.getItem('welcomeLangPref');
-          if (lang) root.setAttribute('data-lang', lang);
-        }catch(e){}
-
-        // 6) preload class 只係用嚟禁 transition/animation
-        if (document.readyState === 'loading'){
-          document.addEventListener('DOMContentLoaded', function(){ root.classList.remove('ag-preload'); }, {once:true});
-        }else{
-          root.classList.remove('ag-preload');
-        }
-      })();
-    </script>
-<!-- === Modal Font Sync Patch (2026-04-10) === -->
-<!-- === Panel Gold Bar + Section Spacing Patch (2026-04-11) === -->
-<!-- Android Chrome 白底閃：用 theme-color/背景預設壓住 -->
-<meta content="dark light" name="color-scheme"/>
-<meta content="#0f2a4a" media="(prefers-color-scheme: dark)" name="theme-color"/>
-<meta content="#f1f1f5" media="(prefers-color-scheme: light)" name="theme-color"/>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Dorm Score Calculator</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-<!-- Score display fonts (artistic but readable) -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&amp;family=ZCOOL+QingKe+HuangYou&amp;family=Abril+Fatface&amp;family=Montserrat:wght@600;800&amp;display=swap" rel="stylesheet"/>
-<style>
-        :root {
+<style id="ag-styles-merged">
+/* === Merged styles (auto) === */
+:root {
             --primary: #1e3a5f;
             --primary-dark: #0f2a4a;
             --accent: #4f9de8;
@@ -2298,9 +2236,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
             z-index: 5;
         }
 
-</style>
-<!-- ✅ 2026-04-15：光明平板 - 大標題面板黃色圍邊外加最幼邊沿線 -->
-<style>
         .modal-overlay {
   position: fixed;
   inset: 0;
@@ -2340,8 +2275,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
         @media (max-width: 600px) { .modal header h3 { font-size: 1.1rem; } .modal .modal-body { font-size: 0.95rem; } }
         
 
-</style>
-<style>
 .shake { animation: shake 320ms ease-in-out 2; }
 @keyframes shake {
     0%   { transform: translateX(0); }
@@ -2351,20 +2284,11 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
     100% { transform: translateX(0); }
 }
 
-
-</style>
-<style>
 .glow-yellow { box-shadow: 0 0 0 3px rgba(255,193,7,0.45), 0 0 12px rgba(255,193,7,0.55) !important; }
 .glow-red { box-shadow: 0 0 0 3px rgba(232,79,79,0.45), 0 0 12px rgba(232,79,79,0.55) !important; }
 
-
-</style>
-<style>
 .disclaimer { color: #ffd07a; font-size: 0.95rem; margin-top: 8px; opacity: 0.9; }
 
-
-</style>
-<style>
 /* 在光明版，將總分改為深色字＋白底，提升對比 */
 .theme-light .highlight-score {
   color: #1a2b44 !important;              /* 深藍字，對比高 */
@@ -2373,9 +2297,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
   text-shadow: none !important;           /* 移除光暈，字更銳利 */
 }
 
-
-</style>
-<style>
 /* 淡藍框：令整體更專業、更易讀 */
 .modal {
   border: 2px solid rgba(126, 200, 255, 0.45) !important; /* 外框淡藍 */
@@ -2478,8 +2399,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
 
     
 
-</style>
-<style>
         .welcome-disclaimer {
             font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.7);
@@ -2496,9 +2415,6 @@ select:focus { outline: 2px solid var(--accent) !important; outline-offset: 2px;
              border-top-color: rgba(255, 255, 255, 0.22);
         }
 
-
-</style>
-<style>
 /* ===== FINAL: 統一「計算分數」= 黑暗版同一套（任何主題都唔再分開改） =====
    目的：無論 theme-light / theme-light-simple / theme-light-vintage / theme-dark / html[data-theme]，
    #calcBtn 都完全同一套（以黑暗版為準）。
@@ -2610,14 +2526,7 @@ html[data-theme] #calcBtn:active,
 #calcBtn:active {
   transform: translateY(0) !important;
 }
-</style>
-<!-- === UI 互動統一（2026-04-02）===
-  目標：
-  - 所有按鈕 hover/active 唔再「喐」(translate/scale)
-  - 改用「斬一斬」式變色/變亮 + 細邊框提示可按
-  - 取消下載箭嘴/圖示額外動畫（保留 #calcBtn 計算機脈衝）
--->
-<style>
+
   :is(.btn, .status-btn, .mini-btn, .action-btn, .close-btn,
       button.language-toggle, button.qr-toggle):hover {
     transform: none !important;
@@ -2643,19 +2552,7 @@ html[data-theme] #calcBtn:active,
 
   /* 但保留「計算分數」掣入面計算機脈衝 */
   #calcBtn i.fa-calculator { animation: calcBtnPulse 1.9s ease-in-out infinite !important; }
-</style>
-<!-- === Hover 漸變方向反轉（2026-04-02）===
-  目標：任何有 linear-gradient 背景嘅按鈕，mouse hover 時都會「走位」
-  視覺上等同漸變方向倒轉，令用家一眼見到可按。
-  做法：用 background-position 由左→右切換，唔需要逐個掣寫反向顏色。
--->
-<!-- === Select/下拉選擇欄：滑鼠提示（2026-04-02）===
-  目標：用家滑鼠移到「是否」呢類 select 時，都見到可互動提示（cursor + 變色/邊框）。
--->
-<!-- === Button Font Preset D FIX (override !important) === -->
-<!-- === Panel Gold Bar + Section Spacing Patch v2 (place last) === -->
-<!-- === Round2 merged head patches (keep order) === -->
-<style id="ag-merged-head-patches">
+
 /* === merged from #modal-font-sync === */
 /*
         目的：同步你已選的「按鈕較大字體」觀感，
@@ -2874,8 +2771,60 @@ html[data-theme] #calcBtn:active,
 /* === merged from #ag-quick-settings === */
 /* 右上角齒輪彈出功能列（沿用原本按鈕視覺） */
       /* ✅ 重要：Quick Settings 7 掣唔可以壓住任何彈窗；所以 z-index 要低過 modal/backdrop */
-      .quick-settings{ position: fixed; top: 58px; right: clamp(10px, 1.4vw, 20px); z-index: 900; }
-      .quick-settings[hidden]{ display:none !important; }
+      .quick-settings{
+        position: fixed;
+        top: 58px;
+        right: clamp(10px, 1.4vw, 20px);
+        z-index: 900;
+
+        /* 動畫：由齒輪位「彈出」 */
+        opacity: 0;
+        transform: translateX(14px) scale(0.98);
+        transform-origin: right center;
+        transition:
+          opacity 200ms ease,
+          transform 260ms cubic-bezier(0.2, 0.85, 0.2, 1);
+        will-change: opacity, transform;
+        pointer-events: none;
+      }
+
+      /* 仍然用 hidden 代表關閉狀態，但唔用 display:none（否則冇得動畫） */
+      .quick-settings[hidden]{
+        display: block !important;
+        visibility: hidden;
+      }
+
+      .quick-settings.qs-open{
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        pointer-events: auto;
+        visibility: visible;
+      }
+
+      /* 7 個功能鍵逐個彈出 */
+      .quick-settings-inner{
+        --qs-stagger: 38ms;
+      }
+      .quick-settings-inner > button{
+        opacity: 0;
+        transform: translateX(10px) scale(0.92);
+        transition:
+          opacity 180ms ease,
+          transform 320ms cubic-bezier(0.2, 0.9, 0.2, 1);
+        will-change: opacity, transform;
+      }
+      .quick-settings.qs-open .quick-settings-inner > button{
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(1){ transition-delay: calc(var(--qs-stagger) * 0); }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(2){ transition-delay: calc(var(--qs-stagger) * 1); }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(3){ transition-delay: calc(var(--qs-stagger) * 2); }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(4){ transition-delay: calc(var(--qs-stagger) * 3); }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(5){ transition-delay: calc(var(--qs-stagger) * 4); }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(6){ transition-delay: calc(var(--qs-stagger) * 5); }
+      .quick-settings.qs-open .quick-settings-inner > button:nth-child(7){ transition-delay: calc(var(--qs-stagger) * 6); }
+
       .quick-settings-inner{
         display: flex;
         gap: 8px;
@@ -3099,9 +3048,8 @@ html[data-theme] #calcBtn:active,
       /* 額外：減少 header 視覺高度（裝飾層唔好令文字睇落『浮』得太高） */
       header .header-decoration{ height: 100% !important; }
 
-    </style>
-<!-- === 總分卡：光明版可讀性最終強制修正（防 cache/覆蓋） === -->
-<style id="ag-scorecard-light-final-fix">
+    
+
     /* 同時覆蓋 theme-light / theme-light-vintage / light-simple */
     :is(.theme-light, .theme-light-simple, .theme-light-vintage) .highlight-score{
       color: #2b1a12 !important;
@@ -3125,9 +3073,8 @@ html[data-theme] #calcBtn:active,
       background: radial-gradient(circle at 50% 45%, rgba(255, 210, 120, 0.95), transparent 62%) !important;
       opacity: 0.12 !important;
     }
-  </style>
-<!-- === 自動整理：由 <body> 搬到 <head> 嘅樣式（保留原有順序） === -->
-<style>
+  
+
     /* 梅花間竹：相鄰相反相位，上下交替 */
 
     @keyframes alt-up { 
@@ -3215,8 +3162,8 @@ html[data-theme] #calcBtn:active,
       z-index: 1;
     }
 
-  </style>
-<style>
+  
+
         .qr-backdrop {
   position: fixed;
   inset: 0;
@@ -3237,8 +3184,8 @@ html[data-theme] #calcBtn:active,
         .qr-label { color: var(--text-light); opacity: 0.85; }
         .qr-link { color: #2b6cb0; word-break: break-all; }
         @media (prefers-color-scheme: dark) { .qr-link { color: #7ab0ff; } }
-    </style>
-<style>
+    
+
         /* 最終覆蓋：強制對齊與顏色（不透明灰、黑字） */
         button#languageToggle.language-toggle,
         button#qrButton.qr-toggle {
@@ -3345,12 +3292,12 @@ html[data-theme] #calcBtn:active,
         .qr-code { background: #fff !important; }
         .qr-label { color: #333 !important; }
         .qr-link { color: #000 !important; }
-    </style>
-<style>
+    
+
         /* 以類名 fixed-btn 作最後保險覆蓋（含 !important）*/
         .fixed-btn { /* 保留個別按鈕色彩，由 inline 與下方覆蓋決定 */ }
-    </style>
-<style>
+    
+
   /* 最終色彩保險：強制顏色顯示 */
   :root { --language-bg: #d7f4d7; }
   #languageToggle.language-toggle { background-color: var(--language-bg) !important; color: #000 !important; border: 1px solid #7fd67f !important; }
@@ -3989,8 +3936,6 @@ html[data-theme] #calcBtn:active,
                 :is(.button-group, .data-controls) .btn-3d::after { animation: none !important; opacity: 0.14; }
             }
 
-</style>
-<style>
       /* 只針對兩個主按鈕：完全取消投影（包括 hover/active 任何覆寫） */
       :is(#calcBtn, #resetBtn) {
         filter: none !important; /* 防止用 filter 做陰影/發光 */
@@ -3999,8 +3944,8 @@ html[data-theme] #calcBtn:active,
       :is(#calcBtn, #resetBtn):active {
         filter: none !important;
       }
-    </style>
-<style>
+    
+
     :is(button, .btn, .btn-3d, .status-btn, .mini-btn, .action-btn, .close-btn,
         #calcBtn, #resetBtn, #languageToggle, #qrButton,
         .qr-close) {
@@ -4024,8 +3969,8 @@ html[data-theme] #calcBtn:active,
         .qr-close)::after {
       filter: none !important;
     }
-  </style>
-<style id="ag-merged-body-patches">
+  
+
 /* === merged from #floating-btn-icon-size === */
 /* EN 掣：字盡量大但唔爆格 */
       #languageToggle.language-toggle{
@@ -5119,14 +5064,108 @@ html[data-theme] #calcBtn:active,
         -6px 8px 0 0 rgba(0,0,0,0.20) !important;
     }
 
-  </style>
+  
+</style>
+<script id="ag-early-theme">
+      (function(){
+        var root = document.documentElement;
+        root.classList.add('ag-preload');
+
+        // 1) 盡早讀 uiSettings，避免 theme/filter/fontScale 之後先套用造成整頁跳
+        var s = {};
+        try{
+          var raw = localStorage.getItem('uiSettings') || '{}';
+          s = JSON.parse(raw) || {};
+        }catch(e){ s = {}; }
+
+        // 2) Theme（同 applyUiSettings 對齊）
+        var t = s.theme || 'dark';
+        if (t === 'light' || t === 'light-simple') t = 'light-vintage';
+        root.classList.remove('theme-dark','theme-light','theme-light-simple','theme-light-vintage');
+        if (t === 'light-vintage') root.classList.add('theme-light-vintage');
+        else root.classList.add('theme-dark');
+
+        // 3) Display filter（同 applyUiSettings 對齊）
+        var b = Number((s.brightness != null) ? s.brightness : 1);
+        var c = Number((s.contrast   != null) ? s.contrast   : 1);
+        var sat = Number((s.saturate != null) ? s.saturate   : 1);
+        var w = Math.max(0, Math.min(0.35, Number((s.warmth != null) ? s.warmth : 0)));
+        var filter = 'brightness(' + b + ') contrast(' + c + ') saturate(' + sat + ') sepia(' + w + ') hue-rotate(' + (-w*14).toFixed(2) + 'deg)';
+        root.style.setProperty('--display-filter', filter);
+
+        // 4) Paper/burlap vars（避免 light-vintage / 背景紋理遲套用）
+        var paperTint = Math.max(0, Math.min(1, Number((s.paperTint != null) ? s.paperTint : 0.65)));
+        var paperStrength = Math.max(0, Math.min(1, Number((s.paperStrength != null) ? s.paperStrength : 0.65)));
+        root.style.setProperty('--paper-tint', String(paperTint));
+        root.style.setProperty('--paper-strength', String(paperStrength));
+        var burlapStrength = Math.max(0, Math.min(1.4, Number((s.burlapStrength != null) ? s.burlapStrength : 1.00)));
+        root.style.setProperty('--ag-bg-texture-opacity-dark', String(0.55 * burlapStrength));
+        root.style.setProperty('--ag-bg-texture-opacity-light', String(0.40 * burlapStrength));
+
+        // 5) 盡早 set 語言屬性（避免首次出現 EN/中跳）
+        try{
+          var lang = localStorage.getItem('appLangPref') || localStorage.getItem('welcomeLangPref');
+          if (lang) root.setAttribute('data-lang', lang);
+        }catch(e){}
+
+        // 6) preload class 只係用嚟禁 transition/animation
+        if (document.readyState === 'loading'){
+          document.addEventListener('DOMContentLoaded', function(){ root.classList.remove('ag-preload'); }, {once:true});
+        }else{
+          root.classList.remove('ag-preload');
+        }
+      })();
+    </script>
+
+
+
+<meta content="dark light" name="color-scheme"/>
+<meta content="#0f2a4a" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="#f1f1f5" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dorm Score Calculator</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&amp;family=ZCOOL+QingKe+HuangYou&amp;family=Abril+Fatface&amp;family=Montserrat:wght@600;800&amp;display=swap" rel="stylesheet"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
-<!-- ✅ 固定背景層：永遠唔跟住捲動 -->
+
 <div aria-hidden="true" id="agFixedBg"></div>
 <div id="appRoot">
 <div id="fouc-shield" style="position:fixed; inset:0; background: #0f0f0f; z-index: 2147483647; transition: opacity 0.8s ease; pointer-events: none;"></div>
-<!-- 右上角浮動鍵（永遠固定喺畫面上；唔會跟住內容滾動） -->
+
 <button aria-label="切換語言" class="language-toggle" id="languageToggle" style="background-color:#90EE90 !important; color:#000 !important; border:1px solid #7fd67f !important;">EN</button>
 <button aria-label="設定" class="qr-toggle" id="qrButton" style="background-color:#555 !important; color:#fff !important; border:1px solid #333 !important;" title="設定" type="button"><i aria-hidden="true" class="fas fa-gear"></i></button>
 <div class="quick-settings" hidden="" id="quickSettings">
@@ -5284,7 +5323,7 @@ html[data-theme] #calcBtn:active,
 <p class="disclaimer" id="disclaimerFooter">此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。</p>
 </footer>
 </div>
-</div><!-- /contentRoot -->
+</div>
 <div class="status-bar">
 <div class="status-message">
 <span aria-hidden="true" class="status-icon">ℹ️</span><span id="statusText">系統準備就緒，請填寫表單開始計算</span>
@@ -5301,7 +5340,203 @@ html[data-theme] #calcBtn:active,
 </div>
 </div>
 </div>
-<script>
+
+<div aria-hidden="true" class="modal-overlay" id="infoOverlay"></div>
+<div aria-hidden="true" aria-labelledby="infoTitle" aria-modal="true" class="modal" id="infoModal" role="dialog">
+<header>
+<h3 id="infoTitle"><i class="fas fa-info-circle"></i> 使用須知</h3>
+</header>
+<div class="modal-body">
+<p class="label" id="scoringLabel">計分準則（簡述）：</p>
+<ul>
+<li id="salaryRule">薪金分數：薪金 ÷ 除數（預設 538）。</li>
+<li id="serviceRule">年資分數：入職至截止日期的天數 ÷ 365.25 × 年資乘數（預設 6）。</li>
+<li id="familyRule">家庭加分：配偶 +20；每名子女 +10；海外就讀子女 +5；新生 +10；其他子女（除首名）按子女分數並可能有首名加成 +20。</li>
+<li id="specialRule">特殊情況：被指示離開 +72；宿舍有缺陷 +20。</li>
+</ul>
+<p class="label" id="noticeLabel">注意事項：</p>
+<ul>
+<li id="refOnlyRule">此計算結果僅供參考，參數或規則可能會改變；請自行核實。</li>
+<li id="dateRule">請確保日期輸入正確（截止日期不可早於入職日期）。</li>
+<li id="storageRule">本工具只在瀏覽器本機儲存資料（localStorage），不會上載伺服器；請自行妥善保管。</li>
+<li id="uiSettingsRule">本程式預設只會在本機記住介面設定（語言、主題/光暗、字體大小、顯示調校等），方便下次開啟自動套用；你填入嘅資料不會上載伺服器，亦不會用作收集個人內容。</li>
+<li id="privacyRule">本工具僅在瀏覽器本機處理及儲存資料；資料不會傳送到任何伺服器或第三方。</li>
+<li id="liabilityRule">任何因使用本工具而引致的後果或損失，本工具不承擔責任。</li>
+</ul>
+</div>
+<div class="modal-foot">
+<button class="close-btn btn-3d" id="closeModal"><span id="closeModalText">我明白</span></button>
+</div>
+</div>
+<div class="modal-overlay" id="saveNoticeModal" style="display: none;">
+<div class="modal" style="display: block;">
+<header>
+<h3>
+<i class="fas fa-save"></i>
+<span class="lang-zh">儲存確認</span>
+<span class="lang-en" style="display:none;">Save Confirmation</span>
+</h3>
+</header>
+<div class="modal-body">
+<p style="font-size: 1.05rem; margin-bottom: 12px;">
+<span class="lang-zh">資料將儲存於您的設備。</span>
+<span class="lang-en" style="display:none;">Data will be saved on your device.</span>
+</p>
+<p style="font-size: 0.9rem; color: #aaa;">
+<span class="lang-zh">（不會上傳伺服器，請自行備份）</span>
+<span class="lang-en" style="display:none;">(Not uploaded to any server; please back up your data.)</span>
+</p>
+</div>
+<div class="modal-foot">
+<button class="btn btn-success btn-3d" id="confirmSaveBtn" style="margin-right: 10px;" type="button">
+<span class="lang-zh">✓ 確認</span>
+<span class="lang-en" style="display:none;">✓ Confirm</span>
+</button>
+<button class="btn btn-danger btn-3d" id="cancelSaveModalBtn" type="button">
+<span class="lang-zh">✕ 取消</span>
+<span class="lang-en" style="display:none;">✕ Cancel</span>
+</button>
+</div>
+</div>
+</div>
+
+</div>
+
+<div aria-hidden="true" class="welcome-overlay" id="welcomeOverlay" role="dialog">
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+<div aria-label="歡迎" class="welcome-modal" role="document">
+<button aria-label="語言切換" class="lang-toggle" id="langToggle" type="button">中 / EN</button>
+<div class="welcome-title">
+<span class="emoji alt-up">🎉</span>
+<span class="emoji alt-down">🎈</span>
+<span class="emoji alt-up">🥳</span>
+<span class="welcome-text">歡迎！</span>
+<span class="emoji alt-down">🎊</span></div>
+<div class="welcome-body">
+        祝您使用愉快。
+      </div>
+<div class="welcome-disclaimer">
+                此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。
+            </div>
+<div class="welcome-actions">
+<button class="welcome-btn primary" id="welcomeStart" type="button">開始使用</button>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" class="qr-modal" id="qrModal" style="display:none;">
+<div class="qr-backdrop"></div>
+<div aria-labelledby="qrTitle" aria-modal="true" class="qr-dialog" role="dialog">
+<button aria-label="關閉" class="qr-close" id="qrClose"><i class="fas fa-times"></i></button>
+<h3 class="qr-header" id="qrTitle"><i class="fas fa-qrcode"></i> QR Code</h3>
+<div class="qr-code" id="qrCode"></div>
+<div class="qr-info">
+<div class="qr-row"><span class="qr-label"><span class="lang-zh">名稱：</span><span class="lang-en" style="display:none;">Name:</span></span><span class="qr-value" id="qrName"></span></div>
+<div class="qr-row"><span class="qr-label"><span class="lang-zh">網址：</span><span class="lang-en" style="display:none;">URL:</span></span><a class="qr-link" href="#" id="qrUrl" rel="noopener" target="_blank"></a></div>
+</div>
+</div>
+</div>
+
+
+
+<div aria-hidden="true" class="tune-backdrop" id="displayTuneModal">
+<div aria-label="顯示調校" aria-modal="true" class="tune-modal" role="dialog">
+<div class="tune-header">
+<div class="tune-title" id="tuneTitle">顯示調校</div>
+<button aria-label="關閉" class="tune-close" id="tuneClose" type="button">×</button>
+</div>
+<div class="tune-body">
+
+<div aria-label="顯示調校預設" class="tune-presets">
+<span class="preset-label" id="tunePresetLabel">預設：</span>
+
+<button class="tune-preset preset-ultra-black" data-b="86" data-c="138" data-en="Ultra black" data-s="112" data-w="0" data-zh="超級深黑" type="button">超級深黑</button>
+<button class="tune-preset preset-extra-deep" data-b="94" data-c="115" data-en="Extra deep" data-s="110" data-w="0" data-zh="超深" type="button">超深</button>
+<button class="tune-preset preset-deeper" data-b="96" data-c="108" data-en="Deeper" data-s="106" data-w="0" data-zh="深色" type="button">深色</button>
+<button class="tune-preset preset-standard" data-b="100" data-c="100" data-en="Standard" data-s="100" data-w="0" data-zh="標準" type="button">標準</button>
+<button class="tune-preset preset-lighter" data-b="108" data-c="96" data-en="Lighter" data-s="96" data-w="4" data-zh="淺色" type="button">淺色</button>
+<button class="tune-preset preset-ultra-light" data-b="118" data-c="92" data-en="Ultra light" data-pt="65" data-py="65" data-s="84" data-theme="light-vintage" data-w="6" data-zh="一鍵白淨" type="button">一鍵白淨</button>
+<button class="tune-preset preset-warmer" data-b="100" data-c="104" data-en="Warmer" data-s="102" data-w="20" data-zh="暖啲" type="button">暖啲</button>
+<button class="tune-preset preset-eye" data-b="90" data-c="98" data-en="Eye comfort" data-pt="70" data-py="82" data-s="92" data-w="28" data-zh="護眼模式" type="button">護眼模式</button>
+</div>
+
+<button aria-expanded="false" class="tune-advanced-toggle" id="tuneAdvancedToggle" type="button">顯示進階滑桿</button>
+<div class="tune-advanced" hidden="" id="tuneAdvanced">
+<div class="tune-row">
+<label for="tuneBrightness"><span id="tuneBrightnessLabel">亮度</span></label>
+<input id="tuneBrightness" max="130" min="70" type="range" value="100"/>
+<span class="tune-val" id="tuneBrightnessVal">100%</span>
+</div>
+<div class="tune-row">
+<label for="tuneContrast"><span id="tuneContrastLabel">對比</span></label>
+<input id="tuneContrast" max="140" min="80" type="range" value="100"/>
+<span class="tune-val" id="tuneContrastVal">100%</span>
+</div>
+<div class="tune-row">
+<label for="tuneSaturate"><span id="tuneSaturateLabel">飽和度</span></label>
+<input id="tuneSaturate" max="160" min="80" type="range" value="100"/>
+<span class="tune-val" id="tuneSaturateVal">100%</span>
+</div>
+<div class="tune-row">
+<label for="tuneWarmth"><span id="tuneWarmthLabel">冷暖色</span></label>
+<input id="tuneWarmth" max="35" min="0" type="range" value="0"/>
+<span class="tune-val" id="tuneWarmthVal">0</span>
+</div>
+<div class="tune-row">
+<label for="tunePaperTint"><span id="tunePaperTintLabel">米黃色</span></label>
+<input id="tunePaperTint" max="100" min="0" type="range" value="65"/>
+<span class="tune-val" id="tunePaperTintVal">65%</span>
+</div>
+<div class="tune-row">
+<label for="tunePaperStrength"><span id="tunePaperStrengthLabel">紙紋</span></label>
+<input id="tunePaperStrength" max="100" min="0" type="range" value="65"/>
+<span class="tune-val" id="tunePaperStrengthVal">65%</span>
+</div>
+<div class="tune-row">
+<label for="tuneBurlapStrength"><span id="tuneBurlapStrengthLabel">麻布紋</span></label>
+<input id="tuneBurlapStrength" max="140" min="0" type="range" value="100"/>
+<span class="tune-val" id="tuneBurlapStrengthVal">100%</span>
+</div>
+</div>
+<div class="tune-hint" id="tuneHint">提示：想「深色啲」通常加少少對比/飽和度，再微調亮度。</div>
+<div class="tune-actions">
+<button class="btn btn-warning btn-3d" id="tuneReset" type="button">重置</button>
+<button class="btn btn-success btn-3d" id="tuneDone" type="button">完成</button>
+</div>
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div aria-label="頁面快速導航" class="scroll-nav">
+<button aria-label="返回頂部" class="scroll-btn" id="btnToTop" type="button">▲</button>
+<button aria-label="前往底部" class="scroll-btn" id="btnToBottom" type="button">▼</button>
+</div>
+
+
+
+
+
+<script id="ag-scripts-merged">
+// === Merged scripts (auto) ===
         // 語言設置
         let currentLang = 'zh';
         function updateStatusToggleLabel(){
@@ -5747,8 +5982,26 @@ function initSalaryTableClipboardFill(){
                 toggle.classList.toggle('open', opened);
             }
 
-            const open = () => { panel.hidden = false; updateToggleUi(); };
-            const close = () => { panel.hidden = true; updateToggleUi(); };
+            // 動畫用：開/關唔即刻用 display:none
+            const OPEN_MS  = 260; // 要同 CSS transition 時間差唔多
+
+            const open = () => {
+              panel.hidden = false;
+              // 下一個 frame 先加 class，確保 transition 會觸發
+              requestAnimationFrame(() => {
+                panel.classList.add('qs-open');
+                updateToggleUi();
+              });
+            };
+
+            const close = () => {
+              panel.classList.remove('qs-open');
+              updateToggleUi();
+              // 等動畫播完先真正 hidden
+              window.setTimeout(() => {
+                if (!panel.classList.contains('qs-open')) panel.hidden = true;
+              }, OPEN_MS + 30);
+            };
 
             // 俾 setLanguage() 用：語言切換時都會重新同步（包括 icon/label）
             try { window.refreshQuickSettingsToggle = updateToggleUi; } catch(e) {}
@@ -7843,67 +8096,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return { valid: true };
     }
-
-</script>
-<div aria-hidden="true" class="modal-overlay" id="infoOverlay"></div>
-<div aria-hidden="true" aria-labelledby="infoTitle" aria-modal="true" class="modal" id="infoModal" role="dialog">
-<header>
-<h3 id="infoTitle"><i class="fas fa-info-circle"></i> 使用須知</h3>
-</header>
-<div class="modal-body">
-<p class="label" id="scoringLabel">計分準則（簡述）：</p>
-<ul>
-<li id="salaryRule">薪金分數：薪金 ÷ 除數（預設 538）。</li>
-<li id="serviceRule">年資分數：入職至截止日期的天數 ÷ 365.25 × 年資乘數（預設 6）。</li>
-<li id="familyRule">家庭加分：配偶 +20；每名子女 +10；海外就讀子女 +5；新生 +10；其他子女（除首名）按子女分數並可能有首名加成 +20。</li>
-<li id="specialRule">特殊情況：被指示離開 +72；宿舍有缺陷 +20。</li>
-</ul>
-<p class="label" id="noticeLabel">注意事項：</p>
-<ul>
-<li id="refOnlyRule">此計算結果僅供參考，參數或規則可能會改變；請自行核實。</li>
-<li id="dateRule">請確保日期輸入正確（截止日期不可早於入職日期）。</li>
-<li id="storageRule">本工具只在瀏覽器本機儲存資料（localStorage），不會上載伺服器；請自行妥善保管。</li>
-<li id="uiSettingsRule">本程式預設只會在本機記住介面設定（語言、主題/光暗、字體大小、顯示調校等），方便下次開啟自動套用；你填入嘅資料不會上載伺服器，亦不會用作收集個人內容。</li>
-<li id="privacyRule">本工具僅在瀏覽器本機處理及儲存資料；資料不會傳送到任何伺服器或第三方。</li>
-<li id="liabilityRule">任何因使用本工具而引致的後果或損失，本工具不承擔責任。</li>
-</ul>
-</div>
-<div class="modal-foot">
-<button class="close-btn btn-3d" id="closeModal"><span id="closeModalText">我明白</span></button>
-</div>
-</div>
-<div class="modal-overlay" id="saveNoticeModal" style="display: none;">
-<div class="modal" style="display: block;">
-<header>
-<h3>
-<i class="fas fa-save"></i>
-<span class="lang-zh">儲存確認</span>
-<span class="lang-en" style="display:none;">Save Confirmation</span>
-</h3>
-</header>
-<div class="modal-body">
-<p style="font-size: 1.05rem; margin-bottom: 12px;">
-<span class="lang-zh">資料將儲存於您的設備。</span>
-<span class="lang-en" style="display:none;">Data will be saved on your device.</span>
-</p>
-<p style="font-size: 0.9rem; color: #aaa;">
-<span class="lang-zh">（不會上傳伺服器，請自行備份）</span>
-<span class="lang-en" style="display:none;">(Not uploaded to any server; please back up your data.)</span>
-</p>
-</div>
-<div class="modal-foot">
-<button class="btn btn-success btn-3d" id="confirmSaveBtn" style="margin-right: 10px;" type="button">
-<span class="lang-zh">✓ 確認</span>
-<span class="lang-en" style="display:none;">✓ Confirm</span>
-</button>
-<button class="btn btn-danger btn-3d" id="cancelSaveModalBtn" type="button">
-<span class="lang-zh">✕ 取消</span>
-<span class="lang-en" style="display:none;">✕ Cancel</span>
-</button>
-</div>
-</div>
-</div>
-<script>
+;
       (function bindSaveModalButtons(){
         const modal = document.getElementById('saveNoticeModal');
         const ok = document.getElementById('confirmSaveBtn');
@@ -7911,115 +8104,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cancel) cancel.addEventListener('click', function(){ if(modal) modal.style.display='none'; });
         if (ok) ok.addEventListener('click', function(){ if (window.proceedSave) window.proceedSave(); });
       })();
-    </script>
-</div><!-- /#appRoot -->
-<!-- 歡迎視窗（僅首次） -->
-<div aria-hidden="true" class="welcome-overlay" id="welcomeOverlay" role="dialog">
-<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
-<div aria-label="歡迎" class="welcome-modal" role="document">
-<button aria-label="語言切換" class="lang-toggle" id="langToggle" type="button">中 / EN</button>
-<div class="welcome-title">
-<span class="emoji alt-up">🎉</span>
-<span class="emoji alt-down">🎈</span>
-<span class="emoji alt-up">🥳</span>
-<span class="welcome-text">歡迎！</span>
-<span class="emoji alt-down">🎊</span></div>
-<div class="welcome-body">
-        祝您使用愉快。
-      </div>
-<div class="welcome-disclaimer">
-                此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。
-            </div>
-<div class="welcome-actions">
-<button class="welcome-btn primary" id="welcomeStart" type="button">開始使用</button>
-</div>
-</div>
-</div>
-<!-- QR Modal -->
-<div aria-hidden="true" class="qr-modal" id="qrModal" style="display:none;">
-<div class="qr-backdrop"></div>
-<div aria-labelledby="qrTitle" aria-modal="true" class="qr-dialog" role="dialog">
-<button aria-label="關閉" class="qr-close" id="qrClose"><i class="fas fa-times"></i></button>
-<h3 class="qr-header" id="qrTitle"><i class="fas fa-qrcode"></i> QR Code</h3>
-<div class="qr-code" id="qrCode"></div>
-<div class="qr-info">
-<div class="qr-row"><span class="qr-label"><span class="lang-zh">名稱：</span><span class="lang-en" style="display:none;">Name:</span></span><span class="qr-value" id="qrName"></span></div>
-<div class="qr-row"><span class="qr-label"><span class="lang-zh">網址：</span><span class="lang-en" style="display:none;">URL:</span></span><a class="qr-link" href="#" id="qrUrl" rel="noopener" target="_blank"></a></div>
-</div>
-</div>
-</div>
-<!-- ✅ 兩個浮動掣：圖標/文字盡量放大（紅圈內） -->
-<!-- /#contentRoot -->
-<!-- 顯示光暗/色深調校彈窗（不受 filter 影響） -->
-<div aria-hidden="true" class="tune-backdrop" id="displayTuneModal">
-<div aria-label="顯示調校" aria-modal="true" class="tune-modal" role="dialog">
-<div class="tune-header">
-<div class="tune-title" id="tuneTitle">顯示調校</div>
-<button aria-label="關閉" class="tune-close" id="tuneClose" type="button">×</button>
-</div>
-<div class="tune-body">
-<!-- 預設：平時最常用，放最頂（唔使捲到最底） -->
-<div aria-label="顯示調校預設" class="tune-presets">
-<span class="preset-label" id="tunePresetLabel">預設：</span>
-<!-- 由深 → 淺（更易分辨），暖色獨立放最後 -->
-<button class="tune-preset preset-ultra-black" data-b="86" data-c="138" data-en="Ultra black" data-s="112" data-w="0" data-zh="超級深黑" type="button">超級深黑</button>
-<button class="tune-preset preset-extra-deep" data-b="94" data-c="115" data-en="Extra deep" data-s="110" data-w="0" data-zh="超深" type="button">超深</button>
-<button class="tune-preset preset-deeper" data-b="96" data-c="108" data-en="Deeper" data-s="106" data-w="0" data-zh="深色" type="button">深色</button>
-<button class="tune-preset preset-standard" data-b="100" data-c="100" data-en="Standard" data-s="100" data-w="0" data-zh="標準" type="button">標準</button>
-<button class="tune-preset preset-lighter" data-b="108" data-c="96" data-en="Lighter" data-s="96" data-w="4" data-zh="淺色" type="button">淺色</button>
-<button class="tune-preset preset-ultra-light" data-b="118" data-c="92" data-en="Ultra light" data-pt="65" data-py="65" data-s="84" data-theme="light-vintage" data-w="6" data-zh="一鍵白淨" type="button">一鍵白淨</button>
-<button class="tune-preset preset-warmer" data-b="100" data-c="104" data-en="Warmer" data-s="102" data-w="20" data-zh="暖啲" type="button">暖啲</button>
-<button class="tune-preset preset-eye" data-b="90" data-c="98" data-en="Eye comfort" data-pt="70" data-py="82" data-s="92" data-w="28" data-zh="護眼模式" type="button">護眼模式</button>
-</div>
-<!-- 進階滑桿：平時收起，需用先展開 -->
-<button aria-expanded="false" class="tune-advanced-toggle" id="tuneAdvancedToggle" type="button">顯示進階滑桿</button>
-<div class="tune-advanced" hidden="" id="tuneAdvanced">
-<div class="tune-row">
-<label for="tuneBrightness"><span id="tuneBrightnessLabel">亮度</span></label>
-<input id="tuneBrightness" max="130" min="70" type="range" value="100"/>
-<span class="tune-val" id="tuneBrightnessVal">100%</span>
-</div>
-<div class="tune-row">
-<label for="tuneContrast"><span id="tuneContrastLabel">對比</span></label>
-<input id="tuneContrast" max="140" min="80" type="range" value="100"/>
-<span class="tune-val" id="tuneContrastVal">100%</span>
-</div>
-<div class="tune-row">
-<label for="tuneSaturate"><span id="tuneSaturateLabel">飽和度</span></label>
-<input id="tuneSaturate" max="160" min="80" type="range" value="100"/>
-<span class="tune-val" id="tuneSaturateVal">100%</span>
-</div>
-<div class="tune-row">
-<label for="tuneWarmth"><span id="tuneWarmthLabel">冷暖色</span></label>
-<input id="tuneWarmth" max="35" min="0" type="range" value="0"/>
-<span class="tune-val" id="tuneWarmthVal">0</span>
-</div>
-<div class="tune-row">
-<label for="tunePaperTint"><span id="tunePaperTintLabel">米黃色</span></label>
-<input id="tunePaperTint" max="100" min="0" type="range" value="65"/>
-<span class="tune-val" id="tunePaperTintVal">65%</span>
-</div>
-<div class="tune-row">
-<label for="tunePaperStrength"><span id="tunePaperStrengthLabel">紙紋</span></label>
-<input id="tunePaperStrength" max="100" min="0" type="range" value="65"/>
-<span class="tune-val" id="tunePaperStrengthVal">65%</span>
-</div>
-<div class="tune-row">
-<label for="tuneBurlapStrength"><span id="tuneBurlapStrengthLabel">麻布紋</span></label>
-<input id="tuneBurlapStrength" max="140" min="0" type="range" value="100"/>
-<span class="tune-val" id="tuneBurlapStrengthVal">100%</span>
-</div>
-</div>
-<div class="tune-hint" id="tuneHint">提示：想「深色啲」通常加少少對比/飽和度，再微調亮度。</div>
-<div class="tune-actions">
-<button class="btn btn-warning btn-3d" id="tuneReset" type="button">重置</button>
-<button class="btn btn-success btn-3d" id="tuneDone" type="button">完成</button>
-</div>
-</div>
-</div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
+    
+;
         (function(){
             const appUrl = 'https://cw91020251212.github.io/Dorm-score-calculator/';
             function getAppName(){
@@ -8072,8 +8158,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 面板只可以由用家再撳一次右上角交叉掣（齒輪）先會關閉。
             });
         })();
-    </script>
-<script>
+    
+;
 (function(){
     // 1. STYLES
     var style = document.createElement('style');
@@ -8534,8 +8620,7 @@ input.input-control, select.input-control, textarea.input-control {
     if (delBtn)  delBtn.addEventListener('click', function(e){ e.preventDefault(); if (window.showDeleteSelect) window.showDeleteSelect(); });
   })();
 })();
-</script>
-<script>
+;
 window.addEventListener('load', function() {
     setTimeout(function() {
         const shield = document.getElementById('fouc-shield');
@@ -8556,20 +8641,7 @@ window.addEventListener('load', function() {
     const btnStart = document.getElementById('welcomeStart');
     if(btnStart) btnStart.addEventListener('click', stopSnow);
 });
-</script>
-<!-- === FIX 2026-03-20: 統一「計算分數/重置表單」圓角 + 黃色掣立體漸變 + 恢復動畫 === -->
-<!-- === FIX 2026-03-20 v10: 強制 calcBtn 掃光一定郁 === -->
-<!-- === FIX 2026-03-20 v23: 只加深圈住嗰兩組按鈕 + 白字加陰影（唔改米白背景） === -->
-<!-- === FIX 2026-03-20 v25: 圓角 + 兩個彈窗色彩/字色統一 === -->
-<!-- 2026-03-21：取消所有按鈕陰影（按你最新要求） -->
-<!-- 2026-03-21：最終覆蓋（放到文件最後）— 取消所有按鈕陰影（包括 hover/active/偽元素） -->
-<!-- 2026-03-21：還原 EN / QR 浮動按鈕陰影（跟隨參考檔：左下偏移立體感） -->
-<!-- 2026-03-21：全站按鈕投影式陰影（方向一致、位移少少；不影響右上 EN/QR） -->
-<!-- ✅ 2026-04-14：強制 Quick Settings 7 掣投影統一（避免被全站光明陰影覆蓋） -->
-<!-- 2026-04-12：修正黑暗模式「顯示調校」底部兩鍵缺少陰影 -->
-<!-- 2026-03-21：把紅圈位置（分數卡片/段落卡片）陰影改為跟按鈕一致 -->
-<!-- EXP 2026-03-22：所有白色文字自動加少少陰影（實驗用） -->
-<script id="exp-auto-white-text-shadow">
+;
     // EXP 2026-03-22: Auto add shadow to anything rendered as white-ish text
     // Fix: avoid MutationObserver infinite loops / heavy re-scan that can freeze the page
     (function(){
@@ -8670,15 +8742,8 @@ window.addEventListener('load', function() {
 
       window.__applyWhiteTextShadow = scheduleApply;
     })();
-  </script>
-<!-- 顯示調校：顏色提示最終覆蓋（放文件尾，確保一定生效） -->
-<!-- 2026-04-01：歡迎畫面按鈕漸變＋3D 效果覆蓋 -->
-<!-- 2026-04-11：右下角「返頂／到底」浮動掣 -->
-<div aria-label="頁面快速導航" class="scroll-nav">
-<button aria-label="返回頂部" class="scroll-btn" id="btnToTop" type="button">▲</button>
-<button aria-label="前往底部" class="scroll-btn" id="btnToBottom" type="button">▼</button>
-</div>
-<script>
+  
+;
     (function(){
       const btnToTop = document.getElementById('btnToTop');
       const btnToBottom = document.getElementById('btnToBottom');
@@ -8706,10 +8771,6 @@ window.addEventListener('load', function() {
         syncScrollNav();
       }
     })();
-  </script>
-<!-- === UPDATE 2026-04-13: Light Mode 取消所有金色橫巴 === -->
-<!-- ✅ FINAL FIX 2026-04-15: 強制大標題輪廓線 + 無化陰影（最高優先） -->
-<!-- ✅ FINAL FIX 2026-04-15: 光明模式七鍵貼邊輪廓線（最高優先） -->
-<!-- === Round2 merged body patches (keep order) === -->
-</body>
+  
+</script></body>
 </html>
