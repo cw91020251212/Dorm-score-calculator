@@ -67,7 +67,7 @@
             font-family: "Microsoft JhengHei", "Segoe UI", sans-serif;
         }
 
-        html{ background: transparent; }
+        html{ background: transparent; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         
         body {
             /* 背景改用固定底層元素（#agFixedBg）去承載。
@@ -3112,7 +3112,7 @@ html[data-theme] #calcBtn:active,
       color: #fff; border: 0; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
       padding: 0; margin: 0;
-      font-size: 0.72rem; font-weight: 700; line-height: 1; user-select: none; white-space: nowrap;
+      font-size: 12px; font-weight: 700; line-height: 1; user-select: none; white-space: nowrap;
       overflow: hidden; text-overflow: clip;
       transition: background .2s ease, transform .12s ease;
 
@@ -7257,35 +7257,12 @@ function initSalaryTableClipboardFill(){
   resetBtn.addEventListener('click', (e)=>{ e.preventDefault(); showMini(); });
 })();
         document.getElementById('saveDataBtn').addEventListener('click', saveCurrentData);
-// 語言圓形按鈕文字自適應，避免出界
+// 語言圓形按鈕：鎖定字體大小（避免手機瀏覽器自動縮放造成忽大忽細）
 (function(){
   const langBtn = document.getElementById('langToggle');
-  function fitLangBtn(){
-    if(!langBtn) return;
-    langBtn.style.fontSize='0.78rem';
-    const max=0.78, min=0.52;
-    let cur=max;
-    // 建立隱形測量器
-    const meas=document.createElement('span');
-    meas.style.position='absolute';
-    meas.style.visibility='hidden';
-    meas.style.whiteSpace='nowrap';
-    meas.style.fontWeight='700';
-    document.body.appendChild(meas);
-    meas.textContent=(langBtn.textContent||'').trim();
-    const limit = langBtn.clientWidth*0.86; // 文字寬度上限
-    while(cur>=min){
-      meas.style.fontSize=cur+'rem';
-      if(meas.getBoundingClientRect().width<=limit) break;
-      cur-=0.02;
-    }
-    langBtn.style.fontSize=cur+'rem';
-    document.body.removeChild(meas);
-  }
-  fitLangBtn();
-  window.addEventListener('resize', fitLangBtn);
-  const obs = new MutationObserver(fitLangBtn);
-  if(langBtn) obs.observe(langBtn, {childList:true, characterData:true, subtree:true});
+  if(!langBtn) return;
+  // 直接鎖定 px，唔再用 rem/自適應量度，避免 address bar 顯示/收起時觸發 resize 反覆改字級。
+  langBtn.style.fontSize = '12px';
 })();
 
         
