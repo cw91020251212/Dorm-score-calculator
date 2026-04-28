@@ -68,6 +68,63 @@
         }
 
         html{ background: transparent; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+        /* ✅ 手勢切換主題：整頁平移過場（拖拉時會即時 translateX） */
+        /* 注意：唔好長期對 #appRoot 設 will-change/transform，否則會影響 position:fixed 彈窗置中 */
+        /* 只對內容層（#appRoot）做合成/transition：
+           背景層（#agFixedBg）保持固定，唔需要參與 transition，真機會少啲合成/重繪壓力 */
+        :is(.ag-swipe-anim,.ag-swipe-dragging) #appRoot{ will-change: transform; }
+        :is(.ag-swipe-anim,.ag-swipe-dragging) #appRoot{
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .ag-swipe-anim #appRoot{
+            /* transform 用 linear 令速度一致，減少尾段『拖慢』感 */
+            transition: transform 190ms linear, opacity 140ms ease;
+        }
+        /* 低效能/減少動態：直接唔做 opacity 動畫（真機更順） */
+        .ag-swipe-lowperf.ag-swipe-anim #appRoot{ transition: transform 190ms linear; }
+
+        .ag-swipe-dragging #appRoot{ transition: none !important; }
+        /* 瞬移（teleport）嗰一下唔要 transition，避免中途『跳格/閃』 */
+        .ag-swipe-teleport #appRoot{ transition: none !important; }
+
+        /* ✅ 切換期間「效能模式」：只關閉『最食性能』嘅效果（避免用 * 造成大規模 style recalc） */
+        html.ag-swipe-perf #contentRoot{ filter: none !important; }
+
+        /* 背景大紋理（SVG + filter）係真機殺手：過場期間直接隱藏 */
+        html.ag-swipe-perf #agFixedBg::before,
+        html.ag-swipe-perf #agFixedBg::after{
+            opacity: 0 !important;
+            filter: none !important;
+            display: none !important;
+        }
+
+        /* blur/backdrop-filter 好食 GPU：過場期間全部關掉（只針對常見容器/彈窗） */
+        html.ag-swipe-perf .modal,
+        html.ag-swipe-perf .welcome-modal,
+        html.ag-swipe-perf .welcome-overlay,
+        html.ag-swipe-perf .form-section,
+        html.ag-swipe-perf .result-section,
+        html.ag-swipe-perf .data-section,
+        html.ag-swipe-perf .section{
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+            filter: none !important;
+        }
+
+        /* 陰影同發光都會令合成層變重：過場期間收斂陰影（唔係全頁清零） */
+        html.ag-swipe-perf .form-section,
+        html.ag-swipe-perf .result-section,
+        html.ag-swipe-perf .data-section,
+        html.ag-swipe-perf .modal,
+        html.ag-swipe-perf .welcome-modal{
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+
+        /* contain 可減少重繪範圍（只喺切換期間啟用） */
+        html.ag-swipe-perf #appRoot{ contain: paint; }
         
         body {
             /* 背景改用固定底層元素（#agFixedBg）去承載。
@@ -7419,6 +7476,218 @@ document.addEventListener('DOMContentLoaded', function() {
             window.addEventListener('resize', updateResultPlaceholderText);
             window.addEventListener('orientationchange', updateResultPlaceholderText);
             initUiControls();
+
+            // ✅ 手勢切換主題：長按後左右拖拉，整頁同步平移；放手達門檻就切換「光/暗」
+            (function initThemeHoldSwipe(){
+              const target = document.getElementById('contentRoot') || document.body;
+              const app = document.getElementById('appRoot') || document.body;
+              const bg  = document.getElementById('agFixedBg');
+              if (!target || !app) return;
+
+              const HOLD_MS = 150;      // 長按門檻（毫秒）（更靈敏）
+              const SWIPE_PX = 50;      // 放手判定門檻（像素）（更易觸發）
+              const EDGE_GUARD = 18;    // 避免貼邊誤觸返回/前進手勢
+              const V_CANCEL = 16;      // 未長按前：垂直移動取消
+
+              let startX = 0, startY = 0;
+              let lastDx = 0;
+              let armed = false;
+              let dragging = false;
+              let fired = false;
+              let timer = null;
+
+              // ✅ 真機卡頓主因通常係：touchmove 觸發太密 + 每次即時寫 style → 掉幀。
+              // 所以用 requestAnimationFrame 合併（每幀最多寫一次 transform）。
+              let rafId = 0;
+              let pendingX = 0;
+              let dragMax = 220;
+
+              const lowPerf = (
+                (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+                (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+              );
+              if (lowPerf) document.documentElement.classList.add('ag-swipe-lowperf');
+
+              function applyX(x){
+                // ✅ 只移動內容層（appRoot），背景層（#agFixedBg）保持固定
+                // 用 0.01px 精度，拖拉時會比整數 px 更順滑（減少微細『跳格』）
+                const v = `translate3d(${Math.round(x*100)/100}px,0,0)`;
+                app.style.transform = v;
+              }
+              function setX(x){
+                pendingX = x;
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                  rafId = 0;
+                  applyX(pendingX);
+                });
+              }
+              function clearX(){
+                if (rafId){ cancelAnimationFrame(rafId); rafId = 0; }
+                app.style.transform = '';
+              }
+              function reset(){
+                armed = false;
+                dragging = false;
+                fired = false;
+                lastDx = 0;
+                if (rafId){ cancelAnimationFrame(rafId); rafId = 0; }
+                document.documentElement.classList.remove('ag-swipe-dragging','ag-swipe-anim','ag-swipe-teleport','ag-swipe-perf');
+                if (timer) { clearTimeout(timer); timer = null; }
+              }
+
+              // 等待某個 transition 結束（避免用 setTimeout 猜時間，減少「半路閃一下」）
+              function waitTransition(el, prop, timeoutMs){
+                return new Promise(resolve => {
+                  let done = false;
+                  const t = setTimeout(() => { if (!done){ done = true; cleanup(); resolve(false); } }, timeoutMs || 420);
+                  function cleanup(){
+                    clearTimeout(t);
+                    el.removeEventListener('transitionend', onEnd, true);
+                  }
+                  function onEnd(e){
+                    if (done) return;
+                    if (e.target !== el) return;
+                    if (prop && e.propertyName !== prop) return;
+                    done = true;
+                    cleanup();
+                    resolve(true);
+                  }
+                  el.addEventListener('transitionend', onEnd, true);
+                });
+              }
+
+              async function commitSwipe(dir){
+                if (fired) return;
+                fired = true;
+
+                const btn = document.getElementById('themeToggle');
+                if (!btn) {
+                  document.documentElement.classList.add('ag-swipe-anim','ag-swipe-perf');
+                  setX(0);
+                  setTimeout(() => { clearX(); reset(); }, 260);
+                  return;
+                }
+
+                const W = Math.max(320, window.innerWidth || 360);
+                // ✅ 推到「幾乎完全出畫面」先切主題：主題切換發生喺畫面外，肉眼就唔會見到『嗒』一聲
+                const OUT = Math.min(520, Math.round(W * 1.05));
+
+                document.documentElement.classList.remove('ag-swipe-dragging','ag-swipe-perf');
+                document.documentElement.classList.add('ag-swipe-anim','ag-swipe-perf');
+
+                // 1) 先滑出畫面（同時淡出），避免「滑完先慢慢淡」造成尾段拖住嘅感覺
+                requestAnimationFrame(() => {
+                  applyX(dir * OUT);
+                  if (!lowPerf){ try { app.style.opacity = '0'; } catch(e) {} }
+                });
+                await Promise.all([
+                  waitTransition(app, 'transform', 520),
+                  (!lowPerf ? waitTransition(app, 'opacity', 260) : Promise.resolve(true))
+                ]);
+
+                // 2) 內容已經喺畫面外：瞬間切主題 + 瞬移到另一邊（仍然畫面外）
+                document.documentElement.classList.add('ag-swipe-teleport');
+                document.documentElement.classList.remove('ag-swipe-anim','ag-swipe-perf');
+                try { btn.click(); } catch(e) {}
+                // 修正：新主題由相反一邊「出場外」開始，再向 0 滑入；
+                // 令「離開」同「進場」嘅移動方向一致（同手勢方向）
+                applyX(-dir * OUT);
+                // force reflow
+                void app.offsetWidth;
+
+                // 3) 用新主題由另一邊滑入（同時淡入）
+                document.documentElement.classList.remove('ag-swipe-teleport');
+                document.documentElement.classList.add('ag-swipe-anim','ag-swipe-perf');
+                requestAnimationFrame(() => {
+                  applyX(0);
+                  if (!lowPerf){ try { app.style.opacity = '1'; } catch(e) {} }
+                });
+                await Promise.all([
+                  waitTransition(app, 'transform', 520),
+                  (!lowPerf ? waitTransition(app, 'opacity', 260) : Promise.resolve(true))
+                ]);
+
+                // 4) 清理
+                try { app.style.opacity = ''; } catch(e) {}
+                clearX();
+                reset();
+              }
+
+              target.addEventListener('touchstart', (e) => {
+                if (!e.touches || e.touches.length !== 1) return;
+                const t = e.touches[0];
+                startX = t.clientX; startY = t.clientY;
+                lastDx = 0;
+
+                if (startX < EDGE_GUARD || startX > (window.innerWidth - EDGE_GUARD)) return;
+
+                reset();
+                timer = setTimeout(() => { armed = true; }, HOLD_MS);
+              }, { passive: true });
+
+              target.addEventListener('touchmove', (e) => {
+                if (!e.touches || e.touches.length !== 1) return;
+                if (fired) return;
+
+                const t = e.touches[0];
+                const dx = t.clientX - startX;
+                const dy = t.clientY - startY;
+
+                // 未長按：如係明顯上下捲動就取消；如係明顯左右撥，就即時進入拖拉（唔使等到 HOLD）
+                if (!armed) {
+                  if (Math.abs(dy) > V_CANCEL && Math.abs(dy) > Math.abs(dx)) { reset(); return; }
+                  if (Math.abs(dx) >= 28 && Math.abs(dx) > Math.abs(dy) * 1.1) {
+                    // 輕輕一撥都可以開始拖拉
+                    armed = true;
+                    if (timer) { clearTimeout(timer); timer = null; }
+                  } else {
+                    return;
+                  }
+                }
+
+                // 已長按：開始拖拉
+                if (!dragging) {
+                  dragging = true;
+                  // 快取最大拖拉距離：避免每個 touchmove 都計 window.innerWidth
+                  {
+                    const W = Math.max(320, window.innerWidth || 360);
+                    dragMax = Math.min(220, Math.round(W * 0.55));
+                  }
+                  document.documentElement.classList.add('ag-swipe-dragging','ag-swipe-perf');
+                }
+
+                // 只處理「水平為主」嘅拖拉
+                if (Math.abs(dx) > Math.abs(dy) * 1.1) {
+                  const clamped = Math.max(-dragMax, Math.min(dragMax, dx));
+                  lastDx = clamped;
+                  setX(clamped);
+                }
+              }, { passive: true });
+
+              target.addEventListener('touchend', () => {
+                if (!armed) { reset(); return; }
+                document.documentElement.classList.remove('ag-swipe-dragging','ag-swipe-perf');
+                document.documentElement.classList.add('ag-swipe-anim','ag-swipe-perf');
+
+                const dx = lastDx;
+                if (Math.abs(dx) >= SWIPE_PX) {
+                  commitSwipe(dx > 0 ? 1 : -1);
+                } else {
+                  // 回彈
+                  setX(0);
+                  setTimeout(() => { clearX(); reset(); }, 240);
+                }
+              }, { passive: true });
+
+              target.addEventListener('touchcancel', () => {
+                document.documentElement.classList.remove('ag-swipe-dragging','ag-swipe-perf');
+                document.documentElement.classList.add('ag-swipe-anim','ag-swipe-perf');
+                setX(0);
+                setTimeout(() => { clearX(); reset(); }, 240);
+              }, { passive: true });
+            })();
+
             lockDateTypingOnDesktop();
             // 讀取上次未完成輸入（例如中途去其他網站搵資料再返嚟）
             loadDraftForm();
@@ -8326,7 +8595,9 @@ input.input-control, select.input-control, textarea.input-control {
     // 2. SAVE MODAL（避免重複 ID 導致按鈕無反應）
     // 本頁面原本已經有 #saveNoticeModal（HTML 內），所以唔好再注入第二個同名彈窗。
     // 如真係缺失（例如被其他版本刪走），先用以下注入作為後備。
+    var __saveModalInjected = false;
     if (!document.getElementById('saveNoticeModal')) {
+        __saveModalInjected = true;
         var div = document.createElement('div');
         div.innerHTML = `<div id="saveNoticeModal" class="modal-overlay" style="display: none; z-index: 3000;">    <div class="modal" style="display: block;">        <header>            <h3><i class="fas fa-save"></i> <span id="saveModalTitle">儲存確認</span></h3>        </header>        <div class="modal-body">            <p id="saveModalMsg" style="margin-bottom: 12px;">資料將儲存於您的設備。</p>            <p id="saveModalSubMsg" style="font-size: 0.8em; color: #aaa;">(不會上傳伺服器，請自行備份)</p>        </div>        <div class="modal-foot">            <button id="confirmSaveBtn" class="btn btn-success">✓ 確認</button>            <button id="cancelSaveModalBtn" class="btn btn-danger">✕ 取消</button>        </div>    </div></div>`;
         document.body.appendChild(div);
@@ -8401,7 +8672,7 @@ input.input-control, select.input-control, textarea.input-control {
         var saveModal = document.getElementById('saveNoticeModal');
         var ok = document.getElementById('confirmSaveBtn');
         var cancel = document.getElementById('cancelSaveModalBtn');
-        if(saveModal && ok && cancel) {
+        if(__saveModalInjected && saveModal && ok && cancel) {
             saveModal.addEventListener('click', function(e){ if(e.target === saveModal) saveModal.style.display = 'none'; });
             cancel.onclick = function(){ saveModal.style.display = 'none'; };
             ok.onclick = function(){ window.proceedSave(); };
