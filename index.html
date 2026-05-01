@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-score-theme="gold" lang="en">
+<html data-score-theme="gold" lang="zh-HK">
 <head>
 
 <style id="ag-anti-flash">
@@ -42,8 +42,8 @@
 
             /* ✅ 輪廓線（版面邊緣最幼邊框） */
             --panel-outline: rgba(255, 255, 255, 0.14); /* 深色底：用白色幼線 */
-            --h1-outline: rgba(0, 0, 0, 0.70);          /* 大標題：用深色描邊 */
-            --h1-outline-gold: rgba(212, 175, 55, 0.98); /* 大標題：外圈金黃色描邊 */
+            --h1-outline: rgba(0, 0, 0, 0.45);          /* 大標題：用深色描邊（降低清晰度） */
+            --h1-outline-gold: rgba(212, 175, 55, 0); /* 大標題：外圈金黃色描邊（已關閉） */
 
             /* === 鋁材頁同款：不規則凹凸紋理（SVG data URI） === */
             --ag-irregular-texture: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27240%27%20height%3D%27240%27%20viewBox%3D%270%200%20240%20240%27%3E%0A%3Cdefs%3E%0A%20%20%3Cfilter%20id%3D%27f%27%20x%3D%27-20%25%27%20y%3D%27-20%25%27%20width%3D%27140%25%27%20height%3D%27140%25%27%3E%0A%20%20%20%20%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.012%200.08%27%20numOctaves%3D%273%27%20seed%3D%278%27%20stitchTiles%3D%27stitch%27%20result%3D%27n%27%2F%3E%0A%20%20%20%20%3CfeDisplacementMap%20in%3D%27SourceGraphic%27%20in2%3D%27n%27%20scale%3D%2726%27%20xChannelSelector%3D%27R%27%20yChannelSelector%3D%27G%27%20%2F%3E%0A%20%20%20%20%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%271%200%200%200%200%20%200%201%200%200%200%20%200%200%201%200%200%20%200%200%200%200.55%200%27%2F%3E%0A%20%20%3C%2Ffilter%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%27240%27%20height%3D%27240%27%20fill%3D%27white%27%20opacity%3D%270%27%2F%3E%0A%3Cg%20filter%3D%27url%28%23f%29%27%20opacity%3D%270.55%27%3E%0A%20%20%3Cpath%20d%3D%27M-20%200%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%206%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2012%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2018%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2024%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2030%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2036%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2042%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2048%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2054%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2060%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2066%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2072%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2078%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2084%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2090%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%2096%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20102%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20108%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20114%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20120%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20126%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20132%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20138%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20144%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20150%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20156%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20162%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20168%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20174%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20180%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20186%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20192%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20198%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20204%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20210%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20216%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20222%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20228%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20234%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%3Cpath%20d%3D%27M-20%20240%20H260%27%20stroke%3D%27rgba%280%2C0%2C0%2C0.55%29%27%20stroke-width%3D%271%27%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E");
@@ -290,39 +290,11 @@
             line-height: 1.1;
             margin-bottom: 8px;
             color: #fff;
-            /* 大標題美術字：保持清晰、帶少少設計感 */
-            /* 先用 Google 美術字；如果撈唔到，退到楷書系（都會明顯唔同） */
+            /* 大標題字體（保留你原本設定） */
             font-family: "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "DFKai-SB", "KaiTi", "STKaiti", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif !important;
-            /* 降低光暈，避免視覺膨脹感 */
-            /* ✅ 大標題加輪廓線（最幼描邊）+ 保留原本少少光暈 */
-            text-shadow:
-                         /* 先保留淡藍光暈（細緻） */
-                         0 0 6px rgba(79, 157, 232, 0.45),
-                         0 0 12px rgba(79, 157, 232, 0.28),
-
-                         /* ① 最幼深色輪廓線 */
-                         1px 0 0 var(--h1-outline),
-                         -1px 0 0 var(--h1-outline),
-                         0 1px 0 var(--h1-outline),
-                         0 -1px 0 var(--h1-outline),
-                         1px 1px 0 var(--h1-outline),
-                         -1px 1px 0 var(--h1-outline),
-                         1px -1px 0 var(--h1-outline),
-                         -1px -1px 0 var(--h1-outline),
-
-                         /* ② 外圈金黃色描邊（2px） */
-                         2px 0 0 var(--h1-outline-gold),
-                         -2px 0 0 var(--h1-outline-gold),
-                         0 2px 0 var(--h1-outline-gold),
-                         0 -2px 0 var(--h1-outline-gold),
-                         2px 2px 0 var(--h1-outline-gold),
-                         -2px 2px 0 var(--h1-outline-gold),
-                         2px -2px 0 var(--h1-outline-gold),
-                         -2px -2px 0 var(--h1-outline-gold),
-
-                         /* 少少金屬光暈，令金邊更似金色 */
-                         0 0 10px rgba(255, 205, 86, 0.22);
-            -webkit-text-stroke: 0.6px var(--h1-outline);
+            /* ✅ 純白字 + 極幼黑邊（已清除淡藍光暈） */
+            text-shadow: none !important;
+            -webkit-text-stroke: 0.25px var(--h1-outline);
             position: relative;
             z-index: 2;
             letter-spacing: 0.5px;
@@ -1696,7 +1668,7 @@
 
                 /* ✅ 光明版輪廓線：用淺黑幼線 */
                 --panel-outline: rgba(0, 0, 0, 0.14);
-                --h1-outline: rgba(0, 0, 0, 0.62);
+                --h1-outline: rgba(0, 0, 0, 0.45);
             }
 
             .theme-light body { color: var(--text-light); }
@@ -1807,7 +1779,7 @@
 
                 /* ✅ 黑暗版輪廓線：用白色幼線 */
                 --panel-outline: rgba(255, 255, 255, 0.14);
-                --h1-outline: rgba(0, 0, 0, 0.74);
+                --h1-outline: rgba(0, 0, 0, 0.45);
             }
             .theme-dark .input-control { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--text-light); }
 
@@ -1833,33 +1805,9 @@
             }
 
             :is(.theme-dark, html[data-theme="dark"]) header h1 {
-                /* 淺藍 Glow：更突出，但保持清晰輪廓 + 金邊 */
-                text-shadow:
-                    0 0 6px rgba(122, 190, 255, 0.50),
-                    0 0 14px rgba(122, 190, 255, 0.32),
-                    0 0 26px rgba(122, 190, 255, 0.18),
-
-                    /* ① 最幼深色輪廓線 */
-                    1px 0 0 var(--h1-outline),
-                    -1px 0 0 var(--h1-outline),
-                    0 1px 0 var(--h1-outline),
-                    0 -1px 0 var(--h1-outline),
-                    1px 1px 0 var(--h1-outline),
-                    -1px 1px 0 var(--h1-outline),
-                    1px -1px 0 var(--h1-outline),
-                    -1px -1px 0 var(--h1-outline),
-
-                    /* ② 外圈金黃色描邊（2px） */
-                    2px 0 0 var(--h1-outline-gold),
-                    -2px 0 0 var(--h1-outline-gold),
-                    0 2px 0 var(--h1-outline-gold),
-                    0 -2px 0 var(--h1-outline-gold),
-                    2px 2px 0 var(--h1-outline-gold),
-                    -2px 2px 0 var(--h1-outline-gold),
-                    2px -2px 0 var(--h1-outline-gold),
-                    -2px -2px 0 var(--h1-outline-gold),
-
-                    0 0 12px rgba(255, 205, 86, 0.22);
+                /* ✅ 純白字 + 極幼黑邊（已清除淡藍光暈） */
+                text-shadow: none !important;
+                -webkit-text-stroke: 0.25px var(--h1-outline);
             }
             
             .theme-light {
@@ -3430,31 +3378,9 @@ html[data-theme] #calcBtn:active,
   .theme-light-vintage h1 {
     color: #ffffff !important;
 
-    /* ✅ 大標題輪廓線：深色幼線 + 外圈金邊 */
-    text-shadow:
-      0 0 6px rgba(79, 157, 232, 0.18),
-
-      /* ① 最幼深色輪廓線 */
-      1px 0 0 var(--h1-outline),
-      -1px 0 0 var(--h1-outline),
-      0 1px 0 var(--h1-outline),
-      0 -1px 0 var(--h1-outline),
-      1px 1px 0 var(--h1-outline),
-      -1px 1px 0 var(--h1-outline),
-      1px -1px 0 var(--h1-outline),
-      -1px -1px 0 var(--h1-outline),
-
-      /* ② 外圈金黃色描邊（2px） */
-      2px 0 0 var(--h1-outline-gold),
-      -2px 0 0 var(--h1-outline-gold),
-      0 2px 0 var(--h1-outline-gold),
-      0 -2px 0 var(--h1-outline-gold),
-      2px 2px 0 var(--h1-outline-gold),
-      -2px 2px 0 var(--h1-outline-gold),
-      2px -2px 0 var(--h1-outline-gold),
-      -2px -2px 0 var(--h1-outline-gold),
-
-      0 0 10px rgba(255, 205, 86, 0.20) !important;
+    /* ✅ 純白字 + 極幼黑邊（已清除淡藍光暈） */
+    text-shadow: none !important;
+    -webkit-text-stroke: 0.25px var(--h1-outline);
 
     /* 取消大標題字外圍啡色框（唔再框住中文字） */
     border: none !important;
@@ -4720,6 +4646,11 @@ html[data-theme] #calcBtn:active,
     }
 
 /* === merged from #exp-white-text-shadow === */
+    /* ✅ 改用 CSS 取代 JS 全頁掃描（提升開啟流暢度） */
+    :is(.theme-dark, html[data-theme="dark"]) body{
+      text-shadow: 0 1px 2px rgba(0,0,0,0.55);
+    }
+
 .white-text-shadow {
       text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important;
     }
@@ -5049,31 +4980,16 @@ html[data-theme] #calcBtn:active,
       box-shadow: 0 0 18px rgba(0,0,0,0.22), 0 0 42px rgba(0,0,0,0.18) !important;
     }
 
-    /* 大標題：深色幼線 + 金黃色外圈（所有主題都強制） */
+    /* 大標題：✅ 純白字 + 極幼輪廓線（只影響最置頂 header 大標題） */
     header h1{
+      /* stroke：主力（Chrome/Safari） */
+      -webkit-text-stroke: 0.4px var(--h1-outline) !important;
+      /* shadow：fallback（Firefox 等）— 配合 0.4px，用 0.6px 四向描邊 */
       text-shadow:
-        0 0 6px rgba(79, 157, 232, 0.35),
-        0 0 12px rgba(79, 157, 232, 0.22),
-
-        1px 0 0 var(--h1-outline),
-        -1px 0 0 var(--h1-outline),
-        0 1px 0 var(--h1-outline),
-        0 -1px 0 var(--h1-outline),
-        1px 1px 0 var(--h1-outline),
-        -1px 1px 0 var(--h1-outline),
-        1px -1px 0 var(--h1-outline),
-        -1px -1px 0 var(--h1-outline),
-
-        2px 0 0 var(--h1-outline-gold),
-        -2px 0 0 var(--h1-outline-gold),
-        0 2px 0 var(--h1-outline-gold),
-        0 -2px 0 var(--h1-outline-gold),
-        2px 2px 0 var(--h1-outline-gold),
-        -2px 2px 0 var(--h1-outline-gold),
-        2px -2px 0 var(--h1-outline-gold),
-        -2px -2px 0 var(--h1-outline-gold),
-
-        0 0 10px rgba(255, 205, 86, 0.22) !important;
+        -0.6px 0   0 var(--h1-outline),
+         0.6px 0   0 var(--h1-outline),
+         0   -0.6px 0 var(--h1-outline),
+         0    0.6px 0 var(--h1-outline) !important;
     }
 
     /* 復古主題：
@@ -5564,7 +5480,7 @@ html[data-theme] #calcBtn:active,
 </div>
 </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
 
 
 
@@ -8892,107 +8808,6 @@ window.addEventListener('load', function() {
     if(btnStart) btnStart.addEventListener('click', stopSnow);
 });
 ;
-    // EXP 2026-03-22: Auto add shadow to anything rendered as white-ish text
-    // Fix: avoid MutationObserver infinite loops / heavy re-scan that can freeze the page
-    (function(){
-      const CLASS = 'white-text-shadow';
-      const THRESH = 245; // near-white
-
-      let running = false;
-      let scheduled = false;
-
-      function isWhiteish(rgb){
-        // rgb(a) like: "rgb(255, 255, 255)" or "rgba(255, 255, 255, 1)"
-        const m = rgb && rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
-        if (!m) return false;
-        const r = +m[1], g = +m[2], b = +m[3];
-        const a = (m[4] == null) ? 1 : +m[4];
-        return a > 0.6 && r >= THRESH && g >= THRESH && b >= THRESH;
-      }
-
-      function apply(){
-        if (running) return;
-        running = true;
-        try {
-          const root = document.body;
-          if (!root) return;
-          const all = root.querySelectorAll('*');
-          all.forEach(el => {
-            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
-
-            // 例外：QR modal 內全部唔加陰影（由 CSS 全禁）
-            if (el.closest && el.closest('#qrModal')) {
-              el.classList.remove(CLASS);
-              return;
-            }
-
-            // 例外（只限非黑暗模式）：儲存確認彈窗內文係黑字，唔應該被自動加陰影
-            // 黑暗模式會將內文改成白字，所以黑暗模式唔做呢個例外
-            const isDark = (document.documentElement.getAttribute('data-theme') === 'dark') ||
-                           document.documentElement.classList.contains('theme-dark');
-            if (!isDark && el.closest && el.closest('#saveNoticeModal')) {
-              el.classList.remove(CLASS);
-              return;
-            }
-
-            // Text detection:
-            // - normal elements: textContent
-            // - form controls: value / selected option text
-            let txt = (el.textContent || '').trim();
-            const tag = (el.tagName || '').toUpperCase();
-            if (!txt) {
-              if (tag === 'INPUT' || tag === 'TEXTAREA') txt = String(el.value || '').trim();
-              else if (tag === 'SELECT') {
-                const opt = el.selectedOptions && el.selectedOptions[0];
-                txt = String((opt && opt.textContent) || el.value || '').trim();
-              }
-            }
-            if (!txt) { el.classList.remove(CLASS); return; }
-
-            const cs = getComputedStyle(el);
-            if (!cs) return;
-            if (cs.visibility === 'hidden' || cs.display === 'none') { el.classList.remove(CLASS); return; }
-
-            if (isWhiteish(cs.color)) el.classList.add(CLASS);
-            else el.classList.remove(CLASS);
-          });
-        } finally {
-          running = false;
-        }
-      }
-
-      function scheduleApply(){
-        if (scheduled) return;
-        scheduled = true;
-        requestAnimationFrame(() => {
-          scheduled = false;
-          apply();
-        });
-      }
-
-      // Initial
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', scheduleApply, { once: true });
-      } else {
-        scheduleApply();
-      }
-
-      // Re-apply only when theme-related attrs change or new nodes inserted
-      const moTheme = new MutationObserver(scheduleApply);
-      moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['class','data-theme','style','data-lang'] });
-
-      const moDom = new MutationObserver(scheduleApply);
-      // 同時監察 style/class 變更（例如彈窗 display 切換），確保顏色變咗會即時重新判斷
-      moDom.observe(document.body || document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class','style']
-      });
-
-      window.__applyWhiteTextShadow = scheduleApply;
-    })();
-  
 ;
     (function(){
       const btnToTop = document.getElementById('btnToTop');
