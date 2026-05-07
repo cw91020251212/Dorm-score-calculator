@@ -5918,10 +5918,20 @@ function initSalaryTableClipboardFill(){
                 if (yesOpt) yesOpt.textContent = translations[lang][m.yes];
             });
 
-            // 重新適配標題字級
+            // ✅ 語言切換後，如果已經計算過成績，立即用新語言重繪成績區
+            try {
+                if (typeof lastResultPayload !== 'undefined' && lastResultPayload && typeof displayResult === 'function') {
+                    const _prev = lastResultPayload;
+                    const _oldTime = _prev.generatedAt;
+                    // displayResult 會按 currentLang（已更新）決定中/英文模板
+                    displayResult(_prev.totalScore, _prev.details);
+                    // 保留原本計算時間（避免每次切語言都變成「剛剛」）
+                    try { if (lastResultPayload) lastResultPayload.generatedAt = _oldTime; } catch(e) {}
+                }
+            } catch(e) {}
+
+            // 重新適配標題字級（只做一次，避免重覆計算）
             if (typeof fitTitle === 'function') fitTitle();
-            // 調整標題以適配當前語言字長
-            fitTitle();
         }
         
         // 語言切換事件
@@ -6053,9 +6063,19 @@ function initSalaryTableClipboardFill(){
             });
         }
         
-        // 更新狀態欄
+        // 更新狀態欄（避免同一句反覆寫入造成卡頓）
+        let __lastStatusMsg = null;
+        let __statusRaf = 0;
         function updateStatus(message) {
-            document.getElementById('statusText').textContent = message;
+            const next = String(message ?? '');
+            if (__lastStatusMsg === next) return;
+            __lastStatusMsg = next;
+            if (__statusRaf) cancelAnimationFrame(__statusRaf);
+            __statusRaf = requestAnimationFrame(() => {
+                __statusRaf = 0;
+                const el = document.getElementById('statusText');
+                if (el) el.textContent = __lastStatusMsg;
+            });
         }
         
         // 平滑捲動到指定元素（正常速度 ~500ms），避免定位混亂
@@ -7343,21 +7363,23 @@ function validateLiveFields() {
 }
 
 function attachLiveValidation() {
-    const ids = ['salary','divisor','hireDate','endDate'];
+    // 防抖：輸入時避免每一下鍵都做大量 DOM class 操作
+    let t = null;
+    const run = () => {
+        if (t) clearTimeout(t);
+        t = setTimeout(() => {
+            t = null;
+            try { validateLiveFields(); } catch(e) {}
+        }, 80);
+    };
+    const ids = ['salary','divisor','hireDate','endDate','children','overseas','newborn','otherChildren'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        ['input','change','blur'].forEach(evt => el.addEventListener(evt, validateLiveFields));
+        ['input','change','blur'].forEach(evt => el.addEventListener(evt, run, { passive: true }));
     });
 }
 
-function lockDateTypingOnDesktop() {
-    // NOTE: 已停用。
-    // 原本呢段係想「限制年份最多 4 位」去避免誤輸入。
-    // 但實測喺部分電腦版瀏覽器，對 input[type=date] 綁 keydown 會令手打日期（年/月/日）失效。
-    // 為保證兼容性同可用性，暫時完全交由瀏覽器原生 date input 行為處理。
-    return;
-}
 
 // 重要：禁止瀏覽器記住滾動位置，確保每次開啟都回到最上方
 (function forceScrollTopOnLoad(){
@@ -7604,7 +7626,6 @@ document.addEventListener('DOMContentLoaded', function() {
               }, { passive: true });
             })();
 
-            lockDateTypingOnDesktop();
             // 讀取上次未完成輸入（例如中途去其他網站搵資料再返嚟）
             loadDraftForm();
             attachDraftAutosave();
@@ -8822,14 +8843,19 @@ window.addEventListener('load', function() {
         window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
       });
 
+      let navRaf = 0;
       function syncScrollNav(){
         if (!scrollNav) return;
         const show = window.scrollY > 200;
         scrollNav.style.opacity = show ? '1' : '0';
         scrollNav.style.pointerEvents = show ? 'auto' : 'none';
       }
+      function onScroll(){
+        if (navRaf) return;
+        navRaf = requestAnimationFrame(() => { navRaf = 0; syncScrollNav(); });
+      }
 
-      window.addEventListener('scroll', syncScrollNav, { passive: true });
+      window.addEventListener('scroll', onScroll, { passive: true });
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', syncScrollNav, { once: true });
       } else {
