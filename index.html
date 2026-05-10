@@ -5866,6 +5866,12 @@ function initSalaryTableClipboardFill(){
             // 更新數據狀態文本
             updateDataCount();
 
+            // ✅ 重要：修正「重開後英文介面但狀態列仍顯示中文」
+            // 原因：initForm() 會先用 currentLang='zh' 呼叫 updateStatus()（rAF 非同步），
+            // 之後即使 setLanguage('en') 直接改咗 #statusText，rAF 仍可能最後覆蓋返中文。
+            // 所以 setLanguage() 必須再同步一次狀態列內容。
+            try { if (typeof updateStatus === 'function') updateStatus(translations[lang]['statusText']); } catch(e) {}
+
             // 依版面（電腦左右／手機上下）更新「左側/上方」提示
             updateResultPlaceholderText();
             
