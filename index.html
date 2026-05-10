@@ -7726,23 +7726,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function startConfetti(){
       if (!canvas) return;
+
+      // ✅ 效能：低性能裝置/減少動態時，降低紙碎負擔
+      const reduceMotion = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      const lowCpu = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+      const lowMem = (navigator.deviceMemory && navigator.deviceMemory <= 4);
+      const lowPerfConfetti = !!(reduceMotion || lowCpu || lowMem);
+
       resizeCanvas();
-      particles = new Array(280).fill(0).map(()=>makeParticle());
+      const particleCount = lowPerfConfetti ? 160 : 260;
+      particles = new Array(particleCount).fill(0).map(()=>makeParticle());
+
       const extraColors = ['#87CEFA','#7B68EE','#BA55D3'];
-      particles.forEach(p=>{ if (Math.random()<0.25){ p.type='star'; p.color=extraColors[(Math.random()*extraColors.length)|0]; } });
+      particles.forEach(p=>{ if (!lowPerfConfetti && Math.random()<0.25){ p.type='star'; p.color=extraColors[(Math.random()*extraColors.length)|0]; } });
+
       cancelAnimationFrame(rafId); rafId = requestAnimationFrame(step);
       window.addEventListener('resize', resizeCanvas);
+
+      // burst（每隔一段時間補充「噴發」）係 setInterval，容易令部份機慢；低效能模式直接關閉
       if (window.__confettiBurstTimer) clearInterval(window.__confettiBurstTimer);
-      window.__confettiBurstTimer = setInterval(()=>{
-        const w = canvas.width;
-        for (let i=0;i<50;i++){
-          const p = makeParticle();
-          p.x = w*0.5 + (Math.random()-0.5)*w*0.2;
-          p.y = -15 - Math.random()*40;
-          p.dy += 0.8; p.size += 1.2; p.twinkle = true;
-          particles[(Math.random()*particles.length)|0] = p;
-        }
-      }, 2800);
+      if (!lowPerfConfetti) {
+        window.__confettiBurstTimer = setInterval(()=>{
+          const w = canvas.width;
+          for (let i=0;i<40;i++){
+            const p = makeParticle();
+            p.x = w*0.5 + (Math.random()-0.5)*w*0.2;
+            p.y = -15 - Math.random()*40;
+            p.dy += 0.8; p.size += 1.1; p.twinkle = true;
+            particles[(Math.random()*particles.length)|0] = p;
+          }
+        }, 3600);
+      } else {
+        window.__confettiBurstTimer = null;
+      }
+
+      // ✅ 當頁面唔可見就暫停（避免背景耗電/卡）
+      if (!window.__confettiVisHandlerAdded) {
+        window.__confettiVisHandlerAdded = true;
+        document.addEventListener('visibilitychange', () => {
+          try {
+            if (document.hidden) {
+              cancelAnimationFrame(rafId);
+            } else if (overlay && overlay.style.display === 'flex') {
+              cancelAnimationFrame(rafId);
+              rafId = requestAnimationFrame(step);
+            }
+          } catch(e) {}
+        }, { passive: true });
+      }
     }
     function stopConfetti(){
       cancelAnimationFrame(rafId); rafId = null; particles = [];
