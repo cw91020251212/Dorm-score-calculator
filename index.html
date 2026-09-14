@@ -5052,8 +5052,8 @@ html[data-theme] #calcBtn:active,
           s = JSON.parse(raw) || {};
         }catch(e){ s = {}; }
 
-        // 2) Theme（同 applyUiSettings 對齊）
-        var t = s.theme || 'dark';
+        // 2) Theme（同 applyUiSettings 對齊）— 預設由 dark 改為 light-vintage
+        var t = s.theme || 'light-vintage';
         if (t === 'light' || t === 'light-simple') t = 'light-vintage';
         root.classList.remove('theme-dark','theme-light','theme-light-simple','theme-light-vintage');
         if (t === 'light-vintage') root.classList.add('theme-light-vintage');
@@ -5098,7 +5098,36 @@ html[data-theme] #calcBtn:active,
 <meta content="#f1f1f5" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Dorm Score Calculator</title>
+<title>宿舍分數計算機 · Dorm Score Calculator</title>
+<meta content="宿舍分數一鍵計算：薪金、年資、家庭、特殊情況全部考慮，資料只留喺你部機。Housing allowance scoring made simple." name="description"/>
+
+<!-- Favicon / App icons -->
+<link href="assets/favicon.ico" rel="icon" sizes="any"/>
+<link href="assets/icon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="assets/icon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<link href="assets/icon-512.png" rel="icon" sizes="512x512" type="image/png"/>
+<link href="assets/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
+<link href="assets/manifest.webmanifest" rel="manifest"/>
+
+<!-- Open Graph (Facebook / WhatsApp / LINE / Telegram / Slack) -->
+<meta content="宿舍分數計算機 · Dorm Score Calculator" property="og:title"/>
+<meta content="宿舍分數一鍵計算：薪金、年資、家庭、特殊情況全部考慮。Housing allowance scoring made simple." property="og:description"/>
+<meta content="https://cw91020251212.github.io/Dorm-score-calculator/" property="og:url"/>
+<meta content="https://cw91020251212.github.io/Dorm-score-calculator/assets/og-preview.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="宿舍分數計算機圖標與說明" property="og:image:alt"/>
+<meta content="website" property="og:type"/>
+<meta content="Dorm Score Calculator" property="og:site_name"/>
+<meta content="zh_HK" property="og:locale"/>
+<meta content="en_US" property="og:locale:alternate"/>
+
+<!-- Twitter / X card -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="宿舍分數計算機 · Dorm Score Calculator" name="twitter:title"/>
+<meta content="宿舍分數一鍵計算：薪金、年資、家庭、特殊情況全部考慮。" name="twitter:description"/>
+<meta content="https://cw91020251212.github.io/Dorm-score-calculator/assets/og-preview.png" name="twitter:image"/>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -5183,8 +5212,8 @@ html[data-theme] #calcBtn:active,
 </div>
 <div class="form-group">
 <label class="required" for="divisor"><span id="divisorLabel">除數</span></label>
-<input class="input-control" id="divisor" inputmode="decimal" min="1" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)" type="text" value="538"/>
-<div class="input-hint"><span id="divisorHint">目前預設值538，請參考最新宿舍手冊</span></div>
+<input class="input-control" id="divisor" inputmode="decimal" min="1" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)" type="text" value="549"/>
+<div class="input-hint"><span id="divisorHint">目前預設值549，請參考最新宿舍手冊</span></div>
 </div>
 <div class="form-row">
 <div class="form-group">
@@ -5268,6 +5297,9 @@ html[data-theme] #calcBtn:active,
 <button class="btn btn-primary no-text-shadow btn-3d" id="loadBtn">
 <i class="fas fa-download"></i> <span id="loadText">載入資料</span>
 </button>
+<button class="btn btn-primary no-text-shadow btn-3d" id="shareAppBtn" title="分享此計算機">
+<i class="fas fa-share-nodes"></i> <span id="shareBtnText">分享</span>
+</button>
 </div>
 </div>
 <div class="data-section">
@@ -5323,7 +5355,7 @@ html[data-theme] #calcBtn:active,
 <div class="modal-body">
 <p class="label" id="scoringLabel">計分準則（簡述）：</p>
 <ul>
-<li id="salaryRule">薪金分數：薪金 ÷ 除數（預設 538）。</li>
+<li id="salaryRule">薪金分數：薪金 ÷ 除數（預設 549）。</li>
 <li id="serviceRule">年資分數：入職至截止日期的天數 ÷ 365.25 × 年資乘數（預設 6）。</li>
 <li id="familyRule">家庭加分：配偶 +20；每名子女 +10；海外就讀子女 +5；新生 +10；其他子女（除首名）按子女分數並可能有首名加成 +20。</li>
 <li id="specialRule">特殊情況：被指示離開 +72；宿舍有缺陷 +20。</li>
@@ -5536,7 +5568,7 @@ const translations = {
                 'salaryTableBtnText': '薪金表格',
                 'requiredLegend': '代表必填資料',
                 'divisorLabel': '除數',
-                'divisorHint': '目前預設值538，請參考最新宿舍手冊',
+                'divisorHint': '目前預設值549，請參考最新宿舍手冊',
                 'hireDateLabel': '入職日期',
                 'endDateLabel': '截止日期',
                 'spouseLabel': '配偶在港居住？',
@@ -5573,11 +5605,12 @@ const translations = {
                 'darkLabel': '暗',
                 'cancelSaveText': '取消儲存',
                 'loadText': '載入資料',
+                'shareBtnText': '分享',
                     'disclaimerResult': '此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。',
                     'disclaimerFooter': '此計算結果僅供參考；結果不保證準確；本工具不對使用後果負責。',
                     'infoTitle': '使用須知',
                     'scoringLabel': '計分準則（簡述）：',
-                    'salaryRule': '薪金分數：薪金 ÷ 除數（預設 538）。',
+                    'salaryRule': '薪金分數：薪金 ÷ 除數（預設 549）。',
                     'serviceRule': '年資分數：入職至截止日期的天數 ÷ 365.25 × 年資乘數（預設 6）。',
                     'familyRule': '家庭加分：配偶 +20；每名子女 +10；海外就讀子女 +5；新生 +10；其他子女（除首名）按子女分數並可能有首名加成 +20。',
                     'specialRule': '特殊情況：被指示離開 +72；宿舍有缺陷 +20。',
@@ -5598,7 +5631,7 @@ const translations = {
                 'salaryTableBtnText': 'Pay Table',
                 'requiredLegend': 'indicates required fields',
                 'divisorLabel': 'Divisor',
-                'divisorHint': 'Default value is 538, please refer to the latest dormitory manual',
+                'divisorHint': 'Default value is 549, please refer to the latest dormitory manual',
                 'hireDateLabel': 'Hire Date',
                 'endDateLabel': 'End Date',
                 'spouseLabel': 'Spouse in Hong Kong?',
@@ -5635,11 +5668,12 @@ const translations = {
                 'darkLabel': 'Dark',
                 'cancelSaveText': 'Cancel Save',
                 'loadText': 'Load Data',
+                'shareBtnText': 'Share',
                     'disclaimerResult': 'Disclaimer: This calculation result is for reference only; accuracy is not guaranteed; this tool is not responsible for any consequences of use.',
                     'disclaimerFooter': 'Disclaimer: This calculation result is for reference only; accuracy is not guaranteed; this tool is not responsible for any consequences of use.',
                     'infoTitle': 'Usage Guide',
                     'scoringLabel': 'Scoring rules (brief):',
-                    'salaryRule': 'Salary score: salary ÷ divisor (default 538).',
+                    'salaryRule': 'Salary score: salary ÷ divisor (default 549).',
                     'serviceRule': 'Service score: days from hire to end ÷ 365.25 × multiplier (default 6).',
                     'familyRule': 'Family points: spouse +20; each child +10; child studying overseas +5; newborn +10; other children (except first) per child score, with possible first-child bonus +20.',
                     'specialRule': 'Special cases: instructed to leave +72; dormitory defects +20.',
@@ -6037,7 +6071,7 @@ function initSalaryTableClipboardFill(){
             // 完全清空與重置預設值（避免殘留）
             const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
             setVal('salary', '');            // 清空薪金
-            setVal('divisor', '538');       // 回復預設除數
+            setVal('divisor', '549');       // 回復預設除數
             setVal('spouse', 'no');
             setVal('children', '0');
             setVal('overseas', '0');
@@ -6930,14 +6964,14 @@ function initSalaryTableClipboardFill(){
             const raw = localStorage.getItem('uiSettings');
             let settings = {};
             if (!raw) {
-                // 全新安裝/第一次開：固定預設
-                settings = { theme: 'dark', fontScale: 1.0, brightness: 1, contrast: 1, saturate: 1, warmth: 0, paperTint: 0.65, paperStrength: 0.65, burlapStrength: 1.00, tuneAdvanced: false };
+                // 全新安裝/第一次開：固定預設（已由黑暗改為光明復古）
+                settings = { theme: 'light-vintage', fontScale: 1.0, brightness: 1, contrast: 1, saturate: 1, warmth: 0, paperTint: 0.65, paperStrength: 0.65, burlapStrength: 1.00, tuneAdvanced: false };
                 localStorage.setItem('uiSettings', JSON.stringify(settings));
             } else {
                 settings = getUiSettings();
                 // 容錯：缺欄位就補返預設，但唔覆蓋用家選擇
                 if (!settings || typeof settings !== 'object') settings = {};
-                if (!settings.theme) settings.theme = 'dark';
+                if (!settings.theme) settings.theme = 'light-vintage';
                 if (!settings.fontScale) settings.fontScale = 1.0;
                 if (settings.brightness == null) settings.brightness = 1;
                 if (settings.contrast == null) settings.contrast = 1;
@@ -8899,6 +8933,76 @@ window.addEventListener('load', function() {
         syncScrollNav();
       }
     })();
-  
+
+    /* === Share button: Web Share API + copy-link fallback === */
+    (function initShareButton(){
+      function getShareUrl(){
+        try {
+          var loc = window.location;
+          // 用去除 hash/query 嘅 clean URL 做分享連結
+          return loc.origin + loc.pathname;
+        } catch(e){ return 'https://cw91020251212.github.io/Dorm-score-calculator/'; }
+      }
+      function currentLang(){
+        try {
+          return (document.documentElement.getAttribute('data-lang')
+                  || localStorage.getItem('appLangPref')
+                  || 'zh');
+        } catch(e){ return 'zh'; }
+      }
+      function toast(msg){
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:rgba(20,25,35,0.92);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,0.35);backdrop-filter:blur(4px);pointer-events:none;opacity:0;transition:opacity .2s;';
+        document.body.appendChild(t);
+        requestAnimationFrame(function(){ t.style.opacity = '1'; });
+        setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 250); }, 1800);
+      }
+      function fallbackCopy(url, zh){
+        var ok = false;
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = url;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch(e){ ok = false; }
+        toast(ok ? (zh ? '連結已複製，快去分享！' : 'Link copied. Share it!')
+                 : (zh ? '無法自動複製，請自行複製：' + url : 'Copy failed. URL: ' + url));
+      }
+      function share(){
+        var zh = currentLang() === 'zh';
+        var url = getShareUrl();
+        var title = zh ? '宿舍分數計算機' : 'Dorm Score Calculator';
+        var text  = zh ? '一鍵計算宿舍分數，資料只留喺你部機。' : 'Housing allowance scoring made simple.';
+        if (navigator.share) {
+          navigator.share({ title: title, text: text, url: url })
+            .catch(function(err){
+              // 用戶取消唔算錯；只有真係失敗先 fallback
+              if (err && err.name !== 'AbortError') fallbackCopy(url, zh);
+            });
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url)
+            .then(function(){ toast(zh ? '連結已複製，快去分享！' : 'Link copied. Share it!'); })
+            .catch(function(){ fallbackCopy(url, zh); });
+        } else {
+          fallbackCopy(url, zh);
+        }
+      }
+      function bind(){
+        var btn = document.getElementById('shareAppBtn');
+        if (!btn || btn.__wired) return;
+        btn.__wired = true;
+        btn.addEventListener('click', share);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind, { once: true });
+      } else {
+        bind();
+      }
+    })();
 </script></body>
 </html>
