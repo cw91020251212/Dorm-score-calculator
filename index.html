@@ -5052,6 +5052,17 @@ html[data-theme] #calcBtn:active,
           s = JSON.parse(raw) || {};
         }catch(e){ s = {}; }
 
+        // 1b) 一次性遷移：預設主題由 dark 改為 light-vintage。
+        //     舊用家 localStorage 已經記低 'dark'，如果佢從未見過新預設，
+        //     就強制切一次去 light-vintage。之後佢手動改嘅選擇會保留。
+        try {
+          if (!localStorage.getItem('themeDefaultV2Migrated')) {
+            s.theme = 'light-vintage';
+            localStorage.setItem('uiSettings', JSON.stringify(s));
+            localStorage.setItem('themeDefaultV2Migrated', '1');
+          }
+        } catch(e){}
+
         // 2) Theme（同 applyUiSettings 對齊）— 預設由 dark 改為 light-vintage
         var t = s.theme || 'light-vintage';
         if (t === 'light' || t === 'light-simple') t = 'light-vintage';
@@ -8945,6 +8956,17 @@ window.addEventListener('load', function() {
       } else {
         syncScrollNav();
       }
+    })();
+
+    /* === Service worker registration (PWA install requirement) === */
+    (function registerSW(){
+      if (!('serviceWorker' in navigator)) return;
+      // 用 pathname 決定 scope，兼容 GitHub Pages 子路徑 (/Dorm-score-calculator/)
+      var scope = new URL('./', location.href).pathname;
+      var swUrl = new URL('sw.js', location.href).href;
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register(swUrl, { scope: scope }).catch(function(){});
+      });
     })();
 
     /* === Share button: Web Share API + copy-link fallback === */
