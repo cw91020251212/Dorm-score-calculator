@@ -5531,6 +5531,62 @@ html[data-theme] #calcBtn:active,
 </div>
 </div>
 </div>
+<script id="autofill-safe-editor-bootstrap">
+/* Android Chrome may show the password/payment/address Autofill toolbar for
+   ordinary inputs. Keep date, range, radio, checkbox and file inputs native;
+   only convert the app's free-form text fields. */
+(function installAutofillSafeEditors(){
+  const ids = ['salary','divisor','children','overseas','newborn','otherChildren','searchData'];
+  const integerIds = new Set(['children','overseas','newborn','otherChildren']);
+  const decimalIds = new Set(['salary','divisor']);
+  const style = document.createElement('style');
+  style.textContent = `
+    .autofill-safe-editor { white-space: nowrap; overflow-x: auto; }
+    .autofill-safe-editor:empty::before { content: attr(data-placeholder); opacity: .7; pointer-events: none; }
+  `;
+  document.head.appendChild(style);
+
+  ids.forEach(id => {
+    const source = document.getElementById(id);
+    if (!source || source.dataset.autofillSafe === '1') return;
+    const editor = document.createElement('div');
+    for (const attr of ['class','id','title','aria-label','tabindex']) {
+      if (source.hasAttribute(attr)) editor.setAttribute(attr, source.getAttribute(attr));
+    }
+    editor.className = `${source.className} autofill-safe-editor`;
+    editor.id = source.id;
+    editor.setAttribute('contenteditable', 'plaintext-only');
+    editor.setAttribute('role', 'textbox');
+    editor.setAttribute('aria-multiline', 'false');
+    editor.setAttribute('tabindex', '0');
+    editor.setAttribute('inputmode', integerIds.has(id) ? 'numeric' : decimalIds.has(id) ? 'decimal' : 'text');
+    editor.dataset.autofillSafe = '1';
+    editor.dataset.placeholder = source.getAttribute('placeholder') || '';
+    editor.textContent = source.value || '';
+    if (source.hasAttribute('min')) editor.dataset.min = source.getAttribute('min');
+
+    Object.defineProperty(editor, 'value', {
+      configurable: true,
+      get() { return this.textContent || ''; },
+      set(value) { this.textContent = value == null ? '' : String(value); }
+    });
+
+    editor.addEventListener('beforeinput', event => {
+      if (event.inputType === 'insertParagraph' || event.inputType === 'insertLineBreak') event.preventDefault();
+    });
+    editor.addEventListener('input', () => {
+      if (/\r|\n/.test(editor.value)) editor.value = editor.value.replace(/[\r\n]+/g, '');
+      if (integerIds.has(id) && typeof window.sanitizeInteger === 'function') window.sanitizeInteger(editor);
+      if (decimalIds.has(id) && typeof window.sanitizeFloat === 'function') window.sanitizeFloat(editor);
+    });
+    editor.addEventListener('keydown', event => {
+      if (integerIds.has(id) && typeof window.blockIntegerKeys === 'function') window.blockIntegerKeys(event);
+      if (decimalIds.has(id) && typeof window.blockFloatKeys === 'function') window.blockFloatKeys(event);
+    });
+    source.replaceWith(editor);
+  });
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
 
 
@@ -8167,7 +8223,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 手機浮動鍵盤遮擋自動避讓（僅數字鍵盤觸發）
 (function initKeyboardAvoidance(){
-  const inputs = document.querySelectorAll('input, textarea'); // select 不處理，避免下拉時畫面移動
+  const inputs = document.querySelectorAll('input, textarea, .autofill-safe-editor'); // select 不處理，避免下拉時畫面移動
   let focusedEl = null;
   function isNumeric(el){
     if (!el) return false;
