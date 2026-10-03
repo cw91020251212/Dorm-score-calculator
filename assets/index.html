@@ -9050,11 +9050,11 @@ window.addEventListener('load', function() {
         requestAnimationFrame(function(){ t.style.opacity = '1'; });
         setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 250); }, 1800);
       }
-      function fallbackCopy(url, zh){
+      function fallbackCopy(text, zh){
         var ok = false;
         try {
           var ta = document.createElement('textarea');
-          ta.value = url;
+          ta.value = text;
           ta.style.position = 'fixed';
           ta.style.opacity = '0';
           document.body.appendChild(ta);
@@ -9062,26 +9062,29 @@ window.addEventListener('load', function() {
           ok = document.execCommand('copy');
           document.body.removeChild(ta);
         } catch(e){ ok = false; }
-        toast(ok ? (zh ? '連結已複製，快去分享！' : 'Link copied. Share it!')
-                 : (zh ? '無法自動複製，請自行複製：' + url : 'Copy failed. URL: ' + url));
+        toast(ok ? (zh ? '成績文字已複製，快去分享！' : 'Result text copied. Share it!')
+                 : (zh ? '無法自動複製成績文字，請自行複製。' : 'Copy failed. Please copy the result text manually.'));
       }
       function share(){
         var zh = currentLang() === 'zh';
-        var url = getShareUrl();
-        var title = zh ? '宿舍分數計算機' : 'Dorm Score Calculator';
-        var text  = zh ? '一鍵計算宿舍分數，資料只留喺你部機。' : 'Housing allowance scoring made simple.';
+        var resultText = (typeof buildResultText === 'function') ? buildResultText() : '';
+        if (!resultText) {
+          toast(zh ? '請先計算分數，再分享成績。' : 'Please calculate a score before sharing.');
+          return;
+        }
+        var title = zh ? '宿舍計分結果' : 'Dorm Score Result';
         if (navigator.share) {
-          navigator.share({ title: title, text: text, url: url })
+          navigator.share({ title: title, text: resultText })
             .catch(function(err){
               // 用戶取消唔算錯；只有真係失敗先 fallback
-              if (err && err.name !== 'AbortError') fallbackCopy(url, zh);
+              if (err && err.name !== 'AbortError') fallbackCopy(resultText, zh);
             });
         } else if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url)
-            .then(function(){ toast(zh ? '連結已複製，快去分享！' : 'Link copied. Share it!'); })
-            .catch(function(){ fallbackCopy(url, zh); });
+          navigator.clipboard.writeText(resultText)
+            .then(function(){ toast(zh ? '成績文字已複製，快去分享！' : 'Result text copied. Share it!'); })
+            .catch(function(){ fallbackCopy(resultText, zh); });
         } else {
-          fallbackCopy(url, zh);
+          fallbackCopy(resultText, zh);
         }
       }
       function bind(){
