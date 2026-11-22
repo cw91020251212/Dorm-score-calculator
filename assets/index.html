@@ -1806,8 +1806,13 @@
             }
 
             :is(.theme-dark, html[data-theme="dark"]) header h1 {
-                /* ✅ 純白字 + 極幼黑邊（已清除淡藍光暈） */
-                text-shadow: none !important;
+                /* 白字要有落影先會「起」；保留幼描邊 */
+                text-shadow:
+                    -0.6px 0 0 var(--h1-outline),
+                    0.6px 0 0 var(--h1-outline),
+                    0 -0.6px 0 var(--h1-outline),
+                    0 0.6px 0 var(--h1-outline),
+                    0 2px 4px rgba(0,0,0,0.55) !important;
                 -webkit-text-stroke: 0.25px var(--h1-outline);
             }
             
@@ -3379,8 +3384,13 @@ html[data-theme] #calcBtn:active,
   .theme-light-vintage h1 {
     color: #ffffff !important;
 
-    /* ✅ 純白字 + 極幼黑邊（已清除淡藍光暈） */
-    text-shadow: none !important;
+    /* 白字落影，淺色／藍色標題條先睇得清楚 */
+    text-shadow:
+        -0.6px 0 0 var(--h1-outline),
+        0.6px 0 0 var(--h1-outline),
+        0 -0.6px 0 var(--h1-outline),
+        0 0.6px 0 var(--h1-outline),
+        0 2px 4px rgba(0,0,0,0.55) !important;
     -webkit-text-stroke: 0.25px var(--h1-outline);
 
     /* 取消大標題字外圍啡色框（唔再框住中文字） */
@@ -3893,6 +3903,11 @@ html[data-theme] #calcBtn:active,
             :is(#saveDataBtn, #cancelSaveBtn, #loadBtn, #resetBtn) :is(span, i) {
                 color: #fff !important;
                 text-shadow: 0 1px 2px rgba(0,0,0,0.45) !important;
+            }
+            /* 兩個「分享」：淺粉／淺綠底上嘅白字同圖示都要落影 */
+            :is(#shareAppBtn, #shareTextBtn) :is(span, i) {
+                color: #fff !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.7), 0 2px 5px rgba(0,0,0,0.45) !important;
             }
 
             /* === 2026-03-19: 微弱呼吸燈（增加動態感） === */
@@ -4990,7 +5005,8 @@ html[data-theme] #calcBtn:active,
         -0.6px 0   0 var(--h1-outline),
          0.6px 0   0 var(--h1-outline),
          0   -0.6px 0 var(--h1-outline),
-         0    0.6px 0 var(--h1-outline) !important;
+         0    0.6px 0 var(--h1-outline),
+         0 2px 4px rgba(0,0,0,0.55) !important;
     }
 
     /* 復古主題：
@@ -5225,7 +5241,7 @@ html[data-theme] #calcBtn:active,
 <div class="form-group">
 <label class="required" for="divisor"><span id="divisorLabel">除數</span></label>
 <input class="input-control" id="divisor" inputmode="decimal" min="1" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)" type="text" value="549"/>
-<div class="input-hint"><span id="divisorHint">目前預設值549，請參考最新宿舍手冊</span></div>
+<div class="input-hint"><span id="divisorHint">目前預設值549，請參考最新宿舍手冊（更新日期：2026年）</span></div>
 </div>
 <div class="form-row">
 <div class="form-group">
@@ -5309,7 +5325,7 @@ html[data-theme] #calcBtn:active,
 <button class="btn btn-primary no-text-shadow btn-3d" id="loadBtn">
 <i class="fas fa-download"></i> <span id="loadText">載入資料</span>
 </button>
-<button class="btn btn-primary no-text-shadow btn-3d" id="shareAppBtn" title="分享此計算機">
+<button class="btn btn-primary btn-3d" id="shareAppBtn" title="分享此計算機">
 <i class="fas fa-share-nodes"></i> <span id="shareBtnText">分享</span>
 </button>
 </div>
@@ -5643,7 +5659,7 @@ const translations = {
                 'salaryTableBtnText': '薪金表格',
                 'requiredLegend': '代表必填資料',
                 'divisorLabel': '除數',
-                'divisorHint': '目前預設值549，請參考最新宿舍手冊',
+                'divisorHint': '目前預設值549，請參考最新宿舍手冊（更新日期：2026年）',
                 'hireDateLabel': '入職日期',
                 'endDateLabel': '截止日期',
                 'spouseLabel': '配偶在港居住？',
@@ -5709,7 +5725,7 @@ const translations = {
                 'salaryTableBtnText': 'Pay Table',
                 'requiredLegend': 'indicates required fields',
                 'divisorLabel': 'Divisor',
-                'divisorHint': 'Default value is 549, please refer to the latest dormitory manual',
+                'divisorHint': 'Default value is 549, please refer to the latest dormitory manual (Updated: 2026)',
                 'hireDateLabel': 'Hire Date',
                 'endDateLabel': 'End Date',
                 'spouseLabel': 'Spouse in Hong Kong?',
@@ -5836,6 +5852,34 @@ function loadDraftForm(){
 }
 function clearDraftForm(){
     try { if (DRAFT_STORE) DRAFT_STORE.removeItem(DRAFT_KEY); } catch(e) {}
+}
+
+// 用本地年月日寫入 <input type="date">。
+// valueAsDate 用 UTC，香港凌晨會把「今天」寫成昨日。
+function localDateInputValue(date){
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+}
+
+function readDormData(){
+    try {
+        const raw = localStorage.getItem('dormData');
+        const data = raw ? JSON.parse(raw) : {};
+        if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+        return data;
+    } catch (e) {
+        return {};
+    }
+}
+
+function formCalcKey(){
+    const ids = ['salary','divisor','hireDate','endDate','spouse','children','overseas','newborn','otherChildren','instruction','defect'];
+    return ids.map(id => {
+        const el = document.getElementById(id);
+        return el ? String(el.value) : '';
+    }).join('\u0001');
 }
 function attachDraftAutosave(){
     let t = null;
@@ -5981,11 +6025,20 @@ function initSalaryTableClipboardFill(){
             // 更新數據狀態文本
             updateDataCount();
 
-            // ✅ 重要：修正「重開後英文介面但狀態列仍顯示中文」
-            // 原因：initForm() 會先用 currentLang='zh' 呼叫 updateStatus()（rAF 非同步），
-            // 之後即使 setLanguage('en') 直接改咗 #statusText，rAF 仍可能最後覆蓋返中文。
-            // 所以 setLanguage() 必須再同步一次狀態列內容。
-            try { if (typeof updateStatus === 'function') updateStatus(translations[lang]['statusText']); } catch(e) {}
+            // 開機時 initForm() 會用 rAF 寫狀態列；這裡再寫一次，先排隊嘅中文先唔會蓋過語言。
+            // 已經計完分就保留結果狀態，避免一切換語言就變回「系統準備就緒」。
+            try {
+                if (typeof updateStatus === 'function') {
+                    if (typeof lastResultPayload !== 'undefined' && lastResultPayload) {
+                        const doneScore = Number(lastResultPayload.totalScore);
+                        updateStatus(lang === 'zh'
+                            ? `計算完成！總分: ${doneScore.toFixed(2)}`
+                            : `Calculation completed! Total score: ${doneScore.toFixed(2)}`);
+                    } else {
+                        updateStatus(translations[lang]['statusText']);
+                    }
+                }
+            } catch(e) {}
 
             // 依版面（電腦左右／手機上下）更新「左側/上方」提示
             updateResultPlaceholderText();
@@ -6137,17 +6190,17 @@ function initSalaryTableClipboardFill(){
             serviceMultiplier: 6
         };
         
-        // 當前計算結果
+        // 當前計算結果。0 唔再當成「未計算」——改用 lastCalcKey 對住表單。
         let currentScore = 0;
+        let lastCalcKey = null;
         
         // 初始化表單數據
         function initForm() {
             const today = new Date();
-            document.getElementById('endDate').valueAsDate = today;
+            document.getElementById('endDate').value = localDateInputValue(today);
             
-            const oneYearAgo = new Date();
-            oneYearAgo.setFullYear(today.getFullYear() - 2);
-            document.getElementById('hireDate').valueAsDate = oneYearAgo;
+            const twoYearsAgo = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
+            document.getElementById('hireDate').value = localDateInputValue(twoYearsAgo);
             
             // 完全清空與重置預設值（避免殘留）
             const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
@@ -6170,8 +6223,10 @@ function initSalaryTableClipboardFill(){
                 </div>
             `;
             
-            // 重置當前分數
+            // 重置當前分數，同埋「上次成功計算」嘅表單指紋／結果
             currentScore = 0;
+            lastCalcKey = null;
+            lastResultPayload = null;
             
             updateStatus(translations[currentLang]['statusText']);
 
@@ -6274,13 +6329,13 @@ function initSalaryTableClipboardFill(){
         function calculateScore() {
             // 驗證必填字段
             if (!validateRequiredFields()) {
-                return;
+                return false;
             }
             const logicRes = validateLogic();
             if (!logicRes.valid) {
                 updateStatus(logicRes.msg);
                 if (logicRes.el) { shakeInput(logicRes.el); try { logicRes.el.focus(); } catch(e){} }
-                return;
+                return false;
             }
 
             
@@ -6292,7 +6347,7 @@ function initSalaryTableClipboardFill(){
                 updateStatus(msg);
                 const el = document.getElementById('salary');
                 if (el) { el.classList.add('error','glow-red'); shakeInput(el); try { el.focus(); } catch(e){} }
-                return;
+                return false;
             }
             const salary = parseFloat(salaryRaw.replace(/,/g, ''));
             const divisorRaw = (document.getElementById('divisor').value || '').trim();
@@ -6301,7 +6356,7 @@ function initSalaryTableClipboardFill(){
                 updateStatus(msg);
                 const el = document.getElementById('divisor');
                 if (el) { el.classList.add('error','glow-red'); shakeInput(el); try { el.focus(); } catch(e){} }
-                return;
+                return false;
             }
             const divisor = parseFloat(divisorRaw);
             const hireDate = document.getElementById('hireDate').value;
@@ -6312,6 +6367,12 @@ function initSalaryTableClipboardFill(){
             const hire = new Date(hireParts[0], hireParts[1]-1, hireParts[2]);
             const endParts = endDate.split('-');
             const end = new Date(endParts[0], endParts[1]-1, endParts[2]);
+
+            if (Number.isNaN(hire.getTime()) || Number.isNaN(end.getTime())) {
+                const errorMsg = currentLang === 'zh' ? '錯誤：日期格式不正確' : 'Error: Invalid date';
+                updateStatus(errorMsg);
+                return false;
+            }
             
             // 額外邏輯檢查：海外子女不可大於子女人數
             const childrenValCalc = parseInt(document.getElementById('children').value) || 0;
@@ -6322,7 +6383,7 @@ function initSalaryTableClipboardFill(){
                 const overseasEl2 = document.getElementById('overseas');
                 if (overseasEl2) overseasEl2.classList.add('error','glow-red');
                 scrollToElement(overseasEl2, 900, -80);
-                return;
+                return false;
             }
 
             if (end < hire) {
@@ -6331,14 +6392,10 @@ function initSalaryTableClipboardFill(){
                     "Error: End date cannot be earlier than hire date";
                 updateStatus(errorMsg);
                 const endEl = document.getElementById('endDate');
-    const childrenEl = document.getElementById('children');
-    const overseasEl = document.getElementById('overseas');
-    const newbornEl = document.getElementById('newborn');
-    const otherChildrenEl = document.getElementById('otherChildren');
                 const hireEl = document.getElementById('hireDate');
                 if (endEl) { endEl.classList.add('error'); endEl.classList.add('glow-red'); }
                 if (hireEl) { hireEl.classList.add('error'); hireEl.classList.add('glow-red'); }
-                return;
+                return false;
             } else {
                 const endEl = document.getElementById('endDate');
                 const hireEl = document.getElementById('hireDate');
@@ -6379,6 +6436,7 @@ function initSalaryTableClipboardFill(){
             currentScore = salaryScore + serviceScore + spouseScore + childrenScore + 
                           overseasScore + newbornScore + otherChildrenScore + 
                           instructionScore + defectScore;
+            lastCalcKey = formCalcKey();
             
             // 顯示結果
             displayResult(currentScore, {
@@ -6399,10 +6457,11 @@ function initSalaryTableClipboardFill(){
                 setTimeout(() => {
                     resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
+            }
             // 套用目前 UI 設定到結果區（避免字體大小或主題未生效）
             const ui = getUiSettings();
             applyUiSettings(ui);
-            }
+            return true;
         }
         
         // 顯示結果
@@ -6662,16 +6721,24 @@ function initSalaryTableClipboardFill(){
             const divisor = document.getElementById('divisor').value;
             const hireDate = document.getElementById('hireDate').value;
             const endDate = document.getElementById('endDate').value;
+            const ready = salary && divisor && hireDate && endDate && lastCalcKey != null && Number.isFinite(Number(currentScore));
 
-            if (!salary || !divisor || !hireDate || !endDate || currentScore === 0) {
+            if (!ready) {
                 const errorMsg = currentLang === 'zh' ? 
                     "錯誤：請先填寫必填欄位並計算分數" : 
                     "Error: Please fill in required fields and calculate score";
                 updateStatus(errorMsg);
                 return;
             }
+            if (formCalcKey() !== lastCalcKey) {
+                updateStatus(currentLang === 'zh'
+                    ? '表單已修改，請先再計算分數'
+                    : 'Form changed. Please calculate again before saving.');
+                return;
+            }
 
-            document.getElementById('saveNoticeModal').style.display = 'flex';
+            const modal = document.getElementById('saveNoticeModal');
+            if (modal) modal.style.display = 'flex';
         }
         
         // 添加數據卡片
@@ -6740,7 +6807,7 @@ function initSalaryTableClipboardFill(){
         
         // 載入已儲存的數據
         function loadSavedData(name) {
-            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            const savedData = readDormData();
             const data = savedData[name];
             
             if (!data) {
@@ -6764,13 +6831,9 @@ function initSalaryTableClipboardFill(){
             document.getElementById('instruction').value = data.instruction;
             document.getElementById('defect').value = data.defect;
             
-            // 設置當前分數
-            currentScore = parseFloat(data.score) || 0;
-            
-            // 顯示結果
-            if (currentScore > 0) {
-                calculateScore();
-            }
+            // 用而家嘅計分規則重算，唔好直接信舊紀錄入面嘅分數
+            const ok = calculateScore();
+            if (!ok) return;
             
             const successMsg = currentLang === 'zh' ? 
                 "已載入儲存的數據: " + name : 
@@ -6779,14 +6842,15 @@ function initSalaryTableClipboardFill(){
         }
         
         // 刪除已儲存的數據
-        function deleteSavedData(name) {
-            const confirmMsg = currentLang === 'zh' ? 
-                `確定要刪除「${name}」嗎？` : 
-                `Are you sure you want to delete "${name}"?`;
-                
-            if (!confirm(confirmMsg)) return;
+        function deleteSavedData(name, skipConfirm) {
+            if (!skipConfirm) {
+                const confirmMsg = currentLang === 'zh' ? 
+                    `確定要刪除「${name}」嗎？` : 
+                    `Are you sure you want to delete "${name}"?`;
+                if (!confirm(confirmMsg)) return;
+            }
             
-            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
+            const savedData = readDormData();
             delete savedData[name];
             localStorage.setItem('dormData', JSON.stringify(savedData));
             
@@ -6855,21 +6919,13 @@ function initSalaryTableClipboardFill(){
                     try {
                         const data = JSON.parse(e.target.result);
                         
-                        // 驗證數據格式
-                        if (typeof data !== 'object') {
-                            throw new Error('無效的數據格式');
+                        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                            throw new Error(currentLang === 'zh' ? '無效的數據格式' : 'Invalid data format');
                         }
-                        
-                        // 保存到本地存儲
+
+                        // 保存到本地存儲，再整表重畫（唔好清走「尚未儲存」提示節點）
                         localStorage.setItem('dormData', JSON.stringify(data));
-                        
-                        // 更新UI
-                        document.querySelector('.data-container').innerHTML = '';
-                        document.getElementById('noDataMessage').style.display = 'none';
-                        
-                        for (const [name, item] of Object.entries(data)) {
-                            addDataCard(name, item);
-                        }
+                        loadAllSavedData();
                         
                         const successMsg = currentLang === 'zh' ? 
                             `已導入數據: ${Object.keys(data).length} 筆記錄` : 
@@ -6892,14 +6948,7 @@ function initSalaryTableClipboardFill(){
         
         // 更新數據計數（修正：保留並重建 #dataCount 內嵌結構，避免被覆蓋）
         function updateDataCount() {
-            const savedDataRaw = localStorage.getItem('dormData');
-            let savedData = {};
-            try {
-                savedData = savedDataRaw ? JSON.parse(savedDataRaw) : {};
-            } catch (e) {
-                // 若資料損壞，重設為空物件
-                savedData = {};
-            }
+            const savedData = readDormData();
             const count = Object.keys(savedData).length;
             const dataStatusEl = document.getElementById('dataStatus');
             if (!dataStatusEl) return;
@@ -6914,21 +6963,22 @@ function initSalaryTableClipboardFill(){
         
         // 載入已儲存的數據
         function loadAllSavedData() {
-            const savedData = JSON.parse(localStorage.getItem('dormData')) || {};
-            
-            if (Object.keys(savedData).length === 0) {
-                const nd = document.getElementById('noDataMessage');
+            const savedData = readDormData();
+            const container = document.querySelector('.data-container');
+            if (container) {
+                container.querySelectorAll('.data-card').forEach(card => card.remove());
+            }
+
+            const names = Object.keys(savedData);
+            const nd = document.getElementById('noDataMessage');
+            if (names.length === 0) {
                 if (nd) nd.style.display = 'block';
+                updateDataCount();
                 return;
             }
-            
-            const nd2 = document.getElementById('noDataMessage');
-            if (nd2) nd2.style.display = 'none';
-            
-            for (const [name, data] of Object.entries(savedData)) {
-                addDataCard(name, data);
-            }
-            
+
+            if (nd) nd.style.display = 'none';
+            names.forEach(name => addDataCard(name, savedData[name]));
             updateDataCount();
         }
         
@@ -7384,7 +7434,7 @@ function initSalaryTableClipboardFill(){
         function deleteAllSavedData() {
             if (!confirm(currentLang === 'zh' ? '確定要刪除全部儲存資料嗎？此操作不可恢復。' : 'Delete ALL saved records? This action cannot be undone.')) return;
             localStorage.removeItem('dormData');
-            document.querySelector('.data-container')?.replaceChildren();
+            document.querySelectorAll('.data-container .data-card').forEach(card => card.remove());
             const nd = document.getElementById('noDataMessage');
             if (nd) nd.style.display = 'block';
             updateDataCount();
@@ -8705,9 +8755,15 @@ input.input-control, select.input-control, textarea.input-control {
         const lang = document.documentElement.getAttribute('data-lang') || 'zh';
         const isZh = (lang === 'zh');
 
-        if (!salary || !divisor || !hireDate || !endDate || (typeof currentScore !== 'undefined' && Number(currentScore) === 0)) {
+        if (!salary || !divisor || !hireDate || !endDate || lastCalcKey == null || !Number.isFinite(Number(currentScore))) {
             if (typeof updateStatus === 'function') {
                 updateStatus(isZh ? '錯誤：請先填寫必填欄位並計算分數' : 'Error: Please fill in required fields and calculate score');
+            }
+            return;
+        }
+        if (typeof formCalcKey === 'function' && formCalcKey() !== lastCalcKey) {
+            if (typeof updateStatus === 'function') {
+                updateStatus(isZh ? '表單已修改，請先再計算分數' : 'Form changed. Please calculate again before saving.');
             }
             return;
         }
@@ -8739,8 +8795,11 @@ input.input-control, select.input-control, textarea.input-control {
         };
 
         try {
-            let savedData = {};
-            try { savedData = JSON.parse(localStorage.getItem('dormData') || '{}') || {}; } catch(e) { savedData = {}; }
+            let savedData = (typeof readDormData === 'function') ? readDormData() : {};
+            if (Object.prototype.hasOwnProperty.call(savedData, data.name)) {
+                const overwrite = confirm(isZh ? `「${data.name}」已存在，要覆蓋嗎？` : `"${data.name}" already exists. Overwrite?`);
+                if (!overwrite) return;
+            }
             savedData[data.name] = data;
             localStorage.setItem('dormData', JSON.stringify(savedData));
 
@@ -8781,33 +8840,14 @@ input.input-control, select.input-control, textarea.input-control {
         if(title) title.textContent = isZh ? '儲存確認' : 'Save Confirmation';
         if(msg) msg.textContent = isZh ? '資料將儲存於您的設備。' : 'Data will be saved on your device.';
         if(sub) sub.textContent = isZh ? '(不會上傳伺服器，請自行備份)' : '(Not uploaded to any server; please back up your data.)';
-        if(btnOk) btnOk.textContent = isZh ? '✓ 確認' : '✓ Confirm';
-        if(btnCancel) btnCancel.textContent = isZh ? '✕ 取消' : '✕ Cancel';
-    }
-
-
-    window.saveCurrentData = function() {
-        const salary = document.getElementById('salary')?.value;
-        const divisor = document.getElementById('divisor')?.value;
-        const hireDate = document.getElementById('hireDate')?.value;
-        const endDate = document.getElementById('endDate')?.value;
-        const lang = document.documentElement.getAttribute('data-lang') || 'zh';
-        const isZh = (lang === 'zh');
-
-        if (!salary || !divisor || !hireDate || !endDate || (typeof currentScore !== 'undefined' && Number(currentScore) === 0)) {
-            if (typeof updateStatus === 'function') {
-                updateStatus(isZh ? '錯誤：請先填寫必填欄位並計算分數' : 'Error: Please fill in required fields and calculate score');
-            } else {
-                alert(isZh ? '請先填寫必填欄位並計算分數' : 'Please fill in required fields and calculate score');
-            }
-            return;
-        }
-
-        if (typeof updateSaveModalText === 'function') updateSaveModalText();
-        const modal = document.getElementById('saveNoticeModal');
-        if (modal) modal.style.display = 'flex';
+        // 正式版面用 lang-zh / lang-en，唔好成個按鈕 textContent 換走，否則中英切換會壞。
+        if(btnOk && !btnOk.querySelector('.lang-zh')) btnOk.textContent = isZh ? '✓ 確認' : '✓ Confirm';
+        if(btnCancel && !btnCancel.querySelector('.lang-zh')) btnCancel.textContent = isZh ? '✕ 取消' : '✕ Cancel';
     };
 
+
+    // saveCurrentData() 已經係全域函數，唔好再寫去 window.saveCurrentData，
+    // 否則會蓋過原函數，變成自己呼叫自己。
 
     // 5. LOAD/DELETE MODAL (Injected & Modified)
     (function(){
@@ -8919,7 +8959,7 @@ input.input-control, select.input-control, textarea.input-control {
     var okB = mkBtn(isZh ? '刪除' : 'Delete','danger'); okB.onclick = function(){
       if (chosen['__DELETE_ALL__']) { deleteAllSavedData(); document.body.removeChild(ov); return; }
       var keysToDelete = Object.keys(chosen);
-      if (keysToDelete.length){ keysToDelete.forEach(function(k){ try{ deleteSavedData(k); }catch(e){} }); }
+      if (keysToDelete.length){ keysToDelete.forEach(function(k){ try{ deleteSavedData(k, true); }catch(e){} }); }
       document.body.removeChild(ov);
     };
     foot.appendChild(cancelB); foot.appendChild(okB); box.appendChild(foot);
