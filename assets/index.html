@@ -552,8 +552,19 @@
             text-align: left;
             cursor: pointer;
         }
-        #payScaleOverlay .pay-now .pay-figure {
-            color: var(--accent);
+        #payScaleOverlay .pay-now .pay-figure,
+        #payScaleOverlay .pay-head-now {
+            color: #1a120c !important;
+        }
+        #payScaleOverlay .pay-now .pay-incs {
+            color: rgba(26, 18, 12, 0.72) !important;
+            opacity: 1;
+        }
+        #payScaleOverlay .pay-old,
+        #payScaleOverlay .pay-old .pay-figure,
+        #payScaleOverlay .pay-old .pay-incs,
+        #payScaleOverlay .pay-head-old {
+            color: rgba(58, 46, 34, 0.42) !important;
         }
         #payScaleOverlay .modal-foot {
             display: flex;
@@ -6253,8 +6264,10 @@ function initPayScaleSheet() {
         const pointHead = document.createElement('div');
         pointHead.textContent = isZh ? '薪點' : 'Pt';
         const oldHead = document.createElement('div');
+        oldHead.className = 'pay-head-old';
         oldHead.textContent = (isZh ? '截至 ' : 'As at ') + asAt;
         const newHead = document.createElement('div');
+        newHead.className = 'pay-head-now';
         newHead.textContent = (isZh ? '由 ' : 'From ') + effective;
         head.append(pointHead, oldHead, newHead);
         list.appendChild(head);
@@ -6265,6 +6278,7 @@ function initPayScaleSheet() {
             point.className = 'pay-point';
             point.textContent = row.point;
             const oldCol = payColumn(row.oldPay);
+            oldCol.classList.add('pay-old');
             const now = document.createElement('div');
             now.className = 'pay-now';
             now.setAttribute('role', 'button');
