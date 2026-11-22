@@ -474,6 +474,19 @@
         #payScaleOverlay .modal-foot {
             flex: 0 0 auto;
         }
+        #payScaleOverlay .pay-scale-sheet > header {
+            border: 1px solid rgba(32, 22, 14, 0.92) !important;
+            box-shadow: none !important;
+        }
+        #payScaleTitle {
+            color: #fff !important;
+            text-shadow:
+                -0.6px 0 0 rgba(0, 0, 0, 0.55),
+                0.6px 0 0 rgba(0, 0, 0, 0.55),
+                0 -0.6px 0 rgba(0, 0, 0, 0.55),
+                0 0.6px 0 rgba(0, 0, 0, 0.55),
+                0 2px 4px rgba(0, 0, 0, 0.55) !important;
+        }
         #payScaleOverlay .modal-body {
             overflow: auto;
             flex: 1 1 auto;
@@ -552,6 +565,21 @@
             margin-right: auto;
             color: inherit;
             font-size: 0.9rem;
+        }
+        #payScaleClose {
+            width: 44px;
+            height: 44px;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            color: #1a120c !important;
+        }
+        #payScaleClose i {
+            color: #1a120c !important;
+            font-size: 1.45rem;
+            line-height: 1;
+            text-shadow: none !important;
         }
 
         .button-group {
@@ -5513,7 +5541,7 @@ html[data-theme] #calcBtn:active,
 </div>
 <div class="modal-foot">
 <a id="payScaleOfficial" href="https://www.csb.gov.hk/tc_chi/admin/pay/54.html" target="_blank" rel="noopener noreferrer">官方原頁</a>
-<button type="button" class="close-btn btn-3d" id="payScaleClose">關閉</button>
+<button type="button" class="close-btn btn-3d" id="payScaleClose" aria-label="關閉" title="關閉"><i aria-hidden="true" class="fas fa-times"></i></button>
 </div>
 </div>
 </div>
@@ -6201,7 +6229,11 @@ function initPayScaleSheet() {
         const isZh = zh();
         const year = yearOf(rows[0].effective) || yearOf(rows[0].asAt);
         if (title) title.textContent = sheetTitle(isZh, year);
-        if (closeBtn) closeBtn.textContent = isZh ? '關閉' : 'Close';
+        if (closeBtn) {
+            const closeLabel = isZh ? '關閉' : 'Close';
+            closeBtn.setAttribute('aria-label', closeLabel);
+            closeBtn.title = closeLabel;
+        }
         if (official) {
             official.textContent = isZh ? '官方原頁' : 'Official page';
             official.href = isZh
@@ -6257,7 +6289,11 @@ function initPayScaleSheet() {
         const seq = ++loadSeq;
         const isZh = zh();
         if (title) title.textContent = sheetTitle(isZh, '');
-        if (closeBtn) closeBtn.textContent = isZh ? '關閉' : 'Close';
+        if (closeBtn) {
+            const closeLabel = isZh ? '關閉' : 'Close';
+            closeBtn.setAttribute('aria-label', closeLabel);
+            closeBtn.title = closeLabel;
+        }
         if (note) note.textContent = isZh ? '正在讀取公務員事務局公開檔…' : 'Reading the Civil Service Bureau file…';
         list.replaceChildren();
         overlay.style.display = 'flex';
