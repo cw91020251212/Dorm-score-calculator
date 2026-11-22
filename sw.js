@@ -2,7 +2,7 @@
  * 目的：滿足 PWA 安裝條件（Chrome/Edge/Android 需要 SW），
  * 順便令離線都用得。策略：network-first + cache fallback。
  */
-const CACHE = 'dorm-score-v7-logic-fixes';
+const CACHE = 'dorm-score-v9-payscale-narrow';
 const CORE = [
   './',
   './index.html',
@@ -38,6 +38,11 @@ self.addEventListener('fetch', (event) => {
   // 只處理同源請求，避免影響 CDN / Google Fonts / Font Awesome
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // 薪級檔一定跟網路。快取舊檔會把去年薪酬交俾人。
+  if (url.pathname.endsWith('/pay-scales-cs-icac-tc.csv')) {
+    event.respondWith(fetch(req, { cache: 'no-store' }));
+    return;
+  }
 
   event.respondWith(
     fetch(req)

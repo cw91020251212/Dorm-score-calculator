@@ -462,6 +462,98 @@
         .salary-mini-btn:active { transform: translateY(-50%) scale(0.95); }
         .salary-mini-btn:focus { outline: none; }
 
+        #payScaleOverlay { z-index: 4200; }
+        #payScaleOverlay .pay-scale-sheet {
+            width: min(420px, 94vw);
+            max-height: min(86vh, 760px);
+            display: flex !important;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #payScaleOverlay .pay-scale-sheet > header,
+        #payScaleOverlay .modal-foot {
+            flex: 0 0 auto;
+        }
+        #payScaleOverlay .modal-body {
+            overflow: auto;
+            flex: 1 1 auto;
+            min-height: 0;
+            padding: 8px 14px 16px;
+        }
+        .pay-scale-note {
+            margin: 0 0 8px;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            opacity: 0.9;
+        }
+        .pay-head,
+        .pay-row {
+            display: grid;
+            grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 1fr);
+            column-gap: 8px;
+            align-items: start;
+        }
+        .pay-head {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            padding: 2px 0 6px;
+            background: var(--section-bg);
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .pay-row {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(127, 127, 127, 0.28);
+            font-size: 0.92rem;
+            line-height: 1.35;
+        }
+        .pay-point {
+            font-weight: 700;
+            font-size: 1.02rem;
+            padding-top: 1px;
+        }
+        .pay-figure {
+            display: block;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .pay-incs {
+            display: block;
+            margin-top: 2px;
+            font-size: 0.7rem;
+            line-height: 1.35;
+            opacity: 0.72;
+            font-weight: 500;
+        }
+        .pay-now {
+            display: block;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+        #payScaleOverlay .pay-now .pay-figure {
+            color: var(--accent);
+        }
+        #payScaleOverlay .modal-foot {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            align-items: center;
+        }
+        #payScaleOfficial {
+            margin-right: auto;
+            color: inherit;
+            font-size: 0.9rem;
+        }
+
         .button-group {
             display: flex;
             gap: 15px;
@@ -5233,7 +5325,7 @@ html[data-theme] #calcBtn:active,
 <label class="required" for="salary"><span id="salaryLabel">薪金（港幣）</span></label>
 <div class="salary-input-wrap">
 <input class="input-control" id="salary" inputmode="decimal" min="0" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)" placeholder="例如：30000" type="text"/>
-<a aria-label="打開薪金表格（政府網站）" class="salary-mini-btn" href="https://www.csb.gov.hk/english/admin/pay/54.html" id="salaryTableBtn" rel="noopener noreferrer" target="_blank" title="打開薪金表格（政府網站）">
+<a aria-label="查看廉署薪級表" class="salary-mini-btn" href="https://www.csb.gov.hk/tc_chi/admin/pay/54.html" id="salaryTableBtn" rel="noopener noreferrer" title="查看廉署薪級表">
 <i aria-hidden="true" class="fas fa-dollar-sign"></i><span id="salaryTableBtnText">薪金表格</span>
 </a>
 </div>
@@ -5407,6 +5499,21 @@ html[data-theme] #calcBtn:active,
 </div>
 <div class="modal-foot">
 <button class="close-btn btn-3d" id="closeModal"><span id="closeModalText">我明白</span></button>
+</div>
+</div>
+<div class="modal-overlay" id="payScaleOverlay" style="display: none;" aria-hidden="true">
+<div class="modal pay-scale-sheet" role="dialog" aria-modal="true" aria-labelledby="payScaleTitle">
+<header>
+<h3 id="payScaleTitle">廉政公署人員薪級表</h3>
+</header>
+<div class="modal-body">
+<p class="pay-scale-note" id="payScaleNote"></p>
+<div id="payScaleList"></div>
+</div>
+<div class="modal-foot">
+<a id="payScaleOfficial" href="https://www.csb.gov.hk/tc_chi/admin/pay/54.html" target="_blank" rel="noopener noreferrer">官方原頁</a>
+<button type="button" class="close-btn btn-3d" id="payScaleClose">關閉</button>
+</div>
 </div>
 </div>
 <div class="modal-overlay" id="saveNoticeModal" style="display: none;">
@@ -5924,10 +6031,12 @@ function initSalaryTableClipboardFill(){
     const amountEl = _getNewAmountEl();
     if (!link || !amountEl) return;
 
-    // 點擊薪金表：先保存一次，再設定旗標
-    link.addEventListener('click', () => {
-        try { saveDraftForm(); } catch(e) {}
-        try { sessionStorage.setItem(CLIP_FLAG_KEY, '1'); } catch(e) {}
+    // 去官方原頁先記住剪貼簿旗標。自己個窄表唔算離開頁面。
+    document.addEventListener('click', (e) => {
+        const official = e.target.closest && e.target.closest('#payScaleOfficial');
+        if (!official) return;
+        try { saveDraftForm(); } catch(err) {}
+        try { sessionStorage.setItem(CLIP_FLAG_KEY, '1'); } catch(err) {}
     });
 
     async function tryFillFromClipboard(){
@@ -5974,6 +6083,210 @@ function initSalaryTableClipboardFill(){
     // 必須靠用家手勢（click/focus）先可以 readText
     amountEl.addEventListener('focus', tryFillFromClipboard);
     amountEl.addEventListener('click', tryFillFromClipboard);
+}
+
+// 薪酬數字唔寫死。每次開表都讀公務員事務局公開檔，再收窄成兩欄。
+const PAY_SCALE_CSV = 'data/pay-scales-cs-icac-tc.csv';
+const ICAC_SCALE_KEY = '廉政公署人員薪級表';
+
+function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let quoted = false;
+    const src = String(text).replace(/^\uFEFF/, '');
+    for (let i = 0; i < src.length; i++) {
+        const ch = src[i];
+        if (quoted) {
+            if (ch === '"') {
+                if (src[i + 1] === '"') { cell += '"'; i++; }
+                else quoted = false;
+            } else cell += ch;
+        } else if (ch === '"') {
+            quoted = true;
+        } else if (ch === ',') {
+            row.push(cell);
+            cell = '';
+        } else if (ch === '\n') {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = '';
+        } else if (ch !== '\r') {
+            cell += ch;
+        }
+    }
+    if (cell.length || row.length) {
+        row.push(cell);
+        rows.push(row);
+    }
+    return rows;
+}
+
+function splitPay(raw) {
+    const parts = String(raw || '').split(';').map(s => s.trim()).filter(Boolean);
+    const substantive = parts.length ? parts[parts.length - 1] : '';
+    const money = (n) => Number(n).toLocaleString('en-HK');
+    return {
+        substantive,
+        figure: substantive ? money(substantive) : '',
+        increments: parts.slice(0, -1).map(n => '(' + money(n) + ')').join(' / ')
+    };
+}
+
+function parseIcacPayCsv(text) {
+    return parseCsv(text).slice(1).filter(cols => {
+        return String(cols[0] || '').replace(/\s/g, '') === ICAC_SCALE_KEY;
+    }).map(cols => ({
+        point: String(cols[1] || '').trim(),
+        asAt: String(cols[2] || '').trim(),
+        oldPay: splitPay(cols[3]),
+        effective: String(cols[4] || '').trim(),
+        newPay: splitPay(cols[5])
+    })).filter(row => row.point && row.newPay.substantive);
+}
+
+function initPayScaleSheet() {
+    const btn = document.getElementById('salaryTableBtn');
+    const overlay = document.getElementById('payScaleOverlay');
+    const list = document.getElementById('payScaleList');
+    const note = document.getElementById('payScaleNote');
+    const title = document.getElementById('payScaleTitle');
+    const closeBtn = document.getElementById('payScaleClose');
+    const official = document.getElementById('payScaleOfficial');
+    if (!btn || !overlay || !list) return;
+
+    const zh = () => (typeof currentLang === 'undefined') || currentLang !== 'en';
+
+    function fillSalary(amount) {
+        const el = document.getElementById('salary');
+        if (!el || !amount) return;
+        el.value = amount;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        closeSheet();
+        if (typeof updateStatus === 'function') {
+            updateStatus(zh()
+                ? '已填入薪金 ' + Number(amount).toLocaleString('en-HK')
+                : 'Salary filled: ' + Number(amount).toLocaleString('en-HK'));
+        }
+    }
+
+    function payColumn(pay) {
+        const col = document.createElement('div');
+        const figure = document.createElement('span');
+        figure.className = 'pay-figure';
+        figure.textContent = pay.figure;
+        col.appendChild(figure);
+        if (pay.increments) {
+            const incs = document.createElement('span');
+            incs.className = 'pay-incs';
+            incs.textContent = pay.increments;
+            col.appendChild(incs);
+        }
+        return col;
+    }
+
+    function renderSheet(rows) {
+        const isZh = zh();
+        if (title) title.textContent = isZh ? '廉政公署人員薪級表' : 'ICAC Pay Scale';
+        if (closeBtn) closeBtn.textContent = isZh ? '關閉' : 'Close';
+        if (official) {
+            official.textContent = isZh ? '官方原頁' : 'Official page';
+            official.href = isZh
+                ? 'https://www.csb.gov.hk/tc_chi/admin/pay/54.html'
+                : 'https://www.csb.gov.hk/english/admin/pay/54.html';
+        }
+        const asAt = rows[0].asAt;
+        const effective = rows[0].effective;
+        if (note) {
+            note.textContent = isZh
+                ? '公務員事務局公開檔。左欄截至 ' + asAt + '，右欄由 ' + effective + ' 起，兩欄擺埋一齊對比。括號係增薪額，大字先係該點薪酬。撳右欄填入薪金。'
+                : 'Civil Service Bureau file. Left column is as at ' + asAt + '; right column is from ' + effective + '. Brackets are increments; the large figure is the pay. Tap the right column to fill salary.';
+        }
+        list.replaceChildren();
+        const head = document.createElement('div');
+        head.className = 'pay-head';
+        const pointHead = document.createElement('div');
+        pointHead.textContent = isZh ? '薪點' : 'Pt';
+        const oldHead = document.createElement('div');
+        oldHead.textContent = (isZh ? '截至 ' : 'As at ') + asAt;
+        const newHead = document.createElement('div');
+        newHead.textContent = (isZh ? '由 ' : 'From ') + effective;
+        head.append(pointHead, oldHead, newHead);
+        list.appendChild(head);
+        rows.forEach((row) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'pay-row';
+            const point = document.createElement('div');
+            point.className = 'pay-point';
+            point.textContent = row.point;
+            const oldCol = payColumn(row.oldPay);
+            const now = document.createElement('div');
+            now.className = 'pay-now';
+            now.setAttribute('role', 'button');
+            now.tabIndex = 0;
+            now.setAttribute('aria-label', (isZh ? '填入薪金 ' : 'Fill salary ') + row.newPay.figure);
+            now.appendChild(payColumn(row.newPay));
+            const fill = () => fillSalary(row.newPay.substantive);
+            now.addEventListener('click', fill);
+            now.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    fill();
+                }
+            });
+            wrap.append(point, oldCol, now);
+            list.appendChild(wrap);
+        });
+    }
+
+    let loadSeq = 0;
+    async function openSheet() {
+        const seq = ++loadSeq;
+        const isZh = zh();
+        if (title) title.textContent = isZh ? '廉政公署人員薪級表' : 'ICAC Pay Scale';
+        if (closeBtn) closeBtn.textContent = isZh ? '關閉' : 'Close';
+        if (note) note.textContent = isZh ? '正在讀取公務員事務局公開檔…' : 'Reading the Civil Service Bureau file…';
+        list.replaceChildren();
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
+        const body = overlay.querySelector('.modal-body');
+        if (body) body.scrollTop = 0;
+        try {
+            const url = new URL(PAY_SCALE_CSV, document.baseURI);
+            const res = await fetch(url.href, { cache: 'no-store' });
+            if (!res.ok) throw new Error(String(res.status));
+            const rows = parseIcacPayCsv(await res.text());
+            if (!rows.length) throw new Error('empty');
+            if (seq !== loadSeq) return;
+            renderSheet(rows);
+        } catch (err) {
+            if (seq !== loadSeq) return;
+            list.replaceChildren();
+            if (note) {
+                note.textContent = isZh
+                    ? '讀唔到官方薪級檔，所以唔顯示數字，避免用到舊薪酬。請開官方原頁。'
+                    : 'The official pay file could not be read, so no figures are shown. Open the official page.';
+            }
+        }
+    }
+    function closeSheet() {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSheet();
+    });
+    if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeSheet();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.style.display !== 'none') closeSheet();
+    });
 }
 
         function setLanguage(lang) {
@@ -6064,8 +6377,8 @@ function initSalaryTableClipboardFill(){
                 setAttr('#infoBtn', 'title', '使用須知', 'User guide');
                 setAttr('#infoBtn', 'aria-label', '使用須知', 'User guide');
 
-                setAttr('#salaryTableBtn', 'title', '打開薪金表格（政府網站）', 'Open salary table (Gov website)');
-                setAttr('#salaryTableBtn', 'aria-label', '打開薪金表格（政府網站）', 'Open salary table (Gov website)');
+                setAttr('#salaryTableBtn', 'title', '查看廉署薪級表', 'View ICAC pay scale');
+                setAttr('#salaryTableBtn', 'aria-label', '查看廉署薪級表', 'View ICAC pay scale');
 
                 setAttr('#cancelSaveBtn', 'title', '刪除已儲存的資料', 'Delete saved data');
 
@@ -7801,6 +8114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadDraftForm();
             attachDraftAutosave();
             initSalaryTableClipboardFill();
+            initPayScaleSheet();
 
 // 初始化歡迎視窗（僅首次顯示）
 (function initWelcomeOnce(){

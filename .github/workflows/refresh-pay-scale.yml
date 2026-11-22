@@ -1,0 +1,30 @@
+name: Refresh official pay scale
+
+on:
+  schedule:
+    # 04:15 香港時間。公務員事務局一換公開檔，呢度就換埋，唔使人手記得。
+    - cron: '15 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the Civil Service Bureau pay file
+        run: |
+          curl -fsSL -o data/pay-scales-cs-icac-tc.csv \
+            "https://www.csb.gov.hk/datagovhk/pay-scales-cs-icac/pay-scales-cs-icac-tc.csv"
+
+      - name: Commit when the official file changed
+        run: |
+          git diff --quiet -- data/pay-scales-cs-icac-tc.csv && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pay-scales-cs-icac-tc.csv
+          git commit -m "Update official ICAC pay scale from the Civil Service Bureau"
+          git push
