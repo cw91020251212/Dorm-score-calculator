@@ -5326,7 +5326,7 @@ html[data-theme] #calcBtn:active,
 <label class="required" for="salary"><span id="salaryLabel">薪金（港幣）</span></label>
 <div class="salary-input-wrap">
 <input class="input-control" id="salary" inputmode="decimal" min="0" oninput="sanitizeFloat(this)" onkeydown="blockFloatKeys(event)" placeholder="例如：30000" type="text"/>
-<a aria-label="查看廉署薪級表" class="salary-mini-btn" href="https://www.csb.gov.hk/tc_chi/admin/pay/54.html" id="salaryTableBtn" rel="noopener noreferrer" title="查看廉署薪級表">
+<a aria-label="查看薪級表" class="salary-mini-btn" href="https://www.csb.gov.hk/tc_chi/admin/pay/54.html" id="salaryTableBtn" rel="noopener noreferrer" title="查看薪級表">
 <i aria-hidden="true" class="fas fa-dollar-sign"></i><span id="salaryTableBtnText">薪金表格</span>
 </a>
 </div>
@@ -5505,7 +5505,7 @@ html[data-theme] #calcBtn:active,
 <div class="modal-overlay" id="payScaleOverlay" style="display: none;" aria-hidden="true">
 <div class="modal pay-scale-sheet" role="dialog" aria-modal="true" aria-labelledby="payScaleTitle">
 <header>
-<h3 id="payScaleTitle">廉政公署人員薪級表</h3>
+<h3 id="payScaleTitle">薪級表</h3>
 </header>
 <div class="modal-body">
 <p class="pay-scale-note" id="payScaleNote"></p>
@@ -6188,9 +6188,19 @@ function initPayScaleSheet() {
         return col;
     }
 
+    function sheetTitle(isZh, year) {
+        if (!year) return isZh ? '薪級表' : 'Pay Scale';
+        return isZh ? (year + '年薪級表') : (year + ' Pay Scale');
+    }
+    function yearOf(text) {
+        const found = String(text || '').match(/(\d{4})/);
+        return found ? found[1] : '';
+    }
+
     function renderSheet(rows) {
         const isZh = zh();
-        if (title) title.textContent = isZh ? '廉政公署人員薪級表' : 'ICAC Pay Scale';
+        const year = yearOf(rows[0].effective) || yearOf(rows[0].asAt);
+        if (title) title.textContent = sheetTitle(isZh, year);
         if (closeBtn) closeBtn.textContent = isZh ? '關閉' : 'Close';
         if (official) {
             official.textContent = isZh ? '官方原頁' : 'Official page';
@@ -6246,7 +6256,7 @@ function initPayScaleSheet() {
     async function openSheet() {
         const seq = ++loadSeq;
         const isZh = zh();
-        if (title) title.textContent = isZh ? '廉政公署人員薪級表' : 'ICAC Pay Scale';
+        if (title) title.textContent = sheetTitle(isZh, '');
         if (closeBtn) closeBtn.textContent = isZh ? '關閉' : 'Close';
         if (note) note.textContent = isZh ? '正在讀取公務員事務局公開檔…' : 'Reading the Civil Service Bureau file…';
         list.replaceChildren();
@@ -6380,8 +6390,8 @@ function initPayScaleSheet() {
                 setAttr('#infoBtn', 'title', '使用須知', 'User guide');
                 setAttr('#infoBtn', 'aria-label', '使用須知', 'User guide');
 
-                setAttr('#salaryTableBtn', 'title', '查看廉署薪級表', 'View ICAC pay scale');
-                setAttr('#salaryTableBtn', 'aria-label', '查看廉署薪級表', 'View ICAC pay scale');
+                setAttr('#salaryTableBtn', 'title', '查看薪級表', 'View pay scale');
+                setAttr('#salaryTableBtn', 'aria-label', '查看薪級表', 'View pay scale');
 
                 setAttr('#cancelSaveBtn', 'title', '刪除已儲存的資料', 'Delete saved data');
 
