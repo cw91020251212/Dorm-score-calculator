@@ -2,7 +2,7 @@
  * 目的：滿足 PWA 安裝條件（Chrome/Edge/Android 需要 SW），
  * 順便令離線都用得。策略：network-first + cache fallback。
  */
-const CACHE = 'dorm-score-v9-payscale-narrow';
+const CACHE = 'dorm-score-v10-share-icon';
 const CORE = [
   './',
   './index.html',

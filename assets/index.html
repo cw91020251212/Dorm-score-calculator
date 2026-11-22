@@ -5233,7 +5233,8 @@ html[data-theme] #calcBtn:active,
 <meta content="宿舍分數計算機 · Dorm Score Calculator" property="og:title"/>
 <meta content="宿舍分數一鍵計算：薪金、年資、家庭、特殊情況全部考慮。Housing allowance scoring made simple." property="og:description"/>
 <meta content="https://cw91020251212.github.io/Dorm-score-calculator/" property="og:url"/>
-<meta content="https://cw91020251212.github.io/Dorm-score-calculator/assets/og-preview.png" property="og:image"/>
+<meta content="https://cw91020251212.github.io/Dorm-score-calculator/assets/og-preview.png?v=2" property="og:image"/>
+<meta content="image/png" property="og:image:type"/>
 <meta content="1200" property="og:image:width"/>
 <meta content="630" property="og:image:height"/>
 <meta content="宿舍分數計算機圖標與說明" property="og:image:alt"/>
@@ -5246,7 +5247,7 @@ html[data-theme] #calcBtn:active,
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="宿舍分數計算機 · Dorm Score Calculator" name="twitter:title"/>
 <meta content="宿舍分數一鍵計算：薪金、年資、家庭、特殊情況全部考慮。" name="twitter:description"/>
-<meta content="https://cw91020251212.github.io/Dorm-score-calculator/assets/og-preview.png" name="twitter:image"/>
+<meta content="https://cw91020251212.github.io/Dorm-score-calculator/assets/og-preview.png?v=2" name="twitter:image"/>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 
@@ -6946,13 +6947,12 @@ function initPayScaleSheet() {
 
             const familySum = (details.spouseScore + details.childrenScore + details.overseasScore + details.newbornScore + details.otherChildrenScore);
             const specialSum = (details.instructionScore + details.defectScore);
-            const toolLine = (typeof appUrl !== 'undefined' && appUrl) ? (lang === 'zh' ? `🔗 工具：${appUrl}` : `🔗 Tool: ${appUrl}`) : null;
+            const pageUrl = 'https://cw91020251212.github.io/Dorm-score-calculator/';
 
             if (lang === 'zh') {
                 return [
                     '🏠 宿舍計分結果',
                     `🕒 時間：${timeStr}`,
-                    toolLine ? `🔗 ${toolLine.replace(/^🔗\s*/,'')}` : null,
                     '',
                     `🧮 總分：${Number(totalScore).toFixed(4)}`,
                     '────────────────',
@@ -6968,14 +6968,14 @@ function initPayScaleSheet() {
                     `⚠️ 特殊：${specialSum.toFixed(4)}`,
                     `   • 指示離開：${details.instructionScore}`,
                     `   • 宿舍缺陷：${details.defectScore}`,
-                    '────────────────'
+                    '────────────────',
+                    pageUrl
                 ].filter(Boolean).join('\n');
             }
 
             return [
                 '🏠 Dorm Score Result',
                 `🕒 Time: ${timeStr}`,
-                toolLine ? `🔗 ${toolLine.replace(/^🔗\s*/,'')}` : null,
                 '',
                 `🧮 Total: ${Number(totalScore).toFixed(4)}`,
                 '────────────────',
@@ -6991,7 +6991,8 @@ function initPayScaleSheet() {
                 `⚠️ Special: ${specialSum.toFixed(4)}`,
                 `   • instruction: ${details.instructionScore}`,
                 `   • defect: ${details.defectScore}`,
-                '────────────────'
+                '────────────────',
+                pageUrl
             ].filter(Boolean).join('\n');
         }
 
@@ -7013,7 +7014,8 @@ function initPayScaleSheet() {
                 if (navigator.share) {
                     await navigator.share({
                         title: currentLang === 'zh' ? '宿舍計分結果' : 'Dorm Score Result',
-                        text: md
+                        text: md,
+                        url: 'https://cw91020251212.github.io/Dorm-score-calculator/'
                     });
                     updateStatus(currentLang === 'zh' ? '已打開分享面板。' : 'Share sheet opened.');
                 } else {
@@ -9430,7 +9432,11 @@ window.addEventListener('load', function() {
         }
         var title = zh ? '宿舍計分結果' : 'Dorm Score Result';
         if (navigator.share) {
-          navigator.share({ title: title, text: resultText })
+          navigator.share({
+            title: title,
+            text: resultText,
+            url: 'https://cw91020251212.github.io/Dorm-score-calculator/'
+          })
             .catch(function(err){
               // 用戶取消唔算錯；只有真係失敗先 fallback
               if (err && err.name !== 'AbortError') fallbackCopy(resultText, zh);
