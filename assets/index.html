@@ -6311,7 +6311,9 @@ function initPayScaleSheet() {
             // 【新增】更新 placeholder 屬性
             const salaryInput = document.getElementById('salary');
             if (salaryInput && translations[lang]['salaryPlaceholder']) {
-                salaryInput.placeholder = translations[lang]['salaryPlaceholder'];
+                const salaryHint = translations[lang]['salaryPlaceholder'];
+                salaryInput.placeholder = salaryHint;
+                salaryInput.dataset.placeholder = salaryHint;
             }
 
             // 【修正】更新所有 lang-zh 和 lang-en 的元素顯示狀態
